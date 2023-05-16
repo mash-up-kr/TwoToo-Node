@@ -1,24 +1,10 @@
-# serverless-nestjs
-This is an example of creating a function that runs as nestjs using the serverless framework. 
-Sample publish. https://mmjdx4zxmc.execute-api.ap-northeast-1.amazonaws.com/dev/
-
-## What is changed.
-
-### add
-- `src/index.ts`
-- `src/swagger.ts`
-- `serverless.yml`
-
-### change
-- `package.json`
+# TwoToo Node
 
 ## How to use
 ### Prepare
-
 ```
 $ npm install @nestjs/cli serverless -g
-$ git clone git@github.com:rdlabo/serverless-nestjs.git 【projectName】
-$ cd 【projectName】
+$ cd ${projectName}
 $ npm install
 $ npm start
 ```
@@ -32,7 +18,7 @@ $ npm start
 
 ```
 $ npm start
-> serverless-nestjs@0.0.0 start /Users/sakakibara/dev/serverless-nestjs
+> two-too-node@0.0.1 start
 > nest start
 
 [Nest] 3905   - 11/29/2019, 4:40:49 PM   [NestFactory] Starting Nest application...
@@ -45,15 +31,14 @@ $ npm start
 Then browse http://localhost:3000
 
 #### use serverless-offline
-__after also doing an: `npm run build`__
 
 ```bash
-$ sls offline
+$ npm run build && sls offline
 ```
 
 ```
 $ sls offline
-Serverless: Starting Offline: dev/us-east-1.
+Serverless: Starting Offline: dev/ap-northeast-2.
 
 Serverless: Routes for index:
 Serverless: ANY /

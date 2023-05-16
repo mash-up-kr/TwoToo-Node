@@ -1,73 +1,116 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# serverless-nestjs
+This is an example of creating a function that runs as nestjs using the serverless framework. 
+Sample publish. https://mmjdx4zxmc.execute-api.ap-northeast-1.amazonaws.com/dev/
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## What is changed.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### add
+- `src/index.ts`
+- `src/swagger.ts`
+- `serverless.yml`
 
-## Description
+### change
+- `package.json`
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## How to use
+### Prepare
 
-## Installation
-
-```bash
+```
+$ npm install @nestjs/cli serverless -g
+$ git clone git@github.com:rdlabo/serverless-nestjs.git 【projectName】
+$ cd 【projectName】
 $ npm install
+$ npm start
 ```
 
-## Running the app
+### Development
+#### use NestCLI
+
+```
+$ npm start
+```
+
+```
+$ npm start
+> serverless-nestjs@0.0.0 start /Users/sakakibara/dev/serverless-nestjs
+> nest start
+
+[Nest] 3905   - 11/29/2019, 4:40:49 PM   [NestFactory] Starting Nest application...
+[Nest] 3905   - 11/29/2019, 4:40:49 PM   [InstanceLoader] AppModule dependencies initialized +20ms
+[Nest] 3905   - 11/29/2019, 4:40:49 PM   [RoutesResolver] AppController {/}: +6ms
+[Nest] 3905   - 11/29/2019, 4:40:49 PM   [RouterExplorer] Mapped {/, GET} route +3ms
+[Nest] 3905   - 11/29/2019, 4:40:49 PM   [NestApplication] Nest application successfully started +4ms
+```
+
+Then browse http://localhost:3000
+
+#### use serverless-offline
+__after also doing an: `npm run build`__
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+$ sls offline
 ```
 
-## Test
+```
+$ sls offline
+Serverless: Starting Offline: dev/us-east-1.
 
+Serverless: Routes for index:
+Serverless: ANY /
+Serverless: ANY /{proxy*}
+
+Serverless: Offline listening on http://localhost:3000
+```
+
+Then browse http://localhost:3000
+
+## How to Deploy
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+$ npm run build && sls deploy
 ```
 
-## Support
+## Options
+### Hot start
+See : https://serverless.com/blog/keep-your-lambdas-warm/
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+These behavior can be fixed with the plugin serverless-plugin-warmup
 
-## Stay in touch
+1 Install the plugin
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```
+$ npm install serverless-plugin-warmup --save-dev
+```
 
-## License
+2 Enable the plugin
 
-Nest is [MIT licensed](LICENSE).
+```
+plugins:
+  - '@hewmen/serverless-plugin-typescript'
+  - serverless-plugin-optimize
+  - serverless-offline
+  - serverless-plugin-warmup
+
+custom:
+  # Enable warmup on all functions (only for production and staging)
+  warmup:      
+      - production
+      - staging
+```
+
+### Use Swagger for development
+
+```
+$ npx ts-node src/swagger.ts
+```
+
+```
+[Nest] 6890   - 2019-03-24 15:11   [NestFactory] Starting Nest application...
+[Nest] 6890   - 2019-03-24 15:11   [InstanceLoader] AppModule dependencies initialized +11ms
+[Nest] 6890   - 2019-03-24 15:11   [RoutesResolver] AppController {/}: +224ms
+[Nest] 6890   - 2019-03-24 15:11   [RouterExplorer] Mapped {/, GET} route +2ms
+[Nest] 6890   - 2019-03-24 15:11   [NestApplication] Nest application successfully started +2ms
+```
+
+Then browse http://localhost:3001/api
+`
+**This function is for development.** If you want to use production, change package.json dependencies and serverless.yml.

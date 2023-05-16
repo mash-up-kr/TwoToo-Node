@@ -1,0 +1,27 @@
+service: twotoo-node-serverless
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: ap-northeast-2
+
+plugins:
+  - serverless-offline
+
+package:
+  exclude:
+    - .git/**
+    - src/**
+    - test/**
+    - e2e/**
+    - nodemon.json
+    - README.md
+
+functions:
+  index:
+    handler: dist/index.handler
+    events:
+    - http:
+        cors: true
+        path: '/'
+        method: any

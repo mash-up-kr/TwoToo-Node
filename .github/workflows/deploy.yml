@@ -33,4 +33,4 @@ jobs:
           aws-region: ap-northeast-2
 
       - name: Deploy to Serverless
-        run: sls deploy
+        run: serverless deploy

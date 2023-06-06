@@ -1,40 +1,60 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiOperation } from '@nestjs/swagger';
-import { UpdateUserPayload } from './dto/user.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { SetNicknamePayload } from './dto/user.dto';
 
-@Controller()
+@ApiTags('user')
+@Controller('user')
 export class UserController {
   constructor(private readonly user: UserService) { }
 
-  @Post('/user')
-  @ApiOperation({ description: '유저를 생성합니다.' })
-  async createUser(): Promise<any> {
-    const user = await this.user.createUser();
+  @Post('/signup')
+  @ApiOperation({ description: '회원가입을 진행합니다.' })
+  async signUp(): Promise<any> {
+    const [user, accessToken] = await this.user.signUp();
+
     return {
-      userNo: user.userNo
-    };
+      accessToken,
+      userId: user._id,
+    }
   }
 
-  @Patch('/user')
-  @ApiOperation({ description: '유저 정보를 수정합니다.' })
-  async updateUser(@Body() updateUserPayload: UpdateUserPayload): Promise<any> {
-    const user = await this.user.updateUser(updateUserPayload);
+  // TODO: AuthGuard
+  @Post('/signin')
+  @ApiOperation({ description: '로그인을 진행합니다.' })
+  async signIn(@Req() req: any): Promise<any> {
+    const user = await this.user.signIn(req.user._id);
+
     return {
-      userNo: user.userNo,
-      nickname: user.nickname,
-      partnerNo: user.partnerNo
-    };
+      state: this.user.checkCurrentLoginState(req.user._id),
+      ...user,
+    }
+  }
+
+  @Patch('/nickname')
+  @ApiOperation({ description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 매칭도 진행합니다.' })
+  async setNickname(@Req() req: any, @Body() data: SetNicknamePayload): Promise<any> {
+    const updatedUser = await this.user.setNickname({ userId: req.user._id, data });
+
+    return {
+      user: updatedUser
+    }
+  }
+
+  @Get('/partner')
+  @ApiOperation({ description: '투투메이트 매칭 상태를 확인합니다.' })
+  async checkPartner(@Req() req: any): Promise<any> {
+    const partnerId = await this.user.checkPartner(req.user._id)
+
+    return {
+      partnerId: partnerId,
+    }
   }
 
   @Get('/me')
   @ApiOperation({ description: '내 정보를 조회합니다.' })
-  async me(req: any): Promise<any> {
-    const user = await this.user.me(req.user.userNo);
-    return {
-      userNo: user.userNo,
-      nicknae: user.nickname,
-      partnerNo: user.partnerNo
-    };
+  async me(@Req() req: any): Promise<any> {
+    const user = await this.user.me(req.user._id);
+    return { user: user };
   }
 }

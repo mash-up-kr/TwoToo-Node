@@ -1,7 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import _ from 'lodash';
+import { Model, Types } from 'mongoose';
+
 import { User, UserDocument } from './schema/user.schema';
+
+enum LOGIN_STAT {
+  'NEED_NICKNAME',
+  'NEED_MATCHING',
+  'HOME'
+}
 
 @Injectable()
 export class UserService {
@@ -10,38 +18,79 @@ export class UserService {
     private readonly userModel: Model<UserDocument>
   ) { }
 
-  async createUser() {
-    const userNo = 0; // auto-increment 적용?
-    const user = await this.userModel.create({ userNo });
+  async signUp() {
+    const user = await this.userModel.create({
+      nickname: null,
+      partnerId: null,
+    });
 
+    // TODO: accessToken 발급
+    const accessToken = '';
     await user.save();
+    return [user, accessToken] as const;
+  }
+
+  async signIn(userId: string) {
+    const user = await this.userModel.findOne({ _id: userId });
+
     return user;
   }
 
-  async updateUser({ userNo, nickname, partnerNo }) {
-    const user = await this.userModel.findOne({ userNo });
+  async setNickname({ userId, data }) {
+    const user = await this.userModel.findOne({ _id: userId });
 
+    if (!user) {
+      throw new Error('User Not Found');
+    }
+
+    // TODO: nickname validation
+    if (!data.nickname) {
+      throw new Error('Invalid nickname.');
+    }
+
+    if (user.partnerId) {
+      throw new Error('Partner already matched!');
+    }
+
+    const updatedUser = await this.userModel.findOneAndUpdate(
+      { _id: userId },
+      { $set: { nickname: data.nickname, ...(data.partnerId && { partnerId: data.parterId }) } }
+    ).exec();
+
+    return updatedUser;
+  }
+
+  async checkPartner(userId: string): Promise<Types.ObjectId | null> {
+    const user = await this.me(userId);
+
+    return user.partnerId;
+  }
+
+  async me(userId: string): Promise<User> {
+    const user = await this.userModel.findOne({ _id: userId });
     if (!user) {
       throw new Error('Not Found User');
     }
 
-    if (user.partnerNo) {
-      throw new Error('Partner already exists.');
-    }
-
-    user.nickname = nickname;
-    user.partnerNo = partnerNo;
-
-    await user.save();
     return user;
   }
 
-  async me(userNo: number) {
-    const user = await this.userModel.findOne({ userNo });
-    if (!user) {
-      throw new Error('Not Found User');
+  async checkCurrentLoginState(userId: string): Promise<LOGIN_STAT> {
+    const user = await this.me(userId);
+
+    let state: LOGIN_STAT = null;
+    if (user.nickname && user.partnerId) {
+      state = LOGIN_STAT.HOME;
+    } else {
+      if (!_.isNil(user.nickname)) {
+        state = LOGIN_STAT.NEED_NICKNAME;
+      }
+
+      if (!_.isNil(user.partnerId)) {
+        state = LOGIN_STAT.NEED_MATCHING;
+      }
     }
 
-    return user;
+    return state;
   }
 }

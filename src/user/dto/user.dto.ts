@@ -1,22 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsUUID } from "class-validator";
+import { IsNotEmpty, IsNumber } from "class-validator";
 import { IsString } from "class-validator";
 
 export class UserDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '카카오',
-    description: 'OAuth 제공자 이름',
-    required: true,
-  })
-  authProvider: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
     example: 'ngI0v2YUJ9e2UPfBFjlKriIZvXvOGKfgh59hda0v....',
-    description: 'OAuth 제공자의 Access Token',
+    description: 'Access Token',
     required: true,
   })
   accessToken: string;
@@ -24,11 +15,11 @@ export class UserDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    example: '1',
+    example: '647eee4bdbd1ddadf03b0279',
     description: '사용자 ID',
     required: true,
   })
-  userNo: number;
+  userId: number;
 
   @IsString()
   @IsNotEmpty()
@@ -40,33 +31,25 @@ export class UserDto {
 
   @IsNumber()
   @ApiProperty({
-    example: 'bdc350a8-dd91-4a5d-acd3-8a6e4679f11d',
+    example: '647eee4bdbd1ddadf03b0270',
     description: '파트너 ID',
   })
-  parterNo: number;
-
+  parterId: number;
 }
 
-export class UpdateUserPayload {
-  @IsNumber()
-  @ApiProperty({
-    example: 1,
-    description: '사용자 No',
-    required: true,
-  })
-  userNo: number;
-
+export class SetNicknamePayload {
   @IsString()
   @ApiProperty({
     example: '왕자',
-    description: '사용할 닉네임'
+    description: '사용할 닉네임',
+    required: true,
   })
   nickname: string;
 
   @IsNumber()
   @ApiProperty({
-    example: 2,
-    description: '파트너 No',
+    example: '647eee4bdbd1ddadf03b0279',
+    description: '파트너 ID',
   })
-  partnerNo: number;
+  partnerId: string;
 }

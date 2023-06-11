@@ -38,26 +38,43 @@ export class UserService {
     return user;
   }
 
-  async setNickname({ userId, data }) {
-    const user = await this.userModel.findOne({ _id: userId });
-
-    if (!user) {
-      throw new Error('User Not Found');
-    }
+  async setNicknameAndPartner({ userNo, data }) {
+    console.log('setNicknameAndPartner')
+    const user = await this.getUser(userNo);
 
     // TODO: nickname validation
-    if (!data.nickname) {
-      throw new Error('Invalid nickname.');
+    if (!_.has(data, 'nickname')) {
+      throw new Error('Nickname does not exists! Invalid Nickname');
     }
 
-    if (user.partnerId) {
+    if (user.partnerNo) {
       throw new Error('Partner already matched!');
     }
 
-    const updatedUser = await this.userModel.findOneAndUpdate(
-      { _id: userId },
-      { $set: { nickname: data.nickname, ...(data.partnerId && { partnerId: data.parterId }) } }
-    ).exec();
+    let updatedUser = null;
+    if (data.partnerNo) {
+      console.log('partnerNo exists. Matching is needed');
+      updatedUser = await this.userModel.findOneAndUpdate(
+        { userNo: userNo },
+        {
+          $set: { nickname: data.nickname, partnerNo: data.partnerNo }
+        },
+        { new: true }
+      );
+
+      await this.userModel.findOneAndUpdate(
+        { userNo: data.partnerNo },
+        { $set: { partnerNo: userNo } });
+
+      console.log(`matched each other - 요청한 사람: ${data.partnerNo}, 수락한 사람: ${userNo}`);
+    } else {
+      console.log('partnerNo does not exist. Only set nickname.');
+      updatedUser = await this.userModel.findOneAndUpdate(
+        { userNo: userNo },
+        { $set: { nickname: data.nickname } },
+        { new: true }
+      );
+    }
 
     return updatedUser;
   }

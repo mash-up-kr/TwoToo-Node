@@ -1,15 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import _ from 'lodash';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 
 import { User, UserDocument } from './schema/user.schema';
+import { UserCounter, UserCounterDocument } from './schema/user-counter.schema';
 
-enum LOGIN_STAT {
-  'NEED_NICKNAME',
-  'NEED_MATCHING',
-  'HOME'
-}
+export type LOGIN_STATE = 'NEED_NICKNAME' | 'NEED_MATCHING' | 'HOME'
 
 @Injectable()
 export class UserService {
@@ -21,9 +18,11 @@ export class UserService {
   ) { }
 
   async signUp() {
+    const userNo = await this.autoIncrement('userNo');
     const user = await this.userModel.create({
+      userNo,
       nickname: null,
-      partnerId: null,
+      partnerNo: null,
     });
 
     // TODO: accessToken 발급
@@ -32,8 +31,8 @@ export class UserService {
     return [user, accessToken] as const;
   }
 
-  async signIn(userId: string) {
-    const user = await this.userModel.findOne({ _id: userId });
+  async signIn(userNo: number) {
+    const user = await this.userModel.findOne({ userNo: userNo }).lean();
 
     return user;
   }
@@ -79,14 +78,14 @@ export class UserService {
     return updatedUser;
   }
 
-  async checkPartner(userId: string): Promise<Types.ObjectId | null> {
-    const user = await this.me(userId);
+  async checkPartner(userNo: string): Promise<number | null> {
+    const user = await this.getUser(userNo);
 
-    return user.partnerId;
+    return user.partnerNo;
   }
 
-  async me(userId: string): Promise<User> {
-    const user = await this.userModel.findOne({ _id: userId });
+  async getUser(userNo: string): Promise<User> {
+    const user = await this.userModel.findOne({ userNo: userNo }).lean();
     if (!user) {
       throw new Error('Not Found User');
     }
@@ -94,20 +93,21 @@ export class UserService {
     return user;
   }
 
-  async checkCurrentLoginState(userId: string): Promise<LOGIN_STAT> {
-    const user = await this.me(userId);
-
-    let state: LOGIN_STAT = null;
-    if (user.nickname && user.partnerId) {
-      state = LOGIN_STAT.HOME;
+  async checkCurrentLoginState(user: User): Promise<LOGIN_STATE> {
+    let state: LOGIN_STATE = null;
+    if (user?.nickname && user?.partnerNo) {
+      console.log(`nickname O, partnerNo O: ${user.nickname}, ${user.partnerNo}`);
+      state = 'HOME';
+    } else if (_.isNull(user?.nickname)) {
+      console.log(`nickname X`);
+      state = 'NEED_NICKNAME';
     } else {
-      if (!_.isNil(user.nickname)) {
-        state = LOGIN_STAT.NEED_NICKNAME;
-      }
+      console.log(`partnerNo X`);
+      state = 'NEED_MATCHING';
+    }
 
-      if (!_.isNil(user.partnerId)) {
-        state = LOGIN_STAT.NEED_MATCHING;
-      }
+    return state;
+  }
 
   private async autoIncrement(key: string) {
     let result: { count: number } | null = null;

@@ -32,7 +32,7 @@ export class UserController {
   }
 
   @Patch('/nickname')
-  @ApiOperation({ description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 매칭도 진행합니다.' })
+  @ApiOperation({ description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 닉네임 설정 후 매칭도 진행합니다.' })
   async setNickname(@Req() req: any, @Body() data: SetNicknamePayload): Promise<any> {
     const updatedUser = await this.user.setNickname({ userId: req.user._id, data });
 
@@ -42,7 +42,7 @@ export class UserController {
   }
 
   @Get('/partner')
-  @ApiOperation({ description: '투투메이트 매칭 상태를 확인합니다.' })
+  @ApiOperation({ description: '투투메이트가 매칭되었는지 확인합니다.' })
   async checkPartner(@Req() req: any): Promise<any> {
     const partnerId = await this.user.checkPartner(req.user._id)
 
@@ -54,7 +54,7 @@ export class UserController {
   @Get('/me')
   @ApiOperation({ description: '내 정보를 조회합니다.' })
   async me(@Req() req: any): Promise<any> {
-    const user = await this.user.me(req.user._id);
+    const user = await this.user.getUser(req.user._id);
     return { user: user };
   }
 }

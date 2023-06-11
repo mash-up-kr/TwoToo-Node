@@ -1,25 +1,17 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsNumber } from "class-validator";
 import { IsString } from "class-validator";
+import { LOGIN_STATE } from "../user.service";
 
-export class UserDto {
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: 'ngI0v2YUJ9e2UPfBFjlKriIZvXvOGKfgh59hda0v....',
-    description: 'Access Token',
-    required: true,
-  })
-  accessToken: string;
-
+export class UserResponse {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    example: '647eee4bdbd1ddadf03b0279',
-    description: '사용자 ID',
+    example: '1',
+    description: '사용자 번호',
     required: true,
   })
-  userId: number;
+  userNo: number;
 
   @IsString()
   @IsNotEmpty()
@@ -31,13 +23,64 @@ export class UserDto {
 
   @IsNumber()
   @ApiProperty({
-    example: '647eee4bdbd1ddadf03b0270',
-    description: '파트너 ID',
+    example: '2',
+    description: '파트너 번호',
   })
-  parterId: number;
+  partnerNo: number;
 }
 
-export class SetNicknamePayload {
+export class SignUpResult extends UserResponse {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'ngI0v2YUJ9e2UPfBFjlKriIZvXvOGKfgh59hda0v....',
+    description: 'Access Token',
+    required: true,
+  })
+  accessToken: string;
+}
+
+export class signInPayload {
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '1',
+    description: '사용자 번호',
+    required: true,
+  })
+  userNo: number;
+}
+
+export class SignInResult extends UserResponse {
+  state: LOGIN_STATE
+}
+
+export class UserInfoResponse {
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '1',
+    description: '사용자 번호',
+    required: true,
+  })
+  userNo: number;
+
+  @IsString()
+  @ApiProperty({
+    example: '공주',
+    description: '사용할 닉네임',
+  })
+  nickname: string;
+
+  @IsNumber()
+  @ApiProperty({
+    example: '2',
+    description: '파트너 번호',
+  })
+  partnerNo: number;
+}
+
+export class SetNicknameAndPartnerPayload {
   @IsString()
   @ApiProperty({
     example: '왕자',
@@ -48,8 +91,8 @@ export class SetNicknamePayload {
 
   @IsNumber()
   @ApiProperty({
-    example: '647eee4bdbd1ddadf03b0279',
-    description: '파트너 ID',
+    example: '2',
+    description: '파트너 번호',
   })
-  partnerId: string;
+  partnerNo: number;
 }

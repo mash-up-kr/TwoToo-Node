@@ -15,7 +15,9 @@ enum LOGIN_STAT {
 export class UserService {
   constructor(
     @InjectModel(User.name)
-    private readonly userModel: Model<UserDocument>
+    private readonly userModel: Model<UserDocument>,
+    @InjectModel(UserCounter.name)
+    private readonly userCounterModel: Model<UserCounterDocument>
   ) { }
 
   async signUp() {
@@ -89,8 +91,18 @@ export class UserService {
       if (!_.isNil(user.partnerId)) {
         state = LOGIN_STAT.NEED_MATCHING;
       }
+
+  private async autoIncrement(key: string) {
+    let result: { count: number } | null = null;
+
+    while (result === null) {
+      result = await this.userCounterModel.findOneAndUpdate(
+        { key },
+        { $inc: { count: 1 } },
+        { upsert: true, returnOriginal: false }
+      );
     }
 
-    return state;
+    return result!.count;
   }
 }

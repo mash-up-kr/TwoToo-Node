@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongoose';
 
-export class CreateCommitDto {
+export class UpdateCommitDto {
   challengeId?: ObjectId;
   userId?: ObjectId;
   imageUrl?: string;

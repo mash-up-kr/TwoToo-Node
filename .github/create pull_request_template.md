@@ -11,12 +11,3 @@ close #1
 - 기타 뷰 세팅
 
 ## 🔥 To Reviewers
-
-
-
-## 📷 Screenshot
-|기능|스크린샷|
-|:---|---|
-|기능A 구현|<img src = "" width = 400>|
-|기능B 구현||
-|...||

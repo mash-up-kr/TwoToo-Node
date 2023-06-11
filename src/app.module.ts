@@ -7,9 +7,10 @@ import { UserModule } from './user/user.module';
 import { ChallengeModule } from './challenge/challenge.module';
 import { ChallengeController } from './challenge/challenge.controller';
 import { ChallengeService } from './challenge/challenge.service';
+import { CommitModule } from './commit/commit.module';
 
 @Module({
-  imports: [UserModule, ChallengeModule],
+  imports: [UserModule, ChallengeModule, CommitModule],
   controllers: [AppController, UserController, ChallengeController],
   providers: [AppService, UserService, ChallengeService],
 })

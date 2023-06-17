@@ -62,6 +62,12 @@ export class CommitCreatePayload {
     description: '인증 사진 업로드 주소',
   })
   photoUrl: string;
+
+  @ApiProperty({ description: '생성 시각' })
+  createdAt: number;
+
+  @ApiProperty({ description: '수정 시각' })
+  updatedAt: number;
 }
 
 export class CommitCommentPayload {

@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 
 import { Commit, CommitDocument } from './schema/commit.schema';
 import { CommitCounter, CommitCounterDocument } from './schema/commit-counter.schema';
+import { CommitCreatePayload } from './dto/commit.dto';
 
 
 @Injectable()
@@ -16,11 +17,11 @@ export class CommitService {
     private readonly commitCounterModel: Model<CommitCounterDocument>
   ) { }
 
-  async createCommit(payload: any): Promise<Commit> {
+  async createCommit({ payload, userNo }: { payload: CommitCreatePayload, userNo: string }): Promise<Commit> {
     const commitNo = await this.autoIncrement('commitNo');
     const commit = await this.commitModel.create({
       commitNo,
-      userNo: payload.userNo,
+      userNo: userNo,
       text: payload.text,
       photoUrl: payload.photoUrl,
       partnerComment: '',
@@ -30,11 +31,13 @@ export class CommitService {
     return commit;
   }
 
-  async updateCommit({ commitNo, data }): Promise<Commit> {
+  async updateCommit(
+    { commitNo, partnerComment }: { commitNo: string, partnerComment: string }
+  ): Promise<Commit> {
     const updatedCommit = await this.commitModel.findOneAndUpdate(
       { commitNo: commitNo },
       {
-        $set: { partnerComment: data.partnerComment },
+        $set: { partnerComment: partnerComment },
       },
       { new: true }
     );

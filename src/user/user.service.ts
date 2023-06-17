@@ -31,13 +31,17 @@ export class UserService {
     return [user, accessToken] as const;
   }
 
-  async signIn(userNo: number) {
+  async signIn(userNo: number): Promise<User> {
     const user = await this.userModel.findOne({ userNo: userNo }).lean();
+
+    if (_.isNull(user)) {
+      throw new Error('Not Found User');
+    }
 
     return user;
   }
 
-  async setNicknameAndPartner({ userNo, data }) {
+  async setNicknameAndPartner({ userNo, data }: { userNo: number, data: any }): Promise<User> {
     console.log('setNicknameAndPartner')
     const user = await this.getUser(userNo);
 
@@ -75,16 +79,20 @@ export class UserService {
       );
     }
 
+    if (_.isNull(updatedUser)) {
+      throw new Error('Not Found User - failed to update user');
+    }
+
     return updatedUser;
   }
 
-  async checkPartner(userNo: string): Promise<number | null> {
+  async checkPartner(userNo: number): Promise<number> {
     const user = await this.getUser(userNo);
 
     return user.partnerNo;
   }
 
-  async getUser(userNo: string): Promise<User> {
+  async getUser(userNo: number): Promise<User> {
     const user = await this.userModel.findOne({ userNo: userNo }).lean();
     if (!user) {
       throw new Error('Not Found User');
@@ -94,7 +102,7 @@ export class UserService {
   }
 
   async checkCurrentLoginState(user: User): Promise<LOGIN_STATE> {
-    let state: LOGIN_STATE = null;
+    let state: LOGIN_STATE = 'NEED_NICKNAME';
     if (user?.nickname && user?.partnerNo) {
       console.log(`nickname O, partnerNo O: ${user.nickname}, ${user.partnerNo}`);
       state = 'HOME';

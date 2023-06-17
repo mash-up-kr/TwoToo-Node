@@ -32,15 +32,17 @@ export class CommitService {
   }
 
   async updateCommit(
-    { commitNo, partnerComment }: { commitNo: string, partnerComment: string }
+    { commitNo, partnerComment }: { commitNo: number, partnerComment: string }
   ): Promise<Commit> {
     const updatedCommit = await this.commitModel.findOneAndUpdate(
       { commitNo: commitNo },
-      {
-        $set: { partnerComment: partnerComment },
-      },
+      { $set: { partnerComment: partnerComment, updatedAt: new Date() } },
       { new: true }
     );
+
+    if (_.isNull(updatedCommit)) {
+      throw new Error('Not Found Commit');
+    }
 
     return updatedCommit;
   }
@@ -48,7 +50,7 @@ export class CommitService {
   async getCommit(commitNo: number): Promise<Commit> {
     const commit = await this.commitModel.findOne({ commitNo: commitNo }).lean();
 
-    if (!commit) {
+    if (_.isNull(commit)) {
       throw new Error('Not Found Commit');
     }
 

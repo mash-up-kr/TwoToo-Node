@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { Commit, CommitDocument } from './schema/commit.schema';
 import { CommitCounter, CommitCounterDocument } from './schema/commit-counter.schema';
 import { CommitCreatePayload } from './dto/commit.dto';
+import { Challenge, ChallengeDocument } from 'src/challenge/schema/challenge.schema';
 
 
 @Injectable()
@@ -13,21 +14,46 @@ export class CommitService {
   constructor(
     @InjectModel(Commit.name)
     private readonly commitModel: Model<CommitDocument>,
+    @InjectModel(Challenge.name)
+    private readonly challengeModel: Model<ChallengeDocument>,
     @InjectModel(CommitCounter.name)
     private readonly commitCounterModel: Model<CommitCounterDocument>
   ) { }
 
-  async createCommit({ payload, userNo }: { payload: CommitCreatePayload, userNo: string }): Promise<Commit> {
+  async createCommit({ userNo, data }: { userNo: number, data: CommitCreatePayload }): Promise<Commit> {
     const commitNo = await this.autoIncrement('commitNo');
     const commit = await this.commitModel.create({
       commitNo,
       userNo: userNo,
-      text: payload.text,
-      photoUrl: payload.photoUrl,
+      text: data.text,
+      photoUrl: data.photoUrl,
       partnerComment: '',
     });
 
-    // TODO: ChallengeCollection user1CommitCnt +1
+    const curChallenge = await this.challengeModel.findOneAndUpdate(
+      {
+        $or: [
+          { 'user1.userNo': userNo },
+          { 'user2.userNo': userNo }
+        ]
+      },
+      {
+        $inc: {
+          user1CommitCount: { $cond: [{ $eq: ['$user1.userNo', userNo] }, 1, 0] },
+          user2CommitCount: { $cond: [{ $eq: ['$user2.userNo', userNo] }, 1, 0] }
+        }
+      },
+      {
+        new: true,
+        sort: { endDate: -1 }
+      }
+    ).exec();
+
+    if (_.isNull(curChallenge)) {
+      console.log('There is no matched challenge.');
+      throw new Error('Not Found Challenge');
+    }
+
     return commit;
   }
 

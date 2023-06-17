@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema({ collection: 'commit' })
+@Schema({ collection: 'commit', timestamps: true })
 export class Commit {
   @Prop()
   commitNo: number;
@@ -17,7 +17,14 @@ export class Commit {
 
   @Prop()
   partnerComment: string;
+
+  @Prop()
+  createdAt: Date;
+
+  @Prop()
+  updatedAt: Date;
 }
+
 export type CommitDocument = Commit & Document;
 
 export const CommitSchema = SchemaFactory.createForClass(Commit);

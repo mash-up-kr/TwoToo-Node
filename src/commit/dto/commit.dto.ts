@@ -64,7 +64,7 @@ export class CommitCreatePayload {
   photoUrl: string;
 }
 
-export class CommitCommentDto {
+export class CommitCommentPayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({

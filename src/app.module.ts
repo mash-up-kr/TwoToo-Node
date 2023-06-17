@@ -5,8 +5,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { ChallengeModule } from './challenge/challenge.module';
-import { ChallengeController } from './challenge/challenge.controller';
-import { ChallengeService } from './challenge/challenge.service';
 import { CommitModule } from './commit/commit.module';
 
 @Module({
@@ -24,8 +22,8 @@ import { CommitModule } from './commit/commit.module';
     }),
     UserModule, ChallengeModule, CommitModule
   ],
-  controllers: [AppController, ChallengeController],
-  providers: [AppService, ChallengeService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 
 export class AppModule { }

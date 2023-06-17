@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CommitPayload, CommitResponse } from './dto/commit.dto';
+import { CommitCommentDto, CommitResponse } from './dto/commit.dto';
 import { CommitService } from './commit.service';
 
 @ApiTags('commit')
@@ -10,7 +10,7 @@ export class CommitController {
 
   @Post('/commit')
   @ApiOperation({ description: '인증을 진행합니다.' })
-  async createCommit(@Body() commitPayload: CommitPayload): Promise<CommitResponse> {
+  async createCommit(@Body() commitPayload: any): Promise<CommitResponse> {
     const commit = await this.commit.createCommit(commitPayload);
 
     return commit;
@@ -30,8 +30,12 @@ export class CommitController {
 
   @Post('/commit/:commitNo/comment')
   @ApiOperation({ description: '파트너의 인증에 칭찬 댓글을 추가합니다.' })
-  async createComment(@Body() commitPayload: CommitPayload): Promise<CommitResponse> {
-    const commit = await this.commit.createCommit(commitPayload);
+  async createComment(
+    @Req() req: any,
+    @Body() { partnerComment }: CommitCommentDto,
+    @Param('commitNo') commitNo: string,
+  ): Promise<CommitResponse> {
+    const commit = await this.commit.updateCommit({ commitNo, partnerComment });
 
     return commit;
   }

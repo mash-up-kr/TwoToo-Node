@@ -46,7 +46,7 @@ export class CommitResponse {
   partnerComment: string;
 }
 
-export class CommitPayload {
+export class CommitCreatePayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -62,4 +62,14 @@ export class CommitPayload {
     description: '인증 사진 업로드 주소',
   })
   photoUrl: string;
+}
+
+export class CommitCommentDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '꾸준히 하는 모습 칭찬해',
+    description: '상대방이 남길 칭찬 문구',
+  })
+  partnerComment: string;
 }

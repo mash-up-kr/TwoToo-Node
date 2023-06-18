@@ -11,7 +11,7 @@ export class UserResponse {
     description: '사용자 번호',
     required: true,
   })
-  userNo: number;
+  userNo!: number;
 
   @IsString()
   @IsNotEmpty()
@@ -19,14 +19,14 @@ export class UserResponse {
     example: '공주',
     description: '사용할 닉네임',
   })
-  nickname: string;
+  nickname!: string;
 
   @IsNumber()
   @ApiProperty({
     example: '2',
     description: '파트너 번호',
   })
-  partnerNo: number;
+  partnerNo?: number;
 }
 
 export class SignUpResult extends UserResponse {
@@ -37,7 +37,7 @@ export class SignUpResult extends UserResponse {
     description: 'Access Token',
     required: true,
   })
-  accessToken: string;
+  accessToken!: string;
 }
 
 export class signInPayload {
@@ -48,11 +48,11 @@ export class signInPayload {
     description: '사용자 번호',
     required: true,
   })
-  userNo: number;
+  userNo!: number;
 }
 
 export class SignInResult extends UserResponse {
-  state: LOGIN_STATE
+  state!: LOGIN_STATE
 }
 
 export class UserInfoResponse {
@@ -63,21 +63,21 @@ export class UserInfoResponse {
     description: '사용자 번호',
     required: true,
   })
-  userNo: number;
+  userNo!: number;
 
   @IsString()
   @ApiProperty({
     example: '공주',
     description: '사용할 닉네임',
   })
-  nickname: string;
+  nickname!: string;
 
   @IsNumber()
   @ApiProperty({
     example: '2',
     description: '파트너 번호',
   })
-  partnerNo: number;
+  partnerNo?: number;
 }
 
 export class SetNicknameAndPartnerPayload {
@@ -87,12 +87,12 @@ export class SetNicknameAndPartnerPayload {
     description: '사용할 닉네임',
     required: true,
   })
-  nickname: string;
+  nickname!: string;
 
   @IsNumber()
   @ApiProperty({
     example: '2',
     description: '파트너 번호',
   })
-  partnerNo: number;
+  partnerNo?: number;
 }

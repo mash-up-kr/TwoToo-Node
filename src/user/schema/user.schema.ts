@@ -4,13 +4,13 @@ import { Document } from 'mongoose';
 @Schema({ collection: 'user' })
 export class User {
   @Prop()
-  userNo: number;
+  userNo!: number;
 
   @Prop()
-  nickname: string;
+  nickname!: string;
 
   @Prop()
-  partnerNo: number;
+  partnerNo?: number;
 }
 export type UserDocument = User & Document;
 

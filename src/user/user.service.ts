@@ -6,7 +6,7 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from './schema/user.schema';
 import { UserCounter, UserCounterDocument } from './schema/user-counter.schema';
 
-export type LOGIN_STATE = 'NEED_NICKNAME' | 'NEED_MATCHING' | 'HOME'
+export type LOGIN_STATE = 'NEED_NICKNAME' | 'NEED_MATCHING' | 'HOME';
 
 @Injectable()
 export class UserService {
@@ -14,8 +14,8 @@ export class UserService {
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
     @InjectModel(UserCounter.name)
-    private readonly userCounterModel: Model<UserCounterDocument>
-  ) { }
+    private readonly userCounterModel: Model<UserCounterDocument>,
+  ) {}
 
   async signUp() {
     const userNo = await this.autoIncrement('userNo');
@@ -41,8 +41,14 @@ export class UserService {
     return user;
   }
 
-  async setNicknameAndPartner({ userNo, data }: { userNo: number, data: any }): Promise<User> {
-    console.log('setNicknameAndPartner')
+  async setNicknameAndPartner({
+    userNo,
+    data,
+  }: {
+    userNo: number;
+    data: any;
+  }): Promise<User> {
+    console.log('setNicknameAndPartner');
     const user = await this.getUser(userNo);
 
     // TODO: nickname validation
@@ -60,22 +66,25 @@ export class UserService {
       updatedUser = await this.userModel.findOneAndUpdate(
         { userNo: userNo },
         {
-          $set: { nickname: data.nickname, partnerNo: data.partnerNo }
+          $set: { nickname: data.nickname, partnerNo: data.partnerNo },
         },
-        { new: true }
+        { new: true },
       );
 
       await this.userModel.findOneAndUpdate(
         { userNo: data.partnerNo },
-        { $set: { partnerNo: userNo } });
+        { $set: { partnerNo: userNo } },
+      );
 
-      console.log(`matched each other - 요청한 사람: ${data.partnerNo}, 수락한 사람: ${userNo}`);
+      console.log(
+        `matched each other - 요청한 사람: ${data.partnerNo}, 수락한 사람: ${userNo}`,
+      );
     } else {
       console.log('partnerNo does not exist. Only set nickname.');
       updatedUser = await this.userModel.findOneAndUpdate(
         { userNo: userNo },
         { $set: { nickname: data.nickname } },
-        { new: true }
+        { new: true },
       );
     }
 
@@ -89,7 +98,7 @@ export class UserService {
   async checkPartner(userNo: number): Promise<number> {
     const user = await this.getUser(userNo);
 
-    return user.partnerNo;
+    return user.partnerNo || 0;
   }
 
   async getUser(userNo: number): Promise<User> {
@@ -104,7 +113,9 @@ export class UserService {
   async checkCurrentLoginState(user: User): Promise<LOGIN_STATE> {
     let state: LOGIN_STATE = 'NEED_NICKNAME';
     if (user?.nickname && user?.partnerNo) {
-      console.log(`nickname O, partnerNo O: ${user.nickname}, ${user.partnerNo}`);
+      console.log(
+        `nickname O, partnerNo O: ${user.nickname}, ${user.partnerNo}`,
+      );
       state = 'HOME';
     } else if (_.isNull(user?.nickname)) {
       console.log(`nickname X`);
@@ -124,7 +135,7 @@ export class UserService {
       result = await this.userCounterModel.findOneAndUpdate(
         { key },
         { $inc: { count: 1 } },
-        { upsert: true, returnOriginal: false }
+        { upsert: true, returnOriginal: false },
       );
     }
 

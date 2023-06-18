@@ -8,11 +8,27 @@ import { ChallengeModule } from './challenge/challenge.module';
 import { ChallengeController } from './challenge/challenge.controller';
 import { ChallengeService } from './challenge/challenge.service';
 import { CommitModule } from './commit/commit.module';
+import { UserController } from './user/user.controller';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { UserService } from './user/user.service';
+import { User, UserSchema } from './user/schema/user.schema';
+import { UserCounter, UserCounterSchema } from './user/schema/user-counter.schema';
+import { jwtConstants } from './auth/constants';
 
 @Module({
   imports: [
+    JwtModule.register({
+      secret: 'dkTkghdtkaghkdlxld12341234',
+      global: true,
+      signOptions: {
+        expiresIn: '60m'
+      }
+    }),
+    UserModule,
+    ChallengeModule,
+    CommitModule,
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -22,10 +38,12 @@ import { CommitModule } from './commit/commit.module';
       }),
       inject: [ConfigService],
     }),
-    UserModule, ChallengeModule, CommitModule
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: UserCounter.name, schema: UserCounterSchema },
+    ]),
   ],
-  controllers: [AppController, ChallengeController],
-  providers: [AppService, ChallengeService],
+  controllers: [AppController, ChallengeController, UserController],
+  providers: [AppService, ChallengeService, UserService, JwtService],
 })
-
-export class AppModule { }
+export class AppModule {}

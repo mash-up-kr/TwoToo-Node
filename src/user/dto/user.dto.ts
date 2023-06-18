@@ -27,6 +27,40 @@ export class UserResponse {
     description: '파트너 번호',
   })
   partnerNo?: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: "example@kakao.com",
+    description: "소셜 아이디"
+  })
+  socialId!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: "Kakao",
+    description: "로그인 타입 (Kakao | Apple)"
+  })
+  loginType!: string;
+}
+
+export class signUpPayload {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: "example@kakao.com",
+    description: "소셜 아이디"
+  })
+  socialId!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: "Kakao",
+    description: "로그인 타입 (Kakao | Apple)"
+  })
+  loginType!: string;
 }
 
 export class SignUpResult extends UserResponse {

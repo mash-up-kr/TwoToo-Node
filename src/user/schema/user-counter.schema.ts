@@ -4,10 +4,10 @@ import { Document } from 'mongoose';
 @Schema({ collection: 'user' })
 export class UserCounter {
   @Prop()
-  key: string;
+  key!: string;
 
   @Prop()
-  count: number;
+  count!: number;
 }
 export type UserCounterDocument = UserCounter & Document;
 

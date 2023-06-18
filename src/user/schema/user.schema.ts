@@ -11,6 +11,15 @@ export class User {
 
   @Prop()
   partnerNo?: number;
+
+  @Prop()
+  socialId!: string;
+
+  @Prop()
+  loginType!: string;
+
+  @Prop()
+  accessToken!: string;
 }
 export type UserDocument = User & Document;
 

@@ -23,7 +23,6 @@
     "@nestjs/config": "^2.3.2",
     "@nestjs/core": "^9.4.1",
     "@nestjs/mongoose": "^9.2.2",
-    "@nestjs/mongoose": "^9.2.2",
     "@nestjs/platform-express": "^9.4.1",
     "aws-serverless-express": "^3.4.0",
     "class-transformer": "^0.5.1",

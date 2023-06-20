@@ -36,10 +36,14 @@ export class UserController {
     }
   }
 
+  // TODO: AuthGuard
   @Patch('/nickname')
   @ApiOperation({ description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 닉네임 설정 후 매칭도 진행합니다.' })
-  async setNicknameAndPartner(@Req() req: any, @Body() data: SetNicknameAndPartnerPayload): Promise<UserInfoResponse> {
-    const updatedUser = await this.user.setNicknameAndPartner({ userNo: req.user.userNo, data });
+  async setNicknameAndPartner(
+    @Req() req: any,
+    @Body() data: SetNicknameAndPartnerPayload
+  ): Promise<UserInfoResponse> {
+    const updatedUser = await this.user.setNicknameAndPartner({ userNo: parseInt(req.user.userNo), data });
 
     return {
       userNo: updatedUser.userNo,
@@ -48,10 +52,11 @@ export class UserController {
     };
   }
 
+  // TODO: AuthGuard
   @Get('/partner')
   @ApiOperation({ description: '투투메이트가 매칭되었는지 확인합니다.' })
   async checkPartner(@Req() req: any): Promise<{ partnerNo: number }> {
-    const partnerNo = await this.user.checkPartner(req.user.userNo)
+    const partnerNo = await this.user.checkPartner(parseInt(req.user.userNo));
 
     return {
       partnerNo: partnerNo,
@@ -61,7 +66,7 @@ export class UserController {
   @Get('/me')
   @ApiOperation({ description: '내 정보를 조회합니다.' })
   async me(@Req() req: any): Promise<UserInfoResponse> {
-    const user = await this.user.getUser(req.user.userNo);
+    const user = await this.user.getUser(parseInt(req.user.userNo));
     return {
       userNo: user.userNo,
       nickname: user.nickname,

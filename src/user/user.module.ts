@@ -13,6 +13,7 @@ import { UserCounter, UserCounterSchema } from './schema/user-counter.schema';
     ]),
   ],
   providers: [UserService],
-  controllers: [UserController]
+  controllers: [UserController],
+  exports: [UserService],
 })
 export class UserModule {}

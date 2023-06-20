@@ -22,22 +22,22 @@ export class Challenge {
   @Prop()
   endDate: Date;
 
-  @Prop()
+  @Prop({ default: 0 })
   user1CommitCnt: number;
 
-  @Prop()
+  @Prop({ default: 0 })
   user2CommitCnt: number;
 
-  @Prop()
+  @Prop({ default: '' })
   user1Flower: string;
 
   @Prop()
   user2Flower: string;
 
-  @Prop()
+  @Prop({ default: false })
   isApproved: boolean;
 
-  @Prop()
+  @Prop({ default: false })
   isFinished: boolean;
 }
 export type ChallengeDocument = HydratedDocument<Challenge>;

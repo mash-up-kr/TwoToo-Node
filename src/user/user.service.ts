@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from './schema/user.schema';
 import { UserCounter, UserCounterDocument } from './schema/user-counter.schema';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 export type LOGIN_STATE = 'NEED_NICKNAME' | 'NEED_MATCHING' | 'HOME';
 
@@ -16,7 +17,8 @@ export class UserService {
     private readonly userModel: Model<UserDocument>,
     @InjectModel(UserCounter.name)
     private readonly userCounterModel: Model<UserCounterDocument>,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private configService: ConfigService
   ) {}
 
   async signUp({
@@ -26,15 +28,13 @@ export class UserService {
     socialId: string;
     loginType: string;
   }) {
-    
     const userNo = await this.autoIncrement('userNo');
     // TODO: accessToken 발급 -> userNo를 넣어서 만들고 singin 할때는 해독해서 userNo 받기?
-    
     const payload = { sub: userNo, socialId:socialId, loginType:loginType};
     const accessToken = await this.jwtService.signAsync(payload,{
-      secret:'dkTkghdtkaghkdlxld12341234'
+      secret:this.configService.get<string>('JWT_SECRET')
     });
-    
+    console.log(userNo);
     const user = await this.userModel.create({
       userNo,
       nickname: null,

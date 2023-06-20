@@ -34,6 +34,7 @@ export class UserController {
         loginType: user.loginType,
       };
     }
+ 
     user = await this.user.signUp({ socialId, loginType });
     if(!user){
       console.log('cannot make user');
@@ -50,7 +51,6 @@ export class UserController {
 
   
 
-  // TODO: AuthGuard
   @UseGuards(AuthGuard)
   @Post('/signin')
   @ApiOperation({ description: '로그인을 진행합니다.' })
@@ -68,7 +68,7 @@ export class UserController {
     };
   }
 
-  // TODO: AuthGuard
+  @UseGuards(AuthGuard)
   @Patch('/nickname')
   @ApiOperation({
     description:
@@ -90,7 +90,7 @@ export class UserController {
     };
   }
 
-  // TODO: AuthGuard
+  @UseGuards(AuthGuard)
   @Get('/partner')
   @ApiOperation({ description: '투투메이트가 매칭되었는지 확인합니다.' })
   async checkPartner(@Req() req: any): Promise<{ partnerNo: number }> {
@@ -101,6 +101,7 @@ export class UserController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Get('/me')
   @ApiOperation({ description: '내 정보를 조회합니다.' })
   async me(@Req() req: any): Promise<UserInfoResponse> {

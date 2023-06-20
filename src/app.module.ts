@@ -13,23 +13,26 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { UserService } from './user/user.service';
 import { User, UserSchema } from './user/schema/user.schema';
 import { UserCounter, UserCounterSchema } from './user/schema/user-counter.schema';
-import { jwtConstants } from './auth/constants';
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: 'dkTkghdtkaghkdlxld12341234',
-      global: true,
-      signOptions: {
-        expiresIn: '60m'
-      }
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+    }),
+    JwtModule.registerAsync({
+      inject:[ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        global: true,
+        signOptions: {
+          expiresIn: '60m'
+        }
+      })
     }),
     UserModule,
     ChallengeModule,
     CommitModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({

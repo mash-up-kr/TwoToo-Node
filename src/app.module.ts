@@ -30,7 +30,6 @@ import { UserCounter, UserCounterSchema } from './user/schema/user-counter.schem
         }
       })
     }),
-    UserModule,
     ChallengeModule,
     CommitModule,
     MongooseModule.forRootAsync({
@@ -41,12 +40,9 @@ import { UserCounter, UserCounterSchema } from './user/schema/user-counter.schem
       }),
       inject: [ConfigService],
     }),
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: UserCounter.name, schema: UserCounterSchema },
-    ]),
+    UserModule
   ],
-  controllers: [AppController, ChallengeController, UserController],
-  providers: [AppService, ChallengeService, UserService, JwtService],
+  controllers: [AppController, ChallengeController],
+  providers: [AppService, ChallengeService,  JwtService],
 })
 export class AppModule {}

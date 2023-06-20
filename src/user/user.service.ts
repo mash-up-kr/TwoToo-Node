@@ -30,7 +30,7 @@ export class UserService {
   }) {
     const userNo = await this.autoIncrement('userNo');
     // TODO: accessToken 발급 -> userNo를 넣어서 만들고 singin 할때는 해독해서 userNo 받기?
-    const payload = { sub: userNo, socialId:socialId, loginType:loginType};
+    const payload = { userNo: userNo, socialId:socialId, loginType:loginType};
     const accessToken = await this.jwtService.signAsync(payload,{
       secret:this.configService.get<string>('JWT_SECRET')
     });
@@ -65,7 +65,6 @@ export class UserService {
     userNo: number;
     data: any;
   }): Promise<User> {
-    console.log('setNicknameAndPartner');
     const user = await this.getUser(userNo);
 
     // TODO: nickname validation
@@ -160,6 +159,6 @@ export class UserService {
   }
 
   async getUserBySocialIdAndLoginType(socialId: string, loginType: string): Promise<User | null> {
-    return this.userModel.findOne({socialId: socialId, loginType:loginType});
+    return await this.userModel.findOne({socialId: socialId, loginType:loginType});
   }
 }

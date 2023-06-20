@@ -2,13 +2,19 @@ import { Module } from '@nestjs/common';
 import { CommitService } from './commit.service';
 import { CommitController } from './commit.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Commit as CommitEntity, CommitEntitySchema } from './entities/commit.entity';
+import { Commit, CommitSchema } from './schema/commit.schema';
+import { CommitCounter, CommitCounterSchema } from './schema/commit-counter.schema';
+import { Challenge, ChallengeSchema } from 'src/challenge/schema/challenge.schema';
 
 @Module({
   imports: [
-     MongooseModule.forFeature([{ name: CommitEntity.name, schema: CommitEntitySchema}])
+    MongooseModule.forFeature([
+      { name: Commit.name, schema: CommitSchema },
+      { name: Challenge.name, schema: ChallengeSchema },
+      { name: CommitCounter.name, schema: CommitCounterSchema },
+    ]),
   ],
-  controllers: [CommitController],
-  providers: [CommitService]
+  providers: [CommitService],
+  controllers: [CommitController]
 })
 export class CommitModule {}

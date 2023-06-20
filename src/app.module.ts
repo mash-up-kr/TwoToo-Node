@@ -5,8 +5,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { ChallengeModule } from './challenge/challenge.module';
-import { ChallengeController } from './challenge/challenge.controller';
-import { ChallengeService } from './challenge/challenge.service';
 import { CommitModule } from './commit/commit.module';
 import { UserController } from './user/user.controller';
 import { JwtModule, JwtService } from '@nestjs/jwt';
@@ -42,7 +40,8 @@ import { UserCounter, UserCounterSchema } from './user/schema/user-counter.schem
     }),
     UserModule
   ],
-  controllers: [AppController, ChallengeController],
-  providers: [AppService, ChallengeService,  JwtService],
+
+  controllers: [AppController],
+  providers: [AppService,  JwtService],
 })
 export class AppModule {}

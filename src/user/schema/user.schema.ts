@@ -6,6 +6,7 @@ export class User {
   @Prop()
   userNo!: number;
 
+
   @Prop()
   nickname!: string;
 

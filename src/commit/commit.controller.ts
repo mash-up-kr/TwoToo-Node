@@ -1,34 +1,47 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CommitCommentPayload, CommitCreatePayload, CommitResponse } from './dto/commit.dto';
 import { CommitService } from './commit.service';
-import { CreateCommitDto } from './dto/create-commit.dto';
-import { UpdateCommitDto } from './dto/update-commit.dto';
 
+@ApiTags('commit')
 @Controller('commit')
 export class CommitController {
-  constructor(private readonly commitService: CommitService) {}
+  constructor(private readonly commit: CommitService) { }
 
-  @Post()
-  create(@Body() createCommitDto: CreateCommitDto) {
-    return this.commitService.create(createCommitDto);
+  // @TODO AuthGaurd
+  @Post('/commit')
+  @ApiOperation({ description: '챌린지 인증을 진행합니다.' })
+  async createCommit(
+    @Req() req: any,
+    @Body() data: CommitCreatePayload
+  ): Promise<CommitResponse> {
+    const commit = await this.commit.createCommit({ userNo: parseInt(req.user.userNo), data });
+
+    return commit;
   }
 
-  @Get()
-  findAll() {
-    return this.commitService.findAll();
+  // @TODO AuthGaurd
+  @Get('/commit/:commitNo')
+  @ApiOperation({ description: '챌린지 인증 정보를 조회합니다.' })
+  async getCommit(
+    @Req() req: any,
+    @Param('commitNo') commitNo: string
+  ): Promise<CommitResponse> {
+    const commit = await this.commit.getCommit(parseInt(commitNo));
+
+    return commit;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.commitService.findOne(+id);
-  }
+  // @TODO AuthGaurd
+  @Post('/commit/:commitNo/comment')
+  @ApiOperation({ description: '파트너의 챌린지 인증에 칭찬 댓글을 추가합니다.' })
+  async createComment(
+    @Req() req: any,
+    @Body() { partnerComment }: CommitCommentPayload,
+    @Param('commitNo') commitNo: string,
+  ): Promise<CommitResponse> {
+    const commit = await this.commit.updateCommit({ commitNo: parseInt(commitNo), partnerComment });
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommitDto: UpdateCommitDto) {
-    return this.commitService.update(+id, updateCommitDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commitService.remove(+id);
+    return commit;
   }
 }

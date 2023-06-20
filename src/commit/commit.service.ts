@@ -1,26 +1,99 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCommitDto } from './dto/create-commit.dto';
-import { UpdateCommitDto } from './dto/update-commit.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import _ from 'lodash';
+import { Model } from 'mongoose';
+
+import { Commit, CommitDocument } from './schema/commit.schema';
+import { CommitCounter, CommitCounterDocument } from './schema/commit-counter.schema';
+import { CommitCreatePayload } from './dto/commit.dto';
+import { Challenge, ChallengeDocument } from 'src/challenge/schema/challenge.schema';
+
 
 @Injectable()
 export class CommitService {
-  create(createCommitDto: CreateCommitDto) {
-    return 'This action adds a new commit';
+  constructor(
+    @InjectModel(Commit.name)
+    private readonly commitModel: Model<CommitDocument>,
+    @InjectModel(Challenge.name)
+    private readonly challengeModel: Model<ChallengeDocument>,
+    @InjectModel(CommitCounter.name)
+    private readonly commitCounterModel: Model<CommitCounterDocument>
+  ) { }
+
+  async createCommit({ userNo, data }: { userNo: number, data: CommitCreatePayload }): Promise<Commit> {
+    const commitNo = await this.autoIncrement('commitNo');
+    const commit = await this.commitModel.create({
+      commitNo,
+      userNo: userNo,
+      text: data.text,
+      photoUrl: data.photoUrl,
+      partnerComment: '',
+    });
+
+    const curChallenge = await this.challengeModel.findOneAndUpdate(
+      {
+        $or: [
+          { 'user1.userNo': userNo },
+          { 'user2.userNo': userNo }
+        ]
+      },
+      {
+        $inc: {
+          user1CommitCount: { $cond: [{ $eq: ['$user1.userNo', userNo] }, 1, 0] },
+          user2CommitCount: { $cond: [{ $eq: ['$user2.userNo', userNo] }, 1, 0] }
+        }
+      },
+      {
+        new: true,
+        sort: { endDate: -1 }
+      }
+    ).exec();
+
+    if (_.isNull(curChallenge)) {
+      console.log('There is no matched challenge.');
+      throw new Error('Not Found Challenge');
+    }
+
+    return commit;
   }
 
-  findAll() {
-    return `This action returns all commit`;
+  async updateCommit(
+    { commitNo, partnerComment }: { commitNo: number, partnerComment: string }
+  ): Promise<Commit> {
+    const updatedCommit = await this.commitModel.findOneAndUpdate(
+      { commitNo: commitNo },
+      { $set: { partnerComment: partnerComment, updatedAt: new Date() } },
+      { new: true }
+    );
+
+    if (_.isNull(updatedCommit)) {
+      throw new Error('Not Found Commit');
+    }
+
+    return updatedCommit;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} commit`;
+  async getCommit(commitNo: number): Promise<Commit> {
+    const commit = await this.commitModel.findOne({ commitNo: commitNo }).lean();
+
+    if (_.isNull(commit)) {
+      throw new Error('Not Found Commit');
+    }
+
+    return commit;
   }
 
-  update(id: number, updateCommitDto: UpdateCommitDto) {
-    return `This action updates a #${id} commit`;
-  }
+  private async autoIncrement(key: string) {
+    let result: { count: number } | null = null;
 
-  remove(id: number) {
-    return `This action removes a #${id} commit`;
+    while (result === null) {
+      result = await this.commitCounterModel.findOneAndUpdate(
+        { key },
+        { $inc: { count: 1 } },
+        { upsert: true, returnOriginal: false }
+      );
+    }
+
+    return result!.count;
   }
 }

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 @Schema({ collection: 'commit' })
 export class CommitCounter {
@@ -9,6 +9,6 @@ export class CommitCounter {
   @Prop()
   count: number;
 }
-export type CommitCounterDocument = CommitCounter & Document;
+export type CommitCounterDocument = HydratedDocument<CommitCounter>;
 
 export const CommitCounterSchema = SchemaFactory.createForClass(CommitCounter);

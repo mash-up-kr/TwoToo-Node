@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 @Schema({ collection: 'challenge' })
 export class ChallengeCounter {
@@ -9,6 +9,6 @@ export class ChallengeCounter {
   @Prop()
   count: number;
 }
-export type ChallengeCounterDocument = ChallengeCounter & Document;
+export type ChallengeCounterDocument = HydratedDocument<ChallengeCounter>;
 
 export const ChallengeCounterSchema = SchemaFactory.createForClass(ChallengeCounter);

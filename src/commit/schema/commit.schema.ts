@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 @Schema({ collection: 'commit', timestamps: true })
 export class Commit {
@@ -25,6 +25,6 @@ export class Commit {
   updatedAt: Date;
 }
 
-export type CommitDocument = Commit & Document;
+export type CommitDocument = HydratedDocument<Commit>;
 
 export const CommitSchema = SchemaFactory.createForClass(Commit);

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import { User } from 'src/user/schema/user.schema';
 
 @Schema({ collection: 'challenge', timestamps: true })
@@ -48,6 +48,6 @@ export class Challenge {
   updatedAt: Date;
 }
 
-export type ChallengeDocument = Challenge & Document;
+export type ChallengeDocument = HydratedDocument<Challenge>;
 
 export const ChallengeSchema = SchemaFactory.createForClass(Challenge);

@@ -7,7 +7,6 @@ import { User, UserDocument } from './schema/user.schema';
 import { UserCounter, UserCounterDocument } from './schema/user-counter.schema';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { LoginType } from './types';
 import { JwtPayload } from '../auth/auth.types';
 import { LoginType } from './user.types';
 

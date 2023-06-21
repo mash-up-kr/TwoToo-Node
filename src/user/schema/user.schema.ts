@@ -3,14 +3,24 @@ import { Document } from 'mongoose';
 
 @Schema({ collection: 'user' })
 export class User {
-  @Prop({ index: true, unique: true })
-  userNo: number;
+  @Prop()
+  userNo!: number;
+
 
   @Prop()
-  nickname: string;
+  nickname!: string;
 
   @Prop()
-  partnerNo: number;
+  partnerNo?: number;
+
+  @Prop()
+  socialId!: string;
+
+  @Prop()
+  loginType!: string;
+
+  @Prop()
+  accessToken!: string;
 }
 export type UserDocument = User & Document;
 

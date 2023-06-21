@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { LoginType } from '../user.types';
 
 @Schema({ collection: 'user' })
 export class User {
   @Prop()
   userNo!: number;
-
 
   @Prop()
   nickname!: string;
@@ -17,7 +17,7 @@ export class User {
   socialId!: string;
 
   @Prop()
-  loginType!: string;
+  loginType!: LoginType;
 
   @Prop()
   accessToken!: string;

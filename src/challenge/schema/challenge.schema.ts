@@ -1,26 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { User } from 'src/user/schema/user.schema';
+import { HydratedDocument } from 'mongoose';
+import { User, UserSchema } from '../../user/schema/user.schema';
 
 @Schema({ collection: 'challenge', timestamps: true })
 export class Challenge {
-  @Prop()
+  @Prop({ startAt: 1, increment: 1 })
   challengeNo: number;
 
   @Prop()
-  isApproved: boolean;
-
-  @Prop()
-  isFinished: boolean;
-
-  @Prop()
-  user1: User;
-
-  @Prop()
-  user2: User;
-
-  @Prop()
   name: string;
+
+  @Prop({ type: UserSchema })
+  user1: User; // 챌린지 생성자
+
+  @Prop({ type: UserSchema })
+  user2: User; // 챌린지 수락자
 
   @Prop()
   startDate: Date;
@@ -28,26 +22,24 @@ export class Challenge {
   @Prop()
   endDate: Date;
 
-  @Prop()
-  user1CommitCount: number;
+  @Prop({ default: 0 })
+  user1CommitCnt: number;
 
-  @Prop()
-  user2CommitCount: number;
+  @Prop({ default: 0 })
+  user2CommitCnt: number;
 
-  // TODO: flower type 변경
-  @Prop()
+  @Prop({ default: '' })
   user1Flower: string;
 
   @Prop()
   user2Flower: string;
 
-  @Prop()
-  createdAt: Date;
+  @Prop({ default: false })
+  isApproved: boolean;
 
-  @Prop()
-  updatedAt: Date;
+  @Prop({ default: false })
+  isFinished: boolean;
 }
-
-export type ChallengeDocument = Challenge & Document;
+export type ChallengeDocument = HydratedDocument<Challenge>;
 
 export const ChallengeSchema = SchemaFactory.createForClass(Challenge);

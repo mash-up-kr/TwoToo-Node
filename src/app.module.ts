@@ -38,7 +38,7 @@ import { UserCounter, UserCounterSchema } from './user/schema/user-counter.schem
       }),
       inject: [ConfigService],
     }),
-    UserModule
+    UserModule,
   ],
 
   controllers: [AppController],

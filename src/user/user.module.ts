@@ -15,6 +15,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
     ]),
   ],
   providers: [UserService, AuthGuard, JwtService],
-  controllers: [UserController]
+  controllers: [UserController],
+  exports: [UserService],
 })
 export class UserModule {}

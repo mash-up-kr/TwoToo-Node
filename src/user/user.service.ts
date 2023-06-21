@@ -8,6 +8,7 @@ import { UserCounter, UserCounterDocument } from './schema/user-counter.schema';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { LoginType } from './types';
+import { JwtPayload } from '../auth/auth.types';
 
 export type LOGIN_STATE = 'NEED_NICKNAME' | 'NEED_MATCHING' | 'HOME';
 
@@ -25,7 +26,7 @@ export class UserService {
   async signUp({ socialId, loginType }: { socialId: string; loginType: LoginType }) {
     const userNo = await this.autoIncrement('userNo');
     // TODO: accessToken 발급 -> userNo를 넣어서 만들고 singin 할때는 해독해서 userNo 받기?
-    const payload = { userNo: userNo, socialId: socialId, loginType: LoginType };
+    const payload: JwtPayload = { userNo: userNo, socialId: socialId, loginType: LoginType };
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_SECRET'),
     });

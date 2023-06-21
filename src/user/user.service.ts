@@ -7,6 +7,8 @@ import { User, UserDocument } from './schema/user.schema';
 import { UserCounter, UserCounterDocument } from './schema/user-counter.schema';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { JwtPayload } from '../auth/auth.types';
+import { LoginType } from './user.types';
 
 export type LOGIN_STATE = 'NEED_NICKNAME' | 'NEED_MATCHING' | 'HOME';
 
@@ -21,18 +23,12 @@ export class UserService {
     private configService: ConfigService
   ) {}
 
-  async signUp({
-    socialId,
-    loginType,
-  }: {
-    socialId: string;
-    loginType: string;
-  }) {
+  async signUp({ socialId, loginType }: { socialId: string; loginType: LoginType }) {
     const userNo = await this.autoIncrement('userNo');
     // TODO: accessToken 발급 -> userNo를 넣어서 만들고 singin 할때는 해독해서 userNo 받기?
-    const payload = { userNo: userNo, socialId:socialId, loginType:loginType};
-    const accessToken = await this.jwtService.signAsync(payload,{
-      secret:this.configService.get<string>('JWT_SECRET')
+    const payload: JwtPayload = { userNo: userNo, socialId: socialId, loginType: loginType };
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_SECRET'),
     });
     console.log(userNo);
     const user = await this.userModel.create({
@@ -158,7 +154,10 @@ export class UserService {
     return result!.count;
   }
 
-  async getUserBySocialIdAndLoginType(socialId: string, loginType: string): Promise<User | null> {
-    return await this.userModel.findOne({socialId: socialId, loginType:loginType});
+  async getUserBySocialIdAndLoginType(
+    socialId: string,
+    loginType: LoginType,
+  ): Promise<User | null> {
+    return await this.userModel.findOne({ socialId: socialId, loginType: loginType });
   }
 }

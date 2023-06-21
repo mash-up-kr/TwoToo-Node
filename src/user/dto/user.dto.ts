@@ -60,7 +60,7 @@ export class signUpPayload {
     example: "Kakao",
     description: "로그인 타입 (Kakao | Apple)"
   })
-  loginType!: string;
+  loginType!: LoginType;
 }
 
 export class SignUpResult extends UserResponse {

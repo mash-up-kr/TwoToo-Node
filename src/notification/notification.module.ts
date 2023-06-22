@@ -2,17 +2,27 @@ import { Module } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { NotificationController } from './notification.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { NotificationSchema } from './schema/notification.schema';
-import { NotificationCounter, NotificationCounterSchema } from './schema/notification-counter.schema';
+import { Notification, NotificationSchema } from './schema/notification.schema';
+import {
+  NotificationCounter,
+  NotificationCounterSchema,
+} from './schema/notification-counter.schema';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
+import { User, UserSchema } from 'src/user/schema/user.schema';
+import { UserCounter, UserCounterSchema } from 'src/user/schema/user-counter.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Notification.name, schema: NotificationSchema },
       { name: NotificationCounter.name, schema: NotificationCounterSchema },
+      { name: User.name, schema: UserSchema },
+      { name: UserCounter.name, schema: UserCounterSchema },
     ]),
   ],
   controllers: [NotificationController],
-  providers: [NotificationService],
+  providers: [NotificationService, AuthGuard, JwtService, UserService],
 })
 export class NotificationModule {}

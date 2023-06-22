@@ -17,6 +17,9 @@ export class ChallengeService {
 
   async createChallenge(createChallengeDto: CreateChallengeDto): Promise<Challenge> {
     const user1 = await this.userSvc.getUser(createChallengeDto.user1No);
+    if (user1.partnerNo === undefined) {
+      throw new Error('No PartnerNo');
+    }
     const user2 = await this.userSvc.getUser(user1.partnerNo);
     const endDate: Date = add(createChallengeDto.startDate, { days: TWOTWO });
 

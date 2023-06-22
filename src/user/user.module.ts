@@ -3,9 +3,10 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schema/user.schema';
-import { JwtService,JwtModule } from '@nestjs/jwt';
+import { JwtService, JwtModule } from '@nestjs/jwt';
 import { UserCounter, UserCounterSchema } from './schema/user-counter.schema';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [

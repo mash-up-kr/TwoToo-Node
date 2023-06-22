@@ -21,11 +21,9 @@ export class UserController {
   @Post('/signup')
   @ApiOperation({ description: '회원가입을 진행합니다.' })
   async signUp(@Body() signUpPayload: signUpPayload): Promise<SignUpResult> {
-    const { socialId, loginType } = signUpPayload;
-    let user = await this.user.getUserBySocialIdAndLoginType(
-      socialId,
-      loginType,
-    );
+    console.log(signUpPayload);
+    const { socialId, loginType, firebaseToken } = signUpPayload;
+    let user = await this.user.getUserBySocialIdAndLoginType(socialId, loginType);
     if (user) {
       return {
         accessToken: user.accessToken,
@@ -34,11 +32,12 @@ export class UserController {
         partnerNo: user.partnerNo,
         socialId: user.socialId,
         loginType: user.loginType,
+        firebaseToken: user.firebaseToken,
       };
     }
- 
-    user = await this.user.signUp({ socialId, loginType });
-    if(!user){
+
+    user = await this.user.signUp({ socialId, loginType, firebaseToken });
+    if (!user) {
       console.log('cannot make user');
     }
     return {
@@ -48,10 +47,9 @@ export class UserController {
       partnerNo: user.partnerNo,
       socialId: user.socialId,
       loginType: user.loginType,
+      firebaseToken: user.firebaseToken,
     };
   }
-
-  
 
   @UseGuards(AuthGuard)
   @Post('/signin')
@@ -67,14 +65,14 @@ export class UserController {
       partnerNo: user.partnerNo,
       socialId: user.socialId,
       loginType: user.loginType,
+      firebaseToken: user.firebaseToken,
     };
   }
 
   @UseGuards(AuthGuard)
   @Patch('/nickname')
   @ApiOperation({
-    description:
-      '유저의 닉네임을 설정합니다. 초대를 받은 유저는 닉네임 설정 후 매칭도 진행합니다.',
+    description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 닉네임 설정 후 매칭도 진행합니다.',
   })
   async setNicknameAndPartner(
     @Req() req: any,

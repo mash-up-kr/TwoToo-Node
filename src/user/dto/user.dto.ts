@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber } from 'class-validator';
 import { IsString } from 'class-validator';
 import { LOGIN_STATE } from '../user.service';
+import { LoginType } from '../user.types';
 
 export class UserResponse {
   @IsNumber()

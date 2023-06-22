@@ -11,6 +11,9 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { UserService } from './user/user.service';
 import { User, UserSchema } from './user/schema/user.schema';
 import { UserCounter, UserCounterSchema } from './user/schema/user-counter.schema';
+import { NotificationModule } from './notification/notification.module';
+import { NotificationModule } from './notification/notification.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -39,6 +42,7 @@ import { UserCounter, UserCounterSchema } from './user/schema/user-counter.schem
       inject: [ConfigService],
     }),
     UserModule,
+    NotificationModule,
   ],
 
   controllers: [AppController],

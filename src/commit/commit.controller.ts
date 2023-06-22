@@ -6,15 +6,12 @@ import { CommitService } from './commit.service';
 @ApiTags('commit')
 @Controller('commit')
 export class CommitController {
-  constructor(private readonly commit: CommitService) { }
+  constructor(private readonly commit: CommitService) {}
 
   // @TODO AuthGaurd
   @Post('/commit')
   @ApiOperation({ description: '챌린지 인증을 진행합니다.' })
-  async createCommit(
-    @Req() req: any,
-    @Body() data: CommitCreatePayload
-  ): Promise<CommitResponse> {
+  async createCommit(@Req() req: any, @Body() data: CommitCreatePayload): Promise<CommitResponse> {
     const commit = await this.commit.createCommit({ userNo: parseInt(req.user.userNo), data });
 
     return commit;
@@ -23,10 +20,7 @@ export class CommitController {
   // @TODO AuthGaurd
   @Get('/commit/:commitNo')
   @ApiOperation({ description: '챌린지 인증 정보를 조회합니다.' })
-  async getCommit(
-    @Req() req: any,
-    @Param('commitNo') commitNo: string
-  ): Promise<CommitResponse> {
+  async getCommit(@Req() req: any, @Param('commitNo') commitNo: string): Promise<CommitResponse> {
     const commit = await this.commit.getCommit(parseInt(commitNo));
 
     return commit;

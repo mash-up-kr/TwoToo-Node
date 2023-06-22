@@ -1,7 +1,7 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber } from "class-validator";
-import { IsString } from "class-validator";
-import { LOGIN_STATE } from "../user.service";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString } from 'class-validator';
+import { LOGIN_STATE } from '../user.service';
 
 export class UserResponse {
   @IsNumber()
@@ -31,16 +31,16 @@ export class UserResponse {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: "example@kakao.com",
-    description: "소셜 아이디"
+    example: 'example@kakao.com',
+    description: '소셜 아이디',
   })
   socialId!: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: "Kakao",
-    description: "로그인 타입 (Kakao | Apple)"
+    example: 'Kakao',
+    description: '로그인 타입 (Kakao | Apple)',
   })
   loginType!: string;
 }
@@ -49,16 +49,16 @@ export class signUpPayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: "example@kakao.com",
-    description: "소셜 아이디"
+    example: 'example@kakao.com',
+    description: '소셜 아이디',
   })
   socialId!: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: "Kakao",
-    description: "로그인 타입 (Kakao | Apple)"
+    example: 'Kakao',
+    description: '로그인 타입 (Kakao | Apple)',
   })
   loginType!: LoginType;
 }
@@ -86,7 +86,7 @@ export class signInPayload {
 }
 
 export class SignInResult extends UserResponse {
-  state!: LOGIN_STATE
+  state!: LOGIN_STATE;
 }
 
 export class UserInfoResponse {

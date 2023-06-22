@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsUrl } from "class-validator";
-import { IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsUrl } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CommitResponse {
   @IsNumber()

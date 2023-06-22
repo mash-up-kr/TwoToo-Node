@@ -4,8 +4,8 @@ import { User, UserSchema } from '../../user/schema/user.schema';
 
 @Schema({ collection: 'challenge', timestamps: true })
 export class Challenge {
-  @Prop({ startAt: 1, increment: 1 })
-  challengeNo: number;
+  @Prop()
+  challengeNo!: number;
 
   @Prop()
   name: string;

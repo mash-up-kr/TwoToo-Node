@@ -14,7 +14,10 @@ export class CommitController {
   @UseGuards(AuthGuard)
   @Post('')
   @ApiOperation({ description: '챌린지 인증을 진행합니다.' })
-  async createCommit(@Body() data: CommitCreatePayload, @JwtParam() jwtparam: JwtPayload): Promise<CommitResponse> {
+  async createCommit(
+    @Body() data: CommitCreatePayload,
+    @JwtParam() jwtparam: JwtPayload,
+  ): Promise<CommitResponse> {
     const commit = await this.commitSvc.createCommit({ userNo: jwtparam.userNo, data });
 
     return commit;

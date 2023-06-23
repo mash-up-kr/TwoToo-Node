@@ -6,11 +6,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { ChallengeModule } from './challenge/challenge.module';
 import { CommitModule } from './commit/commit.module';
-import { UserController } from './user/user.controller';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { UserService } from './user/user.service';
-import { User, UserSchema } from './user/schema/user.schema';
-import { UserCounter, UserCounterSchema } from './user/schema/user-counter.schema';
 
 @Module({
   imports: [

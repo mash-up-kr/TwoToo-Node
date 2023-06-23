@@ -7,7 +7,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 @ApiTags('commit')
 @Controller('commit')
 export class CommitController {
-  constructor(private readonly commitSvc: CommitService) { }
+  constructor(private readonly commitSvc: CommitService) {}
 
   @UseGuards(AuthGuard)
   @Post('')
@@ -35,7 +35,10 @@ export class CommitController {
     @Body() { partnerComment }: CommitCommentPayload,
     @Param('commitNo') commitNo: string,
   ): Promise<CommitResponse> {
-    const commit = await this.commitSvc.updateCommit({ commitNo: parseInt(commitNo), partnerComment });
+    const commit = await this.commitSvc.updateCommit({
+      commitNo: parseInt(commitNo),
+      partnerComment,
+    });
 
     return commit;
   }

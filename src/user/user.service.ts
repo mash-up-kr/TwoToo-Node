@@ -21,7 +21,7 @@ export class UserService {
     private readonly userCounterModel: Model<UserCounterDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   async signUp({ socialId, loginType }: { socialId: string; loginType: LoginType }) {
     const userNo = await this.autoIncrement('userNo');

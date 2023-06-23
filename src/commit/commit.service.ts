@@ -49,7 +49,7 @@ export class CommitService {
         {
           new: true,
           sort: { endDate: -1 },
-        }, 
+        },
       )
       .exec();
 

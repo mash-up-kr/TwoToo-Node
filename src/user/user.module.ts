@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schema/user.schema';
-import { JwtService,JwtModule } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { UserCounter, UserCounterSchema } from './schema/user-counter.schema';
 import { AuthGuard } from 'src/auth/auth.guard';
 
@@ -16,6 +16,6 @@ import { AuthGuard } from 'src/auth/auth.guard';
   ],
   providers: [UserService, AuthGuard, JwtService],
   controllers: [UserController],
-  exports: [UserService],
+  exports: [UserService, AuthGuard, JwtService],
 })
 export class UserModule {}

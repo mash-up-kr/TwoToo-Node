@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { Model } from 'mongoose';
 
 import { User, UserDocument } from './schema/user.schema';

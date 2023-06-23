@@ -19,14 +19,14 @@ import { UserCounter, UserCounterSchema } from './user/schema/user-counter.schem
       cache: true,
     }),
     JwtModule.registerAsync({
-      inject:[ConfigService],
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
         global: true,
         signOptions: {
-          expiresIn: '60m'
-        }
-      })
+          expiresIn: '60m',
+        },
+      }),
     }),
     ChallengeModule,
     CommitModule,
@@ -42,6 +42,6 @@ import { UserCounter, UserCounterSchema } from './user/schema/user-counter.schem
   ],
 
   controllers: [AppController],
-  providers: [AppService,  JwtService],
+  providers: [AppService, JwtService],
 })
 export class AppModule {}

@@ -30,7 +30,7 @@ export class UserService {
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_SECRET'),
     });
-    console.log(userNo);
+
     const user = await this.userModel.create({
       userNo,
       nickname: null,
@@ -68,7 +68,6 @@ export class UserService {
 
     let updatedUser = null;
     if (data.partnerNo) {
-      console.log('partnerNo exists. Matching is needed');
       updatedUser = await this.userModel.findOneAndUpdate(
         { userNo: userNo },
         {
@@ -81,10 +80,7 @@ export class UserService {
         { userNo: data.partnerNo },
         { $set: { partnerNo: userNo } },
       );
-
-      console.log(`matched each other - 요청한 사람: ${data.partnerNo}, 수락한 사람: ${userNo}`);
     } else {
-      console.log('partnerNo does not exist. Only set nickname.');
       updatedUser = await this.userModel.findOneAndUpdate(
         { userNo: userNo },
         { $set: { nickname: data.nickname } },
@@ -117,13 +113,10 @@ export class UserService {
   async checkCurrentLoginState(user: User): Promise<LOGIN_STATE> {
     let state: LOGIN_STATE = 'NEED_NICKNAME';
     if (user?.nickname && user?.partnerNo) {
-      console.log(`nickname O, partnerNo O: ${user.nickname}, ${user.partnerNo}`);
       state = 'HOME';
     } else if (_.isNull(user?.nickname)) {
-      console.log(`nickname X`);
       state = 'NEED_NICKNAME';
     } else {
-      console.log(`partnerNo X`);
       state = 'NEED_MATCHING';
     }
 

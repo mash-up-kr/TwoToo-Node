@@ -15,6 +15,6 @@ import { Challenge, ChallengeSchema } from 'src/challenge/schema/challenge.schem
     ]),
   ],
   providers: [CommitService],
-  controllers: [CommitController]
+  controllers: [CommitController],
 })
 export class CommitModule {}

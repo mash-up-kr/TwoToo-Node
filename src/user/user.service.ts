@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { Model } from 'mongoose';
 
 import { User, UserDocument } from './schema/user.schema';
@@ -153,8 +153,12 @@ export class UserService {
   }
 
   async getPartnerFirebaseToken({ userNo }: { userNo: number }) {
-    const ret = await this.userModel.findOne({ userNo: userNo }, { _id: -1, firebaseToken: 1 });
-    if (_.isNull(ret?.firebaseToken)) {
+    const ret = await this.userModel.findOne({ partnerNo: userNo }, { _id: 0, firebaseToken: 1 });
+    console.log(ret);
+    if (_.isNil(ret)) {
+      throw new Error('No Partner');
+    }
+    if (_.isNil(ret.firebaseToken)) {
       throw new Error('No firebaseToken');
     }
     return ret!.firebaseToken;

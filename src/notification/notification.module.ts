@@ -3,10 +3,6 @@ import { NotificationService } from './notification.service';
 import { NotificationController } from './notification.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Notification, NotificationSchema } from './schema/notification.schema';
-import {
-  NotificationCounter,
-  NotificationCounterSchema,
-} from './schema/notification-counter.schema';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
@@ -17,7 +13,6 @@ import { UserCounter, UserCounterSchema } from 'src/user/schema/user-counter.sch
   imports: [
     MongooseModule.forFeature([
       { name: Notification.name, schema: NotificationSchema },
-      { name: NotificationCounter.name, schema: NotificationCounterSchema },
       { name: User.name, schema: UserSchema },
       { name: UserCounter.name, schema: UserCounterSchema },
     ]),

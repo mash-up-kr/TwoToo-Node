@@ -8,7 +8,6 @@ import { CommitCounter, CommitCounterDocument } from './schema/commit-counter.sc
 import { CommitCreatePayload } from './dto/commit.dto';
 import { Challenge, ChallengeDocument } from 'src/challenge/schema/challenge.schema';
 
-
 @Injectable()
 export class CommitService {
   constructor(
@@ -17,10 +16,16 @@ export class CommitService {
     @InjectModel(Challenge.name)
     private readonly challengeModel: Model<ChallengeDocument>,
     @InjectModel(CommitCounter.name)
-    private readonly commitCounterModel: Model<CommitCounterDocument>
-  ) { }
+    private readonly commitCounterModel: Model<CommitCounterDocument>,
+  ) {}
 
-  async createCommit({ userNo, data }: { userNo: number, data: CommitCreatePayload }): Promise<Commit> {
+  async createCommit({
+    userNo,
+    data,
+  }: {
+    userNo: number;
+    data: CommitCreatePayload;
+  }): Promise<Commit> {
     const commitNo = await this.autoIncrement('commitNo');
     const commit = await this.commitModel.create({
       commitNo,
@@ -30,40 +35,42 @@ export class CommitService {
       partnerComment: '',
     });
 
-    const curChallenge = await this.challengeModel.findOneAndUpdate(
-      {
-        $or: [
-          { 'user1.userNo': userNo },
-          { 'user2.userNo': userNo }
-        ]
-      },
-      {
-        $inc: {
-          user1CommitCount: { $cond: [{ $eq: ['$user1.userNo', userNo] }, 1, 0] },
-          user2CommitCount: { $cond: [{ $eq: ['$user2.userNo', userNo] }, 1, 0] }
-        }
-      },
-      {
-        new: true,
-        sort: { endDate: -1 }
-      }
-    ).exec();
+    const curChallenge = await this.challengeModel
+      .findOneAndUpdate(
+        {
+          $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+        },
+        {
+          $inc: {
+            user1CommitCount: { $cond: [{ $eq: ['$user1.userNo', userNo] }, 1, 0] },
+            user2CommitCount: { $cond: [{ $eq: ['$user2.userNo', userNo] }, 1, 0] },
+          },
+        },
+        {
+          new: true,
+          sort: { endDate: -1 },
+        }, 
+      )
+      .exec();
 
     if (_.isNull(curChallenge)) {
-      console.log('There is no matched challenge.');
       throw new Error('Not Found Challenge');
     }
 
     return commit;
   }
 
-  async updateCommit(
-    { commitNo, partnerComment }: { commitNo: number, partnerComment: string }
-  ): Promise<Commit> {
+  async updateCommit({
+    commitNo,
+    partnerComment,
+  }: {
+    commitNo: number;
+    partnerComment: string;
+  }): Promise<Commit> {
     const updatedCommit = await this.commitModel.findOneAndUpdate(
       { commitNo: commitNo },
       { $set: { partnerComment: partnerComment, updatedAt: new Date() } },
-      { new: true }
+      { new: true },
     );
 
     if (_.isNull(updatedCommit)) {
@@ -90,7 +97,7 @@ export class CommitService {
       result = await this.commitCounterModel.findOneAndUpdate(
         { key },
         { $inc: { count: 1 } },
-        { upsert: true, returnOriginal: false }
+        { upsert: true, returnOriginal: false },
       );
     }
 

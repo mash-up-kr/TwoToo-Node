@@ -21,8 +21,8 @@ export class UserController {
   @Post('/signup')
   @ApiOperation({ description: '회원가입을 진행합니다.' })
   async signUp(@Body() signUpPayload: signUpPayload): Promise<SignUpResult> {
-    console.log(signUpPayload);
     const { socialId, loginType, firebaseToken } = signUpPayload;
+
     let user = await this.user.getUserBySocialIdAndLoginType(socialId, loginType);
     if (user) {
       return {
@@ -36,9 +36,11 @@ export class UserController {
       };
     }
 
+
     user = await this.user.signUp({ socialId, loginType, firebaseToken });
     if (!user) {
-      console.log('cannot make user');
+      throw new Error('Create User Failed');
+
     }
     return {
       accessToken: user.accessToken,

@@ -11,8 +11,8 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true,
     "skipLibCheck": true,
-    "strict": true
-  }
+    "strict": true,
+  },
+  "exclude": ["node_modules"]
 }

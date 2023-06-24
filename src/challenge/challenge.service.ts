@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { add } from 'date-fns';
-import * as _ from 'lodash';
 
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UserService } from '../user/user.service';

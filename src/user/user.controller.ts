@@ -9,9 +9,7 @@ import {
   UserInfoResponse,
   signInPayload,
 } from './dto/user.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { JwtParam } from '../auth/auth.user.decorator';
-import { JwtPayload } from '../auth/auth.types';
+import { AuthGuard } from '../auth/auth.guard';
 
 @ApiTags('user')
 @Controller('user')

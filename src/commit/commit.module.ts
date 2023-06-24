@@ -15,7 +15,7 @@ import { UserModule } from '../user/user.module';
       { name: Challenge.name, schema: ChallengeSchema },
       { name: CommitCounter.name, schema: CommitCounterSchema },
     ]),
-    UserModule
+    UserModule,
   ],
   providers: [CommitService],
   controllers: [CommitController],

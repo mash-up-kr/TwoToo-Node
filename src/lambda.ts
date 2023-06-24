@@ -1,15 +1,18 @@
 import { Server } from 'http';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { APIGatewayProxyHandler } from 'aws-lambda';
-import * as awsServerlessExpress from 'aws-serverless-express';
-import { eventContext } from 'aws-serverless-express/middleware';
+
 import * as express from 'express';
+import { Handler, Context } from 'aws-lambda';
+import { createServer, proxy } from 'aws-serverless-express';
+import { eventContext } from 'aws-serverless-express/middleware';
 
 import { AppModule } from './app.module';
 import { setupSwagger } from './swagger';
 
 let cachedServer: Server;
+
+const binaryMimeTypes: string[] = [];
 
 const bootstrapServer = async (): Promise<Server> => {
   const expressApp = express();
@@ -20,13 +23,13 @@ const bootstrapServer = async (): Promise<Server> => {
 
   setupSwagger(app);
   await app.init();
-  return awsServerlessExpress.createServer(expressApp);
+  return createServer(expressApp, undefined, binaryMimeTypes);
 };
 
-export const handler: APIGatewayProxyHandler = async (event, context) => {
+export const handler: Handler = async (event: any, context: Context) => {
   if (!cachedServer) {
     cachedServer = await bootstrapServer();
   }
 
-  return awsServerlessExpress.proxy(cachedServer, event, context, 'PROMISE').promise;
+  return proxy(cachedServer, event, context, 'PROMISE').promise;
 };

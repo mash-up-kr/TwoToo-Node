@@ -1,4 +1,4 @@
-service: twotoo-node-serverless
+service: twotoo-server
 
 provider:
   name: aws

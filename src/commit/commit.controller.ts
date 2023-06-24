@@ -2,9 +2,9 @@ import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/comm
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CommitCommentPayload, CommitCreatePayload, CommitResponse } from './dto/commit.dto';
 import { CommitService } from './commit.service';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { JwtParam } from 'src/auth/auth.user.decorator';
-import { JwtPayload } from 'src/auth/auth.types';
+import { AuthGuard } from '../auth/auth.guard';
+import { JwtParam } from '../auth/auth.user.decorator';
+import { JwtPayload } from '../auth/auth.types';
 
 @ApiTags('commit')
 @Controller('commit')

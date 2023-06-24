@@ -6,7 +6,7 @@ import { Model } from 'mongoose';
 import { Commit, CommitDocument } from './schema/commit.schema';
 import { CommitCounter, CommitCounterDocument } from './schema/commit-counter.schema';
 import { CommitCreatePayload } from './dto/commit.dto';
-import { Challenge, ChallengeDocument } from 'src/challenge/schema/challenge.schema';
+import { Challenge, ChallengeDocument } from '../challenge/schema/challenge.schema';
 
 @Injectable()
 export class CommitService {

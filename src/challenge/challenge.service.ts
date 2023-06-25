@@ -21,6 +21,7 @@ export class ChallengeService {
 
   async createChallenge(createChallengeDto: CreateChallengeDto): Promise<ChallengeDocument> {
     const user1 = await this.userSvc.getUser(createChallengeDto.user1No);
+
     // TODO: Validate 로직 깔끔하게 하기
     if (user1.partnerNo === undefined) throw new Error('파트너가 존재하지 않습니다');
     const user2 = await this.userSvc.getUser(user1.partnerNo);

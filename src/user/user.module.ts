@@ -5,7 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schema/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { UserCounter, UserCounterSchema } from './schema/user-counter.schema';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { NotificationModule } from 'src/notification/notification.module';
+
 
 @Module({
   imports: [

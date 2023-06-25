@@ -44,6 +44,14 @@ export class UserResponse {
     description: '로그인 타입 (Kakao | Apple)',
   })
   loginType!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'FCM Token',
+    description: '파이어베이스 토큰',
+  })
+  firebaseToken!: string;
 }
 
 export class signUpPayload {
@@ -62,6 +70,14 @@ export class signUpPayload {
     description: '로그인 타입 (Kakao | Apple)',
   })
   loginType!: LoginType;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'FCM Token',
+    description: '파이어베이스 토큰',
+  })
+  firebaseToken!: string;
 }
 
 export class SignUpResult extends UserResponse {

@@ -19,7 +19,8 @@ export class UserController {
   @Post('/signup')
   @ApiOperation({ description: '회원가입을 진행합니다.' })
   async signUp(@Body() signUpPayload: signUpPayload): Promise<SignUpResult> {
-    const { socialId, loginType } = signUpPayload;
+    const { socialId, loginType, firebaseToken } = signUpPayload;
+
     let user = await this.user.getUserBySocialIdAndLoginType(socialId, loginType);
     if (user) {
       return {
@@ -29,10 +30,11 @@ export class UserController {
         partnerNo: user.partnerNo,
         socialId: user.socialId,
         loginType: user.loginType,
+        firebaseToken: user.firebaseToken,
       };
     }
 
-    user = await this.user.signUp({ socialId, loginType });
+    user = await this.user.signUp({ socialId, loginType, firebaseToken });
     if (!user) {
       throw new Error('Create User Failed');
     }
@@ -43,6 +45,7 @@ export class UserController {
       partnerNo: user.partnerNo,
       socialId: user.socialId,
       loginType: user.loginType,
+      firebaseToken: user.firebaseToken,
     };
   }
 
@@ -60,6 +63,7 @@ export class UserController {
       partnerNo: user.partnerNo,
       socialId: user.socialId,
       loginType: user.loginType,
+      firebaseToken: user.firebaseToken,
     };
   }
 

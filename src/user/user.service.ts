@@ -23,14 +23,20 @@ export class UserService {
     private configService: ConfigService,
   ) {}
 
-  async signUp({ socialId, loginType }: { socialId: string; loginType: LoginType }) {
+  async signUp({
+    socialId,
+    loginType,
+    firebaseToken,
+  }: {
+    socialId: string;
+    loginType: LoginType;
+    firebaseToken: string;
+  }) {
     const userNo = await this.autoIncrement('userNo');
-    // TODO: accessToken 발급 -> userNo를 넣어서 만들고 singin 할때는 해독해서 userNo 받기?
     const payload: JwtPayload = { userNo: userNo, socialId: socialId, loginType: loginType };
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_SECRET'),
     });
-
     const user = await this.userModel.create({
       userNo,
       nickname: null,
@@ -38,6 +44,7 @@ export class UserService {
       socialId: socialId,
       loginType: loginType,
       accessToken: accessToken,
+      firebaseToken: firebaseToken,
     });
 
     await user.save();
@@ -80,6 +87,7 @@ export class UserService {
         { userNo: data.partnerNo },
         { $set: { partnerNo: userNo } },
       );
+
     } else {
       updatedUser = await this.userModel.findOneAndUpdate(
         { userNo: userNo },
@@ -142,5 +150,17 @@ export class UserService {
     loginType: LoginType,
   ): Promise<User | null> {
     return await this.userModel.findOne({ socialId: socialId, loginType: loginType });
+  }
+
+  async getPartnerFirebaseToken({ userNo }: { userNo: number }) {
+    const ret = await this.userModel.findOne({ partnerNo: userNo }, { _id: 0, firebaseToken: 1 });
+    console.log(ret);
+    if (_.isNil(ret)) {
+      throw new Error('No Partner');
+    }
+    if (_.isNil(ret.firebaseToken)) {
+      throw new Error('No firebaseToken');
+    }
+    return ret!.firebaseToken;
   }
 }

@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { ChallengeModule } from './challenge/challenge.module';
 import { CommitModule } from './commit/commit.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -19,9 +20,6 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
         global: true,
-        signOptions: {
-          expiresIn: '60m',
-        },
       }),
     }),
     ChallengeModule,
@@ -35,6 +33,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
       inject: [ConfigService],
     }),
     UserModule,
+    NotificationModule,
   ],
 
   controllers: [AppController],

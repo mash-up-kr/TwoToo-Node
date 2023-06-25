@@ -21,6 +21,9 @@ export class User {
 
   @Prop()
   accessToken!: string;
+
+  @Prop()
+  firebaseToken!: string;
 }
 export type UserDocument = User & Document;
 

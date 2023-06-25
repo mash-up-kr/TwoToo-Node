@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   SetNicknameAndPartnerPayload,
   SignInResult,
@@ -49,6 +49,7 @@ export class UserController {
     };
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post('/signin')
   @ApiOperation({ description: '로그인을 진행합니다.' })
@@ -67,6 +68,7 @@ export class UserController {
     };
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Patch('/nickname')
   @ApiOperation({
@@ -88,6 +90,7 @@ export class UserController {
     };
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('/partner')
   @ApiOperation({ description: '투투메이트가 매칭되었는지 확인합니다.' })
@@ -99,6 +102,7 @@ export class UserController {
     };
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('/me')
   @ApiOperation({ description: '내 정보를 조회합니다.' })

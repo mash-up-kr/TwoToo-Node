@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CommitCommentPayload, CommitCreatePayload, CommitResponse } from './dto/commit.dto';
 import { CommitService } from './commit.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -11,6 +11,7 @@ import { JwtPayload } from '../auth/auth.types';
 export class CommitController {
   constructor(private readonly commitSvc: CommitService) {}
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post('')
   @ApiOperation({ description: '챌린지 인증을 진행합니다.' })
@@ -23,6 +24,7 @@ export class CommitController {
     return commit;
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('/:commitNo')
   @ApiOperation({ description: '챌린지 인증 정보를 조회합니다.' })
@@ -32,6 +34,7 @@ export class CommitController {
     return commit;
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post('/:commitNo/comment')
   @ApiOperation({ description: '파트너의 챌린지 인증에 칭찬 댓글을 추가합니다.' })

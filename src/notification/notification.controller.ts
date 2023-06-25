@@ -1,6 +1,6 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { NotificationService } from './notification.service';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { JwtParam } from 'src/auth/auth.user.decorator';
 import { JwtPayload } from 'src/auth/auth.types';
@@ -14,6 +14,8 @@ export class NotificationController {
     private readonly userService: UserService,
   ) {}
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Post('/push')
   @ApiOperation({
     description: 'push알림을 보냅니다. 데이터베이스에 따로 저장을 하지는 않습니다.',
@@ -30,7 +32,7 @@ export class NotificationController {
       message,
     });
   }
-
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post('/sting')
   @ApiOperation({

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ChallengeService } from './challenge.service';
 import { UserService } from '../user/user.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -16,6 +16,7 @@ export class ChallengeController {
     private readonly userSvc: UserService,
   ) {}
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post('')
   @ApiOperation({ description: '챌린지를 생성합니다.' })
@@ -37,6 +38,7 @@ export class ChallengeController {
     return challenge;
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get(':challengeNo')
   @ApiOperation({ description: '특정 챌린지를 조회합니다.' })
@@ -45,6 +47,7 @@ export class ChallengeController {
     return FindChallengeResDtoMapper.toDto(challenge);
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('')
   @ApiOperation({ description: '유저의 모든 챌린지를 조회합니다.' })
@@ -56,6 +59,7 @@ export class ChallengeController {
     return challenges.map((challenge) => FindChallengeResDtoMapper.toDto(challenge));
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post(':challengeNo/approve')
   @ApiOperation({ description: '챌린지를 수락합니다.' })
@@ -67,6 +71,7 @@ export class ChallengeController {
     return FindChallengeResDtoMapper.toDto(challenge);
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Delete(':challengeNo')
   @ApiOperation({ description: '챌린지를 삭제합니다.' })

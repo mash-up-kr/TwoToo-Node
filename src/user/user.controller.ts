@@ -10,8 +10,6 @@ import {
   signInPayload,
 } from './dto/user.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { JwtParam } from '../auth/auth.user.decorator';
-import { JwtPayload } from '../auth/auth.types';
 
 @ApiTags('user')
 @Controller('user')
@@ -36,11 +34,9 @@ export class UserController {
       };
     }
 
-
     user = await this.user.signUp({ socialId, loginType, firebaseToken });
     if (!user) {
       throw new Error('Create User Failed');
-
     }
     return {
       accessToken: user.accessToken,

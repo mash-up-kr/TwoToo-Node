@@ -1,10 +1,11 @@
-import { Controller, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { JwtParam } from 'src/auth/auth.user.decorator';
 import { JwtPayload } from 'src/auth/auth.types';
 import { UserService } from 'src/user/user.service';
+import { PushPayload, StingPayload } from './dto/notification.dto';
 
 @Controller('notification')
 export class NotificationController {
@@ -13,17 +14,13 @@ export class NotificationController {
     private readonly userService: UserService,
   ) {}
 
-  @Post('/push/:firebaseToken')
+  @Post('/push')
   @ApiOperation({
     description: 'push알림을 보냅니다. 데이터베이스에 따로 저장을 하지는 않습니다.',
   })
   async push(
     @Body()
-    reqBody: {
-      message: string;
-      deviceToken: string;
-    },
-    @Param('firebaseToken') firebaseToken: string,
+    reqBody: PushPayload,
   ) {
     const { deviceToken, message } = reqBody;
     const title = 'TwoToo';
@@ -35,15 +32,13 @@ export class NotificationController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('/sting/:deviceToken')
+  @Post('/sting')
   @ApiOperation({
     description: '찌르기를 했을 때 DB에 저장하고 push알림을 상대에게 보냅니다.',
   })
   async sting(
     @Body()
-    ReqBody: {
-      message: string;
-    },
+    ReqBody: StingPayload,
     @JwtParam() jwtParam: JwtPayload,
   ) {
     const { userNo } = jwtParam;

@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+
 import { CommitService } from './commit.service';
 import { CommitController } from './commit.controller';
-import { MongooseModule } from '@nestjs/mongoose';
 import { Commit, CommitSchema } from './schema/commit.schema';
 import { CommitCounter, CommitCounterSchema } from './schema/commit-counter.schema';
-import { Challenge, ChallengeSchema } from 'src/challenge/schema/challenge.schema';
+import { Challenge, ChallengeSchema } from '../challenge/schema/challenge.schema';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -13,6 +15,7 @@ import { Challenge, ChallengeSchema } from 'src/challenge/schema/challenge.schem
       { name: Challenge.name, schema: ChallengeSchema },
       { name: CommitCounter.name, schema: CommitCounterSchema },
     ]),
+    UserModule,
   ],
   providers: [CommitService],
   controllers: [CommitController],

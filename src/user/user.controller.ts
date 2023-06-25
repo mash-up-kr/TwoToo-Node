@@ -9,7 +9,7 @@ import {
   UserInfoResponse,
   signInPayload,
 } from './dto/user.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 
 @ApiTags('user')
 @Controller('user')

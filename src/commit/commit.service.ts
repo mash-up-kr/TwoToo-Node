@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { Model } from 'mongoose';
 
 import { Commit, CommitDocument } from './schema/commit.schema';
 import { CommitCounter, CommitCounterDocument } from './schema/commit-counter.schema';
 import { CommitCreatePayload } from './dto/commit.dto';
-import { Challenge, ChallengeDocument } from 'src/challenge/schema/challenge.schema';
+import { Challenge, ChallengeDocument } from '../challenge/schema/challenge.schema';
 
 @Injectable()
 export class CommitService {
@@ -49,7 +49,7 @@ export class CommitService {
         {
           new: true,
           sort: { endDate: -1 },
-        }, 
+        },
       )
       .exec();
 

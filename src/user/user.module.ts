@@ -8,6 +8,7 @@ import { UserCounter, UserCounterSchema } from './schema/user-counter.schema';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { NotificationModule } from 'src/notification/notification.module';
 
+
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -17,6 +18,6 @@ import { NotificationModule } from 'src/notification/notification.module';
   ],
   providers: [UserService, AuthGuard, JwtService],
   controllers: [UserController],
-  exports: [UserService],
+  exports: [UserService, AuthGuard, JwtService],
 })
 export class UserModule {}

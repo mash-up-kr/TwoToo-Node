@@ -166,7 +166,7 @@ export class UserService {
     if (_.isNil(firebaseToken)) {
       throw new Error('No firebaseToken');
     }
-    const ret = await this.userModel.updateOne(
+    const ret = await this.userModel.findOneAndUpdate(
       { userNo: userNo },
       {
         firebaseToken: firebaseToken,

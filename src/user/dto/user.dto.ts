@@ -92,14 +92,13 @@ export class SignUpResult extends UserResponse {
 }
 
 export class signInPayload {
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '1',
-    description: '사용자 번호',
-    required: true,
+    example: 'FCM Token',
+    description: '파이어베이스 토큰',
   })
-  userNo!: number;
+  deviceToken!: string;
 }
 
 export class SignInResult extends UserResponse {

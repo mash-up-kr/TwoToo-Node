@@ -51,7 +51,7 @@ export class UserResponse {
     example: 'FCM Token',
     description: '파이어베이스 토큰',
   })
-  firebaseToken!: string;
+  deviceToken!: string;
 }
 
 export class signUpPayload {
@@ -77,7 +77,7 @@ export class signUpPayload {
     example: 'FCM Token',
     description: '파이어베이스 토큰',
   })
-  firebaseToken!: string;
+  deviceToken!: string;
 }
 
 export class SignUpResult extends UserResponse {

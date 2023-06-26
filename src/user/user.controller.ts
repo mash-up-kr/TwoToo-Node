@@ -19,11 +19,11 @@ export class UserController {
   @Post('/signup')
   @ApiOperation({ description: '회원가입을 진행합니다.' })
   async signUp(@Body() signUpPayload: signUpPayload): Promise<SignUpResult> {
-    const { socialId, loginType, firebaseToken } = signUpPayload;
+    const { socialId, loginType, deviceToken } = signUpPayload;
 
     let user = await this.user.getUserBySocialIdAndLoginType(socialId, loginType);
     if (user) {
-      this.user.updateFirebaseToken({ userNo: user.userNo, firebaseToken: user.firebaseToken });
+      this.user.updateDeviceToken({ userNo: user.userNo, deviceToken: user.deviceToken });
       return {
         accessToken: user.accessToken,
         userNo: user.userNo,
@@ -31,11 +31,11 @@ export class UserController {
         partnerNo: user.partnerNo,
         socialId: user.socialId,
         loginType: user.loginType,
-        firebaseToken: user.firebaseToken,
+        deviceToken: user.deviceToken,
       };
     }
 
-    user = await this.user.signUp({ socialId, loginType, firebaseToken });
+    user = await this.user.signUp({ socialId, loginType, deviceToken });
     if (!user) {
       throw new Error('Create User Failed');
     }
@@ -46,7 +46,7 @@ export class UserController {
       partnerNo: user.partnerNo,
       socialId: user.socialId,
       loginType: user.loginType,
-      firebaseToken: user.firebaseToken,
+      deviceToken: user.deviceToken,
     };
   }
 
@@ -58,7 +58,7 @@ export class UserController {
     const user = await this.user.signIn(signInPayload.userNo);
     const curState = await this.user.checkCurrentLoginState(user);
 
-    this.user.updateFirebaseToken({ userNo: user.userNo, firebaseToken: user.firebaseToken });
+    this.user.updateDeviceToken({ userNo: user.userNo, deviceToken: user.deviceToken });
 
     return {
       state: curState,
@@ -67,7 +67,7 @@ export class UserController {
       partnerNo: user.partnerNo,
       socialId: user.socialId,
       loginType: user.loginType,
-      firebaseToken: user.firebaseToken,
+      deviceToken: user.deviceToken,
     };
   }
 

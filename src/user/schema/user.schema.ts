@@ -23,7 +23,7 @@ export class User {
   accessToken!: string;
 
   @Prop()
-  firebaseToken!: string;
+  deviceToken!: string;
 }
 export type UserDocument = User & Document;
 

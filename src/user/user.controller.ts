@@ -23,6 +23,7 @@ export class UserController {
 
     let user = await this.user.getUserBySocialIdAndLoginType(socialId, loginType);
     if (user) {
+      this.user.updateFirebaseToken({ userNo: user.userNo, firebaseToken: user.firebaseToken });
       return {
         accessToken: user.accessToken,
         userNo: user.userNo,
@@ -56,6 +57,8 @@ export class UserController {
   async signIn(@Body() signInPayload: signInPayload): Promise<SignInResult> {
     const user = await this.user.signIn(signInPayload.userNo);
     const curState = await this.user.checkCurrentLoginState(user);
+
+    this.user.updateFirebaseToken({ userNo: user.userNo, firebaseToken: user.firebaseToken });
 
     return {
       state: curState,

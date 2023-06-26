@@ -87,7 +87,6 @@ export class UserService {
         { userNo: data.partnerNo },
         { $set: { partnerNo: userNo } },
       );
-
     } else {
       updatedUser = await this.userModel.findOneAndUpdate(
         { userNo: userNo },
@@ -154,7 +153,6 @@ export class UserService {
 
   async getPartnerFirebaseToken({ userNo }: { userNo: number }) {
     const ret = await this.userModel.findOne({ partnerNo: userNo }, { _id: 0, firebaseToken: 1 });
-    console.log(ret);
     if (_.isNil(ret)) {
       throw new Error('No Partner');
     }
@@ -162,5 +160,19 @@ export class UserService {
       throw new Error('No firebaseToken');
     }
     return ret!.firebaseToken;
+  }
+
+  async updateFirebaseToken({ userNo, firebaseToken }: { firebaseToken: string; userNo: number }) {
+    if (_.isNil(firebaseToken)) {
+      throw new Error('No firebaseToken');
+    }
+    const ret = await this.userModel.updateOne(
+      { userNo: userNo },
+      {
+        firebaseToken: firebaseToken,
+      },
+    );
+
+    return ret;
   }
 }

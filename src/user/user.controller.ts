@@ -25,7 +25,11 @@ export class UserController {
 
     let user = await this.user.getUserBySocialIdAndLoginType(socialId, loginType);
     if (user) {
-      this.user.updateDeviceToken({ userNo: user.userNo, deviceToken: deviceToken });
+      await this.user.updateDeviceToken({
+        userNo: user.userNo,
+        deviceToken: deviceToken,
+      });
+
       return {
         accessToken: user.accessToken,
         userNo: user.userNo,
@@ -65,7 +69,7 @@ export class UserController {
     const user = await this.user.signIn(userNo);
     const curState = await this.user.checkCurrentLoginState(user);
 
-    this.user.updateDeviceToken({ userNo: user.userNo, deviceToken: deviceToken });
+    await this.user.updateDeviceToken({ userNo: user.userNo, deviceToken: deviceToken });
 
     return {
       state: curState,

@@ -16,5 +16,6 @@ import { ChallengeCounter, ChallengeCounterSchema } from './schema/challenge-cou
   ],
   providers: [ChallengeService],
   controllers: [ChallengeController],
+  exports: [ChallengeService],
 })
 export class ChallengeModule {}

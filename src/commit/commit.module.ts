@@ -19,5 +19,6 @@ import { UserModule } from '../user/user.module';
   ],
   providers: [CommitService],
   controllers: [CommitController],
+  exports: [CommitService],
 })
 export class CommitModule {}

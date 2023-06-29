@@ -26,11 +26,11 @@ export class UserService {
   async signUp({
     socialId,
     loginType,
-    firebaseToken,
+    deviceToken,
   }: {
     socialId: string;
     loginType: LoginType;
-    firebaseToken: string;
+    deviceToken: string;
   }) {
     const userNo = await this.autoIncrement('userNo');
     const payload: JwtPayload = { userNo: userNo, socialId: socialId, loginType: loginType };
@@ -44,7 +44,7 @@ export class UserService {
       socialId: socialId,
       loginType: loginType,
       accessToken: accessToken,
-      firebaseToken: firebaseToken,
+      deviceToken: deviceToken,
     });
 
     await user.save();
@@ -87,7 +87,6 @@ export class UserService {
         { userNo: data.partnerNo },
         { $set: { partnerNo: userNo } },
       );
-
     } else {
       updatedUser = await this.userModel.findOneAndUpdate(
         { userNo: userNo },
@@ -152,15 +151,28 @@ export class UserService {
     return await this.userModel.findOne({ socialId: socialId, loginType: loginType });
   }
 
-  async getPartnerFirebaseToken({ userNo }: { userNo: number }) {
-    const ret = await this.userModel.findOne({ partnerNo: userNo }, { _id: 0, firebaseToken: 1 });
-    console.log(ret);
+  async getPartnerDeviceToken({ userNo }: { userNo: number }) {
+    const ret = await this.userModel.findOne({ partnerNo: userNo }, { _id: 0, deviceToken: 1 });
     if (_.isNil(ret)) {
       throw new Error('No Partner');
     }
-    if (_.isNil(ret.firebaseToken)) {
-      throw new Error('No firebaseToken');
+    if (_.isNil(ret.deviceToken)) {
+      throw new Error('No deviceToken');
     }
-    return ret!.firebaseToken;
+    return ret!.deviceToken;
+  }
+
+  async updateDeviceToken({ userNo, deviceToken }: { deviceToken: string; userNo: number }) {
+    if (_.isNil(deviceToken)) {
+      throw new Error('No deviceToken');
+    }
+    const ret = await this.userModel.findOneAndUpdate(
+      { userNo: userNo },
+      {
+        deviceToken: deviceToken,
+      },
+    );
+
+    return ret;
   }
 }

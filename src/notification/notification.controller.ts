@@ -51,10 +51,10 @@ export class NotificationController {
     if (stingCount >= 5) {
       throw new Error('No more Sting');
     }
-    const partnerFirebaseToken = await this.userService.getPartnerFirebaseToken({ userNo });
+    const partnerDeviceToken = await this.userService.getPartnerDeviceToken({ userNo });
     const pushRet = await this.notificationService.sendPush({
       message,
-      deviceToken: partnerFirebaseToken,
+      deviceToken: partnerDeviceToken,
       title,
     });
     if (pushRet) {

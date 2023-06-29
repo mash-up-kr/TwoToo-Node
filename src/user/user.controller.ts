@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -9,6 +9,8 @@ import {
   UserInfoResponse,
   signInPayload,
 } from './dto/user.dto';
+import { JwtPayload } from 'src/auth/auth.types';
+import { JwtParam } from 'src/auth/auth.user.decorator';
 import { AuthGuard } from '../auth/auth.guard';
 
 @ApiTags('user')
@@ -19,10 +21,15 @@ export class UserController {
   @Post('/signup')
   @ApiOperation({ description: '회원가입을 진행합니다.' })
   async signUp(@Body() signUpPayload: signUpPayload): Promise<SignUpResult> {
-    const { socialId, loginType, firebaseToken } = signUpPayload;
+    const { socialId, loginType, deviceToken } = signUpPayload;
 
     let user = await this.user.getUserBySocialIdAndLoginType(socialId, loginType);
     if (user) {
+      await this.user.updateDeviceToken({
+        userNo: user.userNo,
+        deviceToken: deviceToken,
+      });
+
       return {
         accessToken: user.accessToken,
         userNo: user.userNo,
@@ -30,11 +37,11 @@ export class UserController {
         partnerNo: user.partnerNo,
         socialId: user.socialId,
         loginType: user.loginType,
-        firebaseToken: user.firebaseToken,
+        deviceToken: deviceToken,
       };
     }
 
-    user = await this.user.signUp({ socialId, loginType, firebaseToken });
+    user = await this.user.signUp({ socialId, loginType, deviceToken });
     if (!user) {
       throw new Error('Create User Failed');
     }
@@ -45,7 +52,7 @@ export class UserController {
       partnerNo: user.partnerNo,
       socialId: user.socialId,
       loginType: user.loginType,
-      firebaseToken: user.firebaseToken,
+      deviceToken: user.deviceToken,
     };
   }
 
@@ -53,9 +60,16 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Post('/signin')
   @ApiOperation({ description: '로그인을 진행합니다.' })
-  async signIn(@Body() signInPayload: signInPayload): Promise<SignInResult> {
-    const user = await this.user.signIn(signInPayload.userNo);
+  async signIn(
+    @Body() signInPayload: signInPayload,
+    @JwtParam() jwtParam: JwtPayload,
+  ): Promise<SignInResult> {
+    const { deviceToken } = signInPayload;
+    const { userNo } = jwtParam;
+    const user = await this.user.signIn(userNo);
     const curState = await this.user.checkCurrentLoginState(user);
+
+    await this.user.updateDeviceToken({ userNo: user.userNo, deviceToken: deviceToken });
 
     return {
       state: curState,
@@ -64,7 +78,7 @@ export class UserController {
       partnerNo: user.partnerNo,
       socialId: user.socialId,
       loginType: user.loginType,
-      firebaseToken: user.firebaseToken,
+      deviceToken: deviceToken,
     };
   }
 
@@ -75,11 +89,12 @@ export class UserController {
     description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 닉네임 설정 후 매칭도 진행합니다.',
   })
   async setNicknameAndPartner(
-    @Req() req: any,
+    @JwtParam() jwtParam: JwtPayload,
     @Body() data: SetNicknameAndPartnerPayload,
   ): Promise<UserInfoResponse> {
+    const { userNo } = jwtParam;
     const updatedUser = await this.user.setNicknameAndPartner({
-      userNo: parseInt(req.user.userNo),
+      userNo: userNo,
       data,
     });
 
@@ -94,8 +109,9 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('/partner')
   @ApiOperation({ description: '투투메이트가 매칭되었는지 확인합니다.' })
-  async checkPartner(@Req() req: any): Promise<{ partnerNo: number }> {
-    const partnerNo = await this.user.checkPartner(parseInt(req.user.userNo));
+  async checkPartner(@JwtParam() jwtParam: JwtPayload): Promise<{ partnerNo: number }> {
+    const { userNo } = jwtParam;
+    const partnerNo = await this.user.checkPartner(userNo);
 
     return {
       partnerNo: partnerNo,
@@ -106,8 +122,9 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('/me')
   @ApiOperation({ description: '내 정보를 조회합니다.' })
-  async me(@Req() req: any): Promise<UserInfoResponse> {
-    const user = await this.user.getUser(parseInt(req.user.userNo));
+  async me(@JwtParam() jwtParam: JwtPayload): Promise<UserInfoResponse> {
+    const { userNo } = jwtParam;
+    const user = await this.user.getUser(userNo);
     return {
       userNo: user.userNo,
       nickname: user.nickname,

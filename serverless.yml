@@ -12,6 +12,9 @@ plugins:
   - serverless-plugin-typescript
 
 package:
+  patterns:
+    - '!node_modules/**'
+
   individually: true
 
 functions:

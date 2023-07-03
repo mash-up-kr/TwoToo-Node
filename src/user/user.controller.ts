@@ -22,8 +22,8 @@ export class UserController {
   @Post('/signup')
   @ApiOperation({ description: '회원가입을 진행합니다.', summary: '회원가입' })
   @ApiResponse({ status: 200, type: SignUpResDto })
-  async signUp(@Body() SignUpPayload: SignUpPayload): Promise<SignUpResDto> {
-    const { socialId, loginType, deviceToken } = SignUpPayload;
+  async signUp(@Body() data: SignUpPayload): Promise<SignUpResDto> {
+    const { socialId, loginType, deviceToken } = data;
 
     let user = await this.user.getUserBySocialIdAndLoginType(socialId, loginType);
     if (user) {
@@ -64,10 +64,10 @@ export class UserController {
   @ApiOperation({ description: '로그인을 진행합니다.', summary: '로그인' })
   @ApiResponse({ status: 200, type: SignInResult })
   async signIn(
-    @Body() signInPayload: SignInPayload,
+    @Body() data: SignInPayload,
     @JwtParam() jwtParam: JwtPayload,
   ): Promise<SignInResult> {
-    const { deviceToken } = signInPayload;
+    const { deviceToken } = data;
     const { userNo } = jwtParam;
     const user = await this.user.signIn(userNo);
     const curState = await this.user.checkCurrentLoginState(user);

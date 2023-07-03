@@ -11,7 +11,7 @@ export class NotificationService {
     @InjectModel(Notification.name)
     private readonly notificaitonModel: Model<NotificationDocument>,
   ) {}
-  async getStingCount({ userNo }: { userNo: number }): Promise<any> {
+  async getStingCount(userNo: number): Promise<number> {
     const today = moment().tz('Asia/Seoul').startOf('day').toDate();
 
     const ret = await this.notificaitonModel

@@ -151,7 +151,7 @@ export class UserService {
     return await this.userModel.findOne({ socialId: socialId, loginType: loginType });
   }
 
-  async getPartnerDeviceToken({ userNo }: { userNo: number }) {
+  async getPartnerDeviceToken(userNo: number) {
     const ret = await this.userModel.findOne({ partnerNo: userNo }, { _id: 0, deviceToken: 1 });
     if (_.isNil(ret)) {
       throw new Error('No Partner');

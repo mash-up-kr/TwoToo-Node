@@ -48,12 +48,12 @@ export class NotificationController {
     const { message } = ReqBody;
     const title = 'twotoo';
 
-    const stingCount = await this.notificationService.getStingCount({ userNo });
+    const stingCount = await this.notificationService.getStingCount(userNo);
     if (stingCount >= 5) {
       throw new Error('No more Sting');
     }
 
-    const partnerDeviceToken = await this.userService.getPartnerDeviceToken({ userNo });
+    const partnerDeviceToken = await this.userService.getPartnerDeviceToken(userNo);
     const pushRet = await this.notificationService.sendPush({
       message,
       deviceToken: partnerDeviceToken,

@@ -7,6 +7,7 @@ import { Commit, CommitDocument } from './schema/commit.schema';
 import { CommitCounter, CommitCounterDocument } from './schema/commit-counter.schema';
 import { CommitCreatePayload } from './dto/commit.dto';
 import { Challenge, ChallengeDocument } from '../challenge/schema/challenge.schema';
+import { startOfToday } from 'date-fns';
 
 @Injectable()
 export class CommitService {
@@ -86,6 +87,20 @@ export class CommitService {
     if (_.isNull(commit)) {
       throw new Error('Not Found Commit');
     }
+
+    return commit;
+  }
+
+  async getTodayCommit(userNo: number): Promise<CommitDocument | null> {
+    const commit = await this.commitModel
+      .findOne({
+        userNo: userNo,
+        createdAt: {
+          $gte: startOfToday(),
+        },
+      })
+      .sort({ createdAt: -1 })
+      .lean();
 
     return commit;
   }

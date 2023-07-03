@@ -8,6 +8,7 @@ import { ChallengeModule } from './challenge/challenge.module';
 import { CommitModule } from './commit/commit.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { NotificationModule } from './notification/notification.module';
+import { ViewModule } from './view/view.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { NotificationModule } from './notification/notification.module';
     }),
     UserModule,
     NotificationModule,
+    ViewModule,
   ],
 
   controllers: [AppController],

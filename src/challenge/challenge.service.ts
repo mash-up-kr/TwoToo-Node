@@ -55,6 +55,23 @@ export class ChallengeService {
     return challenges;
   }
 
+  async findRecentChallenge(userNo: number): Promise<ChallengeDocument | null> {
+    const challenge = await this.challengeModel
+      .findOne({
+        $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+      })
+      .sort({ challengeNo: -1 });
+    return challenge;
+  }
+
+  // 승인된 모든 챌린지들
+  async countUserChallenges(userNo: number): Promise<number> {
+    return this.challengeModel.countDocuments({
+      $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+      isApproved: true,
+    });
+  }
+
   async approveChallenge(challengeNo: number, user1Flower: string): Promise<ChallengeDocument> {
     const challenge = await this.challengeModel.findOneAndUpdate(
       { challengeNo },

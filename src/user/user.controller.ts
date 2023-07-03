@@ -4,11 +4,11 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import {
   SetNicknameAndPartnerPayload,
   SignInResult,
-  signUpPayload,
-  SignUpResult,
-  UserInfoResponse,
+  SignUpPayload,
+  SignUpResDto,
+  UserInfoResDto,
   SignInPayload,
-  GetPartnerResponse,
+  GetPartnerResDto,
 } from './dto/user.dto';
 import { JwtPayload } from 'src/auth/auth.types';
 import { JwtParam } from 'src/auth/auth.user.decorator';
@@ -21,9 +21,9 @@ export class UserController {
 
   @Post('/signup')
   @ApiOperation({ description: '회원가입을 진행합니다.', summary: '회원가입' })
-  @ApiResponse({ status: 200, type: SignUpResult})
-  async signUp(@Body() signUpPayload: signUpPayload): Promise<SignUpResult> {
-    const { socialId, loginType, deviceToken } = signUpPayload;
+  @ApiResponse({ status: 200, type: SignUpResDto })
+  async signUp(@Body() SignUpPayload: SignUpPayload): Promise<SignUpResDto> {
+    const { socialId, loginType, deviceToken } = SignUpPayload;
 
     let user = await this.user.getUserBySocialIdAndLoginType(socialId, loginType);
     if (user) {
@@ -62,7 +62,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Post('/signin')
   @ApiOperation({ description: '로그인을 진행합니다.', summary: '로그인' })
-  @ApiResponse({ status: 200, type: SignInResult})
+  @ApiResponse({ status: 200, type: SignInResult })
   async signIn(
     @Body() signInPayload: SignInPayload,
     @JwtParam() jwtParam: JwtPayload,
@@ -89,13 +89,14 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Patch('/nickname')
   @ApiOperation({
-    description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 닉네임 설정 후 매칭도 진행합니다.', summary: '닉네임 설정 및 파트너 매칭'
+    description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 닉네임 설정 후 매칭도 진행합니다.',
+    summary: '닉네임 설정 및 파트너 매칭',
   })
-  @ApiResponse({ status: 200, type: UserInfoResponse})
+  @ApiResponse({ status: 200, type: UserInfoResDto })
   async setNicknameAndPartner(
     @JwtParam() jwtParam: JwtPayload,
     @Body() data: SetNicknameAndPartnerPayload,
-  ): Promise<UserInfoResponse> {
+  ): Promise<UserInfoResDto> {
     const { userNo } = jwtParam;
     const updatedUser = await this.user.setNicknameAndPartner({
       userNo: userNo,
@@ -112,9 +113,12 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('/partner')
-  @ApiOperation({ description: '투투메이트가 매칭되었는지 확인합니다.', summary: '파트너 정보 조회' })
-  @ApiResponse({ status: 200, type: GetPartnerResponse})
-  async getPartner(@JwtParam() jwtParam: JwtPayload): Promise<GetPartnerResponse> {
+  @ApiOperation({
+    description: '투투메이트가 매칭되었는지 확인합니다.',
+    summary: '파트너 정보 조회',
+  })
+  @ApiResponse({ status: 200, type: GetPartnerResDto })
+  async getPartner(@JwtParam() jwtParam: JwtPayload): Promise<GetPartnerResDto> {
     const { userNo } = jwtParam;
     const partnerNo = await this.user.checkPartner(userNo);
 
@@ -127,8 +131,8 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('/me')
   @ApiOperation({ description: '내 정보를 조회합니다.', summary: '내 정보 조회' })
-  @ApiResponse({ status: 200, type: UserInfoResponse})
-  async me(@JwtParam() jwtParam: JwtPayload): Promise<UserInfoResponse> {
+  @ApiResponse({ status: 200, type: UserInfoResDto })
+  async me(@JwtParam() jwtParam: JwtPayload): Promise<UserInfoResDto> {
     const { userNo } = jwtParam;
     const user = await this.user.getUser(userNo);
     return {

@@ -4,7 +4,7 @@ import { IsString } from 'class-validator';
 import { LOGIN_STATE } from '../user.service';
 import { LoginType } from '../user.types';
 
-export class UserResponse {
+export class UserResDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
@@ -54,7 +54,7 @@ export class UserResponse {
   deviceToken!: string;
 }
 
-export class signUpPayload {
+export class SignUpPayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -80,7 +80,7 @@ export class signUpPayload {
   deviceToken!: string;
 }
 
-export class SignUpResult extends UserResponse {
+export class SignUpResDto extends UserResDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -101,11 +101,11 @@ export class SignInPayload {
   deviceToken!: string;
 }
 
-export class SignInResult extends UserResponse {
+export class SignInResult extends UserResDto {
   state!: LOGIN_STATE;
 }
 
-export class UserInfoResponse {
+export class UserInfoResDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
@@ -147,7 +147,7 @@ export class SetNicknameAndPartnerPayload {
   partnerNo?: number;
 }
 
-export class GetPartnerResponse {
+export class GetPartnerResDto {
   @IsNumber()
   @ApiProperty({
     example: '2',

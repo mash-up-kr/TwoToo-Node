@@ -91,7 +91,7 @@ export class SignUpResult extends UserResponse {
   accessToken!: string;
 }
 
-export class signInPayload {
+export class SignInPayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -139,6 +139,15 @@ export class SetNicknameAndPartnerPayload {
   })
   nickname!: string;
 
+  @IsNumber()
+  @ApiProperty({
+    example: '2',
+    description: '파트너 번호',
+  })
+  partnerNo?: number;
+}
+
+export class GetPartnerResponse {
   @IsNumber()
   @ApiProperty({
     example: '2',

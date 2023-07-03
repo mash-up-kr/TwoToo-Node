@@ -1,13 +1,14 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   SetNicknameAndPartnerPayload,
   SignInResult,
   signUpPayload,
   SignUpResult,
   UserInfoResponse,
-  signInPayload,
+  SignInPayload,
+  GetPartnerResponse,
 } from './dto/user.dto';
 import { JwtPayload } from 'src/auth/auth.types';
 import { JwtParam } from 'src/auth/auth.user.decorator';
@@ -20,6 +21,7 @@ export class UserController {
 
   @Post('/signup')
   @ApiOperation({ description: '회원가입을 진행합니다.', summary: '회원가입' })
+  @ApiResponse({ status: 200, type: SignUpResult})
   async signUp(@Body() signUpPayload: signUpPayload): Promise<SignUpResult> {
     const { socialId, loginType, deviceToken } = signUpPayload;
 
@@ -60,8 +62,9 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Post('/signin')
   @ApiOperation({ description: '로그인을 진행합니다.', summary: '로그인' })
+  @ApiResponse({ status: 200, type: SignInResult})
   async signIn(
-    @Body() signInPayload: signInPayload,
+    @Body() signInPayload: SignInPayload,
     @JwtParam() jwtParam: JwtPayload,
   ): Promise<SignInResult> {
     const { deviceToken } = signInPayload;
@@ -88,6 +91,7 @@ export class UserController {
   @ApiOperation({
     description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 닉네임 설정 후 매칭도 진행합니다.', summary: '닉네임 설정 및 파트너 매칭'
   })
+  @ApiResponse({ status: 200, type: UserInfoResponse})
   async setNicknameAndPartner(
     @JwtParam() jwtParam: JwtPayload,
     @Body() data: SetNicknameAndPartnerPayload,
@@ -109,7 +113,8 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('/partner')
   @ApiOperation({ description: '투투메이트가 매칭되었는지 확인합니다.', summary: '파트너 정보 조회' })
-  async checkPartner(@JwtParam() jwtParam: JwtPayload): Promise<{ partnerNo: number }> {
+  @ApiResponse({ status: 200, type: GetPartnerResponse})
+  async getPartner(@JwtParam() jwtParam: JwtPayload): Promise<GetPartnerResponse> {
     const { userNo } = jwtParam;
     const partnerNo = await this.user.checkPartner(userNo);
 
@@ -122,6 +127,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('/me')
   @ApiOperation({ description: '내 정보를 조회합니다.', summary: '내 정보 조회' })
+  @ApiResponse({ status: 200, type: UserInfoResponse})
   async me(@JwtParam() jwtParam: JwtPayload): Promise<UserInfoResponse> {
     const { userNo } = jwtParam;
     const user = await this.user.getUser(userNo);

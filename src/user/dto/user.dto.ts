@@ -19,6 +19,7 @@ export class UserResDto {
   @ApiProperty({
     example: '공주',
     description: '사용할 닉네임',
+    required: true,
   })
   nickname!: string;
 
@@ -42,6 +43,7 @@ export class UserResDto {
   @ApiProperty({
     example: 'Kakao',
     description: '로그인 타입 (Kakao | Apple)',
+    required: true,
   })
   loginType!: string;
 
@@ -50,6 +52,7 @@ export class UserResDto {
   @ApiProperty({
     example: 'FCM Token',
     description: '파이어베이스 토큰',
+    required: true,
   })
   deviceToken!: string;
 }

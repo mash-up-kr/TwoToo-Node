@@ -18,29 +18,33 @@ export class ChallengeResDto {
     example: '아침 7시 기상',
     description: '챌린지 이름',
   })
-  name: string;
+  name!: string;
 
-  @ApiProperty({ type: UserResDto })
-  user1: UserResDto; // 챌린지 생성자
+  @IsNotEmpty()
+  @ApiProperty({ type: UserResDto, description: 'user1 - 챌린지 생성자' })
+  user1!: UserResDto;
 
-  @ApiProperty({ type: UserResDto })
-  user2: UserResDto; // 챌린지 수락자
+  @IsNotEmpty()
+  @ApiProperty({ type: UserResDto, description: 'user2 - 챌린지 수락자' })
+  user2!: UserResDto;
 
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
     type: Number,
     default: new Date(),
+    description: '챌린지 시작일'
   })
-  startDate: Date;
+  startDate!: Date;
 
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
     type: Number,
     default: new Date(new Date().getTime() + 86400000 * 23),
+    description: '챌린지 종료일'
   })
-  endDate: Date;
+  endDate!: Date;
 
   @IsNumber()
   @IsNotEmpty()
@@ -71,7 +75,7 @@ export class ChallengeResDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '민들레꽃',
+    example: '해바라기',
     description: 'user2(생성자)의 꽃',
   })
   user2Flower: string;
@@ -82,7 +86,7 @@ export class ChallengeResDto {
     example: true,
     description: '챌린지 승인 여부',
   })
-  isApproved: boolean;
+  isApproved!: boolean;
 
   @IsBoolean()
   @IsNotEmpty()
@@ -90,7 +94,7 @@ export class ChallengeResDto {
     example: false,
     description: '챌린지 완료 여부',
   })
-  isFinished: boolean;
+  isFinished!: boolean;
 }
 
 export class CreateChallengePayload {
@@ -105,7 +109,7 @@ export class CreateChallengePayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '민들레꽃',
+    example: '해바라기',
     description: 'user2(수락자)의 꽃',
   })
   user2Flower: string;

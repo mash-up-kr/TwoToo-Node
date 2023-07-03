@@ -102,6 +102,13 @@ export class SignInPayload {
 }
 
 export class SignInResDto extends UserResDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: '로그인 상태',
+    enum: LOGIN_STATE,
+    required: true,
+  })
   state!: LOGIN_STATE;
 }
 

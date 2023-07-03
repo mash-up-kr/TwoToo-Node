@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ChallengeService } from './challenge.service';
 import { UserService } from '../user/user.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -9,6 +9,7 @@ import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { CreateChallengeReqDto } from './dto/create-challenge.req.dto';
 import { FindChallengeResDto, FindChallengeResDtoMapper } from './dto/find-challenge.res.dto';
 
+@ApiTags('challenge')
 @Controller('challenge')
 export class ChallengeController {
   constructor(
@@ -19,7 +20,7 @@ export class ChallengeController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post('')
-  @ApiOperation({ description: '챌린지를 생성합니다.' })
+  @ApiOperation({ description: '챌린지를 생성합니다.', summary: '챌린지 생성' })
   // TODO: Validation 필요
   // TODO: CRUD 할 때, 자신의 챌린지 아니면 예외 처리 하는 로직 필요한지 고민.
   async createChallenge(
@@ -41,16 +42,16 @@ export class ChallengeController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get(':challengeNo')
-  @ApiOperation({ description: '특정 챌린지를 조회합니다.' })
+  @ApiOperation({ description: '특정 챌린지를 조회합니다.', summary: '챌린지 조회' })
   async findChallenge(@Param('challengeNo') challengeNo: number): Promise<FindChallengeResDto> {
     const challenge = await this.challengeSvc.findChallenge(challengeNo);
     return FindChallengeResDtoMapper.toDto(challenge);
   }
-
+ 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('')
-  @ApiOperation({ description: '유저의 모든 챌린지를 조회합니다.' })
+  @ApiOperation({ description: '유저의 모든 챌린지를 조회합니다.', summary: '챌린지 모두 조회' })
   async findUserChallenges(
     @JwtParam() jwtPayload: JwtPayload,
   ): Promise<FindChallengeResDtoMapper[]> {
@@ -62,7 +63,7 @@ export class ChallengeController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post(':challengeNo/approve')
-  @ApiOperation({ description: '챌린지를 수락합니다.' })
+  @ApiOperation({ description: '챌린지를 수락합니다.', summary: '챌린지 수락' })
   async acceptChallenge(
     @Param('challengeNo') challengeNo: number,
     @Body() body: { user1Flower: string },
@@ -74,7 +75,7 @@ export class ChallengeController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Delete(':challengeNo')
-  @ApiOperation({ description: '챌린지를 삭제합니다.' })
+  @ApiOperation({ description: '챌린지를 삭제합니다.', summary: '챌린지 그만두기' })
   async deleteChallenge(@Param('challengeNo') challengeNo: number): Promise<number> {
     return this.challengeSvc.deleteChallenge(challengeNo);
   }

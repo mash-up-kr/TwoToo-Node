@@ -19,7 +19,7 @@ export class UserController {
   constructor(private readonly user: UserService) {}
 
   @Post('/signup')
-  @ApiOperation({ description: '회원가입을 진행합니다.' })
+  @ApiOperation({ description: '회원가입을 진행합니다.', summary: '회원가입' })
   async signUp(@Body() signUpPayload: signUpPayload): Promise<SignUpResult> {
     const { socialId, loginType, deviceToken } = signUpPayload;
 
@@ -59,7 +59,7 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post('/signin')
-  @ApiOperation({ description: '로그인을 진행합니다.' })
+  @ApiOperation({ description: '로그인을 진행합니다.', summary: '로그인' })
   async signIn(
     @Body() signInPayload: signInPayload,
     @JwtParam() jwtParam: JwtPayload,
@@ -86,7 +86,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Patch('/nickname')
   @ApiOperation({
-    description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 닉네임 설정 후 매칭도 진행합니다.',
+    description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 닉네임 설정 후 매칭도 진행합니다.', summary: '닉네임 설정 및 파트너 매칭'
   })
   async setNicknameAndPartner(
     @JwtParam() jwtParam: JwtPayload,
@@ -108,7 +108,7 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('/partner')
-  @ApiOperation({ description: '투투메이트가 매칭되었는지 확인합니다.' })
+  @ApiOperation({ description: '투투메이트가 매칭되었는지 확인합니다.', summary: '파트너 정보 조회' })
   async checkPartner(@JwtParam() jwtParam: JwtPayload): Promise<{ partnerNo: number }> {
     const { userNo } = jwtParam;
     const partnerNo = await this.user.checkPartner(userNo);
@@ -121,7 +121,7 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('/me')
-  @ApiOperation({ description: '내 정보를 조회합니다.' })
+  @ApiOperation({ description: '내 정보를 조회합니다.', summary: '내 정보 조회' })
   async me(@JwtParam() jwtParam: JwtPayload): Promise<UserInfoResponse> {
     const { userNo } = jwtParam;
     const user = await this.user.getUser(userNo);

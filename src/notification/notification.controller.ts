@@ -1,18 +1,19 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { NotificationService } from './notification.service';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { JwtParam } from 'src/auth/auth.user.decorator';
 import { JwtPayload } from 'src/auth/auth.types';
 import { UserService } from 'src/user/user.service';
 import { PushPayload, StingPayload } from './dto/notification.dto';
 
+@ApiTags('notification')
 @Controller('notification')
 export class NotificationController {
   constructor(
-    private readonly notificationService: NotificationService,
     private readonly userService: UserService,
-  ) {}
+    private readonly notificationService: NotificationService,
+  ) { }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
@@ -23,7 +24,7 @@ export class NotificationController {
   async push(
     @Body()
     reqBody: PushPayload,
-  ) {
+  ): Promise<string> {
     const { deviceToken, message } = reqBody;
     const title = 'TwoToo';
     return await this.notificationService.sendPush({
@@ -42,7 +43,7 @@ export class NotificationController {
     @Body()
     ReqBody: StingPayload,
     @JwtParam() jwtParam: JwtPayload,
-  ) {
+  ): Promise<Notification> {
     const { userNo } = jwtParam;
     const { message } = ReqBody;
     const title = 'twotoo';
@@ -51,15 +52,18 @@ export class NotificationController {
     if (stingCount >= 5) {
       throw new Error('No more Sting');
     }
+
     const partnerDeviceToken = await this.userService.getPartnerDeviceToken({ userNo });
     const pushRet = await this.notificationService.sendPush({
       message,
       deviceToken: partnerDeviceToken,
       title,
     });
+
     if (pushRet) {
       return await this.notificationService.createSting({ message, userNo });
     }
+
     throw new Error('Fail to Sting');
   }
 }

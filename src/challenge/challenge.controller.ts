@@ -34,14 +34,14 @@ export class ChallengeController {
     @JwtParam() jwtParam: JwtPayload,
   ): Promise<ChallengeResDto> {
     const user = await this.userSvc.getUser(jwtParam.userNo);
-    const createChallengeDto: CreateChallenge = {
+    const challengeInfo: CreateChallenge = {
       name: data.name,
       user1No: user.userNo,
       user2Flower: data.user2Flower,
       // TODO: 날짜 정책 정하기
       startDate: new Date(),
     };
-    const challenge = await this.challengeSvc.createChallenge(createChallengeDto);
+    const challenge = await this.challengeSvc.createChallenge(challengeInfo);
     return challenge;
   }
 

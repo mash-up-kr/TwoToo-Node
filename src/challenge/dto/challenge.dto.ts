@@ -121,7 +121,7 @@ export class ApproveChallengePayload {
   user1Flower: string;
 }
 
-export class CreateChallengeDto {
+export class CreateChallenge {
   name: string;
   user1No: number;
   user2Flower: string;

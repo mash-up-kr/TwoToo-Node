@@ -8,7 +8,7 @@ export class UserResDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    example: '1',
+    example: 1,
     description: '사용자 번호',
     required: true,
   })
@@ -24,7 +24,7 @@ export class UserResDto {
 
   @IsNumber()
   @ApiProperty({
-    example: '2',
+    example: 2,
     description: '파트너 번호',
   })
   partnerNo?: number;
@@ -109,7 +109,7 @@ export class UserInfoResDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    example: '1',
+    example: 1,
     description: '사용자 번호',
     required: true,
   })
@@ -118,13 +118,13 @@ export class UserInfoResDto {
   @IsString()
   @ApiProperty({
     example: '공주',
-    description: '사용할 닉네임',
+    description: '닉네임',
   })
   nickname!: string;
 
   @IsNumber()
   @ApiProperty({
-    example: '2',
+    example: 2,
     description: '파트너 번호',
   })
   partnerNo?: number;
@@ -141,7 +141,7 @@ export class SetNicknameAndPartnerPayload {
 
   @IsNumber()
   @ApiProperty({
-    example: '2',
+    example: 2,
     description: '파트너 번호',
   })
   partnerNo?: number;
@@ -150,7 +150,7 @@ export class SetNicknameAndPartnerPayload {
 export class GetPartnerResDto {
   @IsNumber()
   @ApiProperty({
-    example: '2',
+    example: 2,
     description: '파트너 번호',
   })
   partnerNo?: number;

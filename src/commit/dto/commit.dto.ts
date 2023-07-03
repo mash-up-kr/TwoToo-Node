@@ -6,7 +6,7 @@ export class CommitResDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    example: '1',
+    example: 1,
     description: '인증 번호',
     required: true,
   })
@@ -15,7 +15,7 @@ export class CommitResDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    example: '1',
+    example: 1,
     description: '인증하는 사용자의 번호',
     required: true,
   })

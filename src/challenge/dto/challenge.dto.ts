@@ -111,7 +111,7 @@ export class CreateChallengePayload {
   user2Flower: string;
 }
 
-export class ApproveChallengePayload {
+export class AcceptChallengePayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({

@@ -72,7 +72,7 @@ export class ChallengeService {
     });
   }
 
-  async approveChallenge(challengeNo: number, user1Flower: string): Promise<ChallengeDocument> {
+  async acceptChallenge(challengeNo: number, user1Flower: string): Promise<ChallengeDocument> {
     const challenge = await this.challengeModel.findOneAndUpdate(
       { challengeNo },
       { $set: { user1Flower, isApproved: true } },

@@ -8,7 +8,7 @@ import { JwtParam } from '../auth/auth.user.decorator';
 import { ChallengeService } from './challenge.service';
 import { FindChallengeResDto } from './dto/find-challenge.res.dto';
 import {
-  ApproveChallengePayload,
+  AcceptChallengePayload,
   ChallengeResDto,
   CreateChallenge,
   CreateChallengePayload,
@@ -73,9 +73,9 @@ export class ChallengeController {
   @ApiResponse({ status: 200, type: ChallengeResDto })
   async acceptChallenge(
     @Param('challengeNo') challengeNo: number,
-    @Body() data: ApproveChallengePayload,
+    @Body() data: AcceptChallengePayload,
   ): Promise<ChallengeResDto> {
-    const challenge = await this.challengeSvc.approveChallenge(challengeNo, data.user1Flower);
+    const challenge = await this.challengeSvc.acceptChallenge(challengeNo, data.user1Flower);
     return challenge;
   }
 

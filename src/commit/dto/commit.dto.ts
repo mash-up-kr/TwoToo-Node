@@ -26,6 +26,7 @@ export class CommitResDto {
   @ApiProperty({
     example: '오늘도 7시 기상 완료',
     description: '인증에 남길 설명',
+    required: true,
   })
   text!: string;
 
@@ -34,6 +35,7 @@ export class CommitResDto {
   @ApiProperty({
     example: '',
     description: '인증 사진 업로드 주소',
+    required: true,
   })
   photoUrl!: string;
 
@@ -52,6 +54,7 @@ export class CommitPayload {
   @ApiProperty({
     example: '오늘도 7시 기상 완료',
     description: '인증에 남길 설명',
+    required: true,
   })
   text!: string;
 
@@ -60,6 +63,7 @@ export class CommitPayload {
   @ApiProperty({
     example: '',
     description: '인증 사진 업로드 주소',
+    required: true,
   })
   photoUrl!: string;
 
@@ -86,8 +90,9 @@ export class CommitCommentPayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '꾸준히 하는 모습 칭찬해',
-    description: '상대방이 남길 칭찬 문구',
+    example: '오늘도 인증하느라 고생했어!',
+    description: '파트너의 챌린지 인증에 남길 칭찬 문구',
+    required: true,
   })
   partnerComment!: string;
 }

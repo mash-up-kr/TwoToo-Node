@@ -10,7 +10,7 @@ import { FindChallengeResDto } from './dto/find-challenge.res.dto';
 import {
   ApproveChallengePayload,
   ChallengeResDto,
-  CreateChallengeDto,
+  CreateChallenge,
   CreateChallengePayload,
 } from './dto/challenge.dto';
 
@@ -34,7 +34,7 @@ export class ChallengeController {
     @JwtParam() jwtParam: JwtPayload,
   ): Promise<ChallengeResDto> {
     const user = await this.userSvc.getUser(jwtParam.userNo);
-    const createChallengeDto: CreateChallengeDto = {
+    const createChallengeDto: CreateChallenge = {
       name: data.name,
       user1No: user.userNo,
       user2Flower: data.user2Flower,

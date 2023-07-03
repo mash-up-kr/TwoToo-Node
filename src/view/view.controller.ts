@@ -9,15 +9,13 @@ import { JwtPayload } from '../auth/auth.types';
 @ApiTags('view')
 @Controller('view')
 export class ViewController {
-  constructor(
-    private readonly homeViewSvc: HomeViewService,
-  ) {}
+  constructor(private readonly homeViewSvc: HomeViewService) {}
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('home')
   @ApiOperation({ description: '홈 화면을 조회합니다.', summary: '홈 화면 조회' })
-  @ApiResponse({ status: 200, type:  HomeViewResDto})
+  @ApiResponse({ status: 200, type: HomeViewResDto })
   async getHomeView(@JwtParam() jwtParam: JwtPayload): Promise<HomeViewResDto> {
     return await this.homeViewSvc.createHomeViewResponse(jwtParam.userNo);
   }

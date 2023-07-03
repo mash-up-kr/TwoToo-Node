@@ -20,13 +20,7 @@ export class CommitService {
     private readonly commitCounterModel: Model<CommitCounterDocument>,
   ) {}
 
-  async createCommit({
-    userNo,
-    data,
-  }: {
-    userNo: number;
-    data: CommitPayload;
-  }): Promise<Commit> {
+  async createCommit({ userNo, data }: { userNo: number; data: CommitPayload }): Promise<Commit> {
     const commitNo = await this.autoIncrement('commitNo');
     const commit = await this.commitModel.create({
       commitNo,

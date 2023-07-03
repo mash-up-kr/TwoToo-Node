@@ -72,7 +72,7 @@ export class CommitPayload {
   @ApiProperty({
     type: Number,
     default: new Date(),
-    description: '생성 시각'
+    description: '생성 시각',
   })
   createdAt!: number;
 
@@ -81,7 +81,7 @@ export class CommitPayload {
   @ApiProperty({
     type: Number,
     default: new Date(),
-    description: '수정 시각'
+    description: '수정 시각',
   })
   updatedAt!: number;
 }

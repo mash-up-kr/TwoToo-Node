@@ -19,12 +19,11 @@ export class NotificationController {
   @UseGuards(AuthGuard)
   @Post('/push')
   @ApiOperation({
-    description: 'push알림을 전송합니다. 데이터베이스에 따로 저장하지 않습니다.', summary: '푸쉬 알림 전송'
+    description: 'push알림을 전송합니다. 데이터베이스에 따로 저장하지 않습니다.',
+    summary: '푸쉬 알림 전송',
   })
   @ApiResponse({ status: 200, type: String })
-  async push(
-    @Body() data: PushPayload,
-  ): Promise<string> {
+  async push(@Body() data: PushPayload): Promise<string> {
     const { deviceToken, message } = data;
     const title = 'TwoToo';
     return await this.notificationService.sendPush({
@@ -38,7 +37,8 @@ export class NotificationController {
   @UseGuards(AuthGuard)
   @Post('/sting')
   @ApiOperation({
-    description: '찌르기를 했을때 데이터베이스에 저장하고, push알림을 파트너에게 전송합니다.', summary: '찌르기 기능'
+    description: '찌르기를 했을때 데이터베이스에 저장하고, push알림을 파트너에게 전송합니다.',
+    summary: '찌르기 기능',
   })
   @ApiResponse({ status: 200, type: NotificationResDto })
   async sting(

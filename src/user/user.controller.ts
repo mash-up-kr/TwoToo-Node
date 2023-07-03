@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   SetNicknameAndPartnerPayload,
-  SignInResult,
+  SignInResDto,
   SignUpPayload,
   SignUpResDto,
   UserInfoResDto,
@@ -62,11 +62,11 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Post('/signin')
   @ApiOperation({ description: '로그인을 진행합니다.', summary: '로그인' })
-  @ApiResponse({ status: 200, type: SignInResult })
+  @ApiResponse({ status: 200, type: SignInResDto })
   async signIn(
     @Body() data: SignInPayload,
     @JwtParam() jwtParam: JwtPayload,
-  ): Promise<SignInResult> {
+  ): Promise<SignInResDto> {
     const { deviceToken } = data;
     const { userNo } = jwtParam;
     const user = await this.user.signIn(userNo);
@@ -114,7 +114,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('/partner')
   @ApiOperation({
-    description: '투투메이트가 매칭되었는지 확인합니다.',
+    description: '파트너 정보를 조회합니다.',
     summary: '파트너 정보 조회',
   })
   @ApiResponse({ status: 200, type: GetPartnerResDto })

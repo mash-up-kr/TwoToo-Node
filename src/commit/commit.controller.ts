@@ -40,7 +40,7 @@ export class CommitController {
   @Post('/:commitNo/comment')
   @ApiOperation({
     description: '파트너의 챌린지 인증에 칭찬 문구를 추가합니다.',
-    summary: '칭찬하기'
+    summary: '칭찬하기',
   })
   @ApiResponse({ status: 200, type: CommitResDto })
   async createComment(

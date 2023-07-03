@@ -101,7 +101,7 @@ export class SignInPayload {
   deviceToken!: string;
 }
 
-export class SignInResult extends UserResDto {
+export class SignInResDto extends UserResDto {
   state!: LOGIN_STATE;
 }
 

@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 
 import { Commit, CommitDocument } from './schema/commit.schema';
 import { CommitCounter, CommitCounterDocument } from './schema/commit-counter.schema';
-import { CommitCreatePayload } from './dto/commit.dto';
+import { CommitPayload } from './dto/commit.dto';
 import { Challenge, ChallengeDocument } from '../challenge/schema/challenge.schema';
 import { startOfToday } from 'date-fns';
 
@@ -25,7 +25,7 @@ export class CommitService {
     data,
   }: {
     userNo: number;
-    data: CommitCreatePayload;
+    data: CommitPayload;
   }): Promise<Commit> {
     const commitNo = await this.autoIncrement('commitNo');
     const commit = await this.commitModel.create({

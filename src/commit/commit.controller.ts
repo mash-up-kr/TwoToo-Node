@@ -1,10 +1,11 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CommitCommentPayload, CommitPayload, CommitResDto } from './dto/commit.dto';
+
 import { CommitService } from './commit.service';
 import { AuthGuard } from '../auth/auth.guard';
-import { JwtParam } from '../auth/auth.user.decorator';
 import { JwtPayload } from '../auth/auth.types';
+import { JwtParam } from '../auth/auth.user.decorator';
+import { CommitCommentPayload, CommitPayload, CommitResDto } from './dto/commit.dto';
 
 @ApiTags('commit')
 @Controller('commit')
@@ -38,7 +39,7 @@ export class CommitController {
   @UseGuards(AuthGuard)
   @Post('/:commitNo/comment')
   @ApiOperation({
-    description: '파트너의 챌린지 인증에 칭찬 댓글을 추가합니다.',
+    description: '파트너의 챌린지 인증에 칭찬 문구를 추가합니다.',
     summary: '칭찬하기'
   })
   @ApiResponse({ status: 200, type: CommitResDto })

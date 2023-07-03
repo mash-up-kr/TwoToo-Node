@@ -3,11 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { add } from 'date-fns';
 
-import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UserService } from '../user/user.service';
 import { Challenge, ChallengeDocument } from './schema/challenge.schema';
 import { TWOTWO } from '../constants/number';
 import { ChallengeCounter, ChallengeCounterDocument } from './schema/challenge-counter.schema';
+import { ChallengeResDto, CreateChallengeDto } from './dto/challenge.dto';
 
 @Injectable()
 export class ChallengeService {
@@ -19,7 +19,7 @@ export class ChallengeService {
     private readonly challengeCounterModel: Model<ChallengeCounterDocument>,
   ) {}
 
-  async createChallenge(createChallengeDto: CreateChallengeDto): Promise<ChallengeDocument> {
+  async createChallenge(createChallengeDto: CreateChallengeDto): Promise<ChallengeResDto> {
     const user1 = await this.userSvc.getUser(createChallengeDto.user1No);
 
     // TODO: Validate 로직 깔끔하게 하기

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class PushPayload {
   @IsString()
@@ -29,7 +29,7 @@ export class StingPayload {
   message!: string;
 }
 
-export class PushResponseDto {
+export class PushResDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -55,6 +55,21 @@ export class PushResponseDto {
   title!: string;
 }
 
-export class NotificationResponse {
-  
+export class NotificationResDto {
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '1',
+    description: '사용자 번호',
+    required: true,
+  })
+  userNo!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '왜 인증 안해!?!',
+    description: 'Push 메세지',
+  })
+  message!: string;
 }

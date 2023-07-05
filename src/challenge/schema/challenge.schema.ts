@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { User, UserSchema } from '../../user/schema/user.schema';
+import { FlowerType } from '../dto/challenge.dto';
 
 @Schema({ collection: 'challenge', timestamps: true })
 export class Challenge {
@@ -29,10 +30,10 @@ export class Challenge {
   user2CommitCnt: number;
 
   @Prop({ default: '' })
-  user1Flower: string;
+  user1Flower: FlowerType;
 
   @Prop()
-  user2Flower: string;
+  user2Flower: FlowerType;
 
   @Prop({ default: false })
   isApproved: boolean;

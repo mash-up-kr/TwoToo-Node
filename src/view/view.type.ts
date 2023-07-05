@@ -7,4 +7,5 @@ export const HomeViewState = {
   IN_PROGRESS: 'IN_PROGRESS',
   COMPLETE: 'COMPLETE', // 완료 다음날
 } as const;
+
 export type HomeViewStateType = (typeof HomeViewState)[keyof typeof HomeViewState];

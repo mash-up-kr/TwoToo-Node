@@ -3,11 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { add } from 'date-fns';
 
-import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UserService } from '../user/user.service';
 import { Challenge, ChallengeDocument } from './schema/challenge.schema';
 import { TWOTWO } from '../constants/number';
 import { ChallengeCounter, ChallengeCounterDocument } from './schema/challenge-counter.schema';
+import { ChallengeResDto, CreateChallenge } from './dto/challenge.dto';
 
 @Injectable()
 export class ChallengeService {
@@ -19,23 +19,23 @@ export class ChallengeService {
     private readonly challengeCounterModel: Model<ChallengeCounterDocument>,
   ) {}
 
-  async createChallenge(createChallengeDto: CreateChallengeDto): Promise<ChallengeDocument> {
-    const user1 = await this.userSvc.getUser(createChallengeDto.user1No);
+  async createChallenge(challengeInfo: CreateChallenge): Promise<ChallengeResDto> {
+    const user1 = await this.userSvc.getUser(challengeInfo.user1No);
 
     // TODO: Validate 로직 깔끔하게 하기
     if (user1.partnerNo === undefined) throw new Error('파트너가 존재하지 않습니다');
     const user2 = await this.userSvc.getUser(user1.partnerNo);
-    const endDate: Date = add(createChallengeDto.startDate, { days: TWOTWO });
+    const endDate: Date = add(challengeInfo.startDate, { days: TWOTWO });
 
     const challengeNo = await this.autoIncrement();
     const challenge = await this.challengeModel.create({
       challengeNo,
-      name: createChallengeDto.name,
+      name: challengeInfo.name,
       user1: user1,
       user2: user2,
-      startDate: createChallengeDto.startDate,
+      startDate: challengeInfo.startDate,
       endDate: endDate,
-      user2Flower: createChallengeDto.user2Flower,
+      user2Flower: challengeInfo.user2Flower,
     });
 
     await challenge.save();
@@ -72,7 +72,7 @@ export class ChallengeService {
     });
   }
 
-  async approveChallenge(challengeNo: number, user1Flower: string): Promise<ChallengeDocument> {
+  async acceptChallenge(challengeNo: number, user1Flower: string): Promise<ChallengeDocument> {
     const challenge = await this.challengeModel.findOneAndUpdate(
       { challengeNo },
       { $set: { user1Flower, isApproved: true } },

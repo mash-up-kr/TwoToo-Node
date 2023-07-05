@@ -10,7 +10,11 @@ import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from '../auth/auth.types';
 import { LoginType } from './user.types';
 
-export type LOGIN_STATE = 'NEED_NICKNAME' | 'NEED_MATCHING' | 'HOME';
+export enum LOGIN_STATE {
+  NEED_NICKNAME = 'NEED_NICKNAME',
+  NEED_MATCHING = 'NEED_MATCHING',
+  HOME = 'HOME',
+}
 
 @Injectable()
 export class UserService {
@@ -118,13 +122,13 @@ export class UserService {
   }
 
   async checkCurrentLoginState(user: User): Promise<LOGIN_STATE> {
-    let state: LOGIN_STATE = 'NEED_NICKNAME';
+    let state: LOGIN_STATE = LOGIN_STATE.NEED_NICKNAME;
     if (user?.nickname && user?.partnerNo) {
-      state = 'HOME';
+      state = LOGIN_STATE.HOME;
     } else if (_.isNull(user?.nickname)) {
-      state = 'NEED_NICKNAME';
+      state = LOGIN_STATE.NEED_NICKNAME;
     } else {
-      state = 'NEED_MATCHING';
+      state = LOGIN_STATE.NEED_MATCHING;
     }
 
     return state;
@@ -151,7 +155,7 @@ export class UserService {
     return await this.userModel.findOne({ socialId: socialId, loginType: loginType });
   }
 
-  async getPartnerDeviceToken({ userNo }: { userNo: number }) {
+  async getPartnerDeviceToken(userNo: number) {
     const ret = await this.userModel.findOne({ partnerNo: userNo }, { _id: 0, deviceToken: 1 });
     if (_.isNil(ret)) {
       throw new Error('No Partner');

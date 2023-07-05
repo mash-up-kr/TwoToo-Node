@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { UserService } from '../user/user.service';
-import { ChallengeService } from '../challenge/challenge.service';
-import { CommitService } from '../commit/commit.service';
-import { HomeViewState, HomeViewStateType } from './view.type';
-import { ChallengeDocument } from '../challenge/schema/challenge.schema';
 import { endOfDay, startOfDay } from 'date-fns';
-import { HomeViewResDto } from './dto/home-view.res.dto';
+
+import { HomeViewResDto } from './dto/home-view.dto';
+import { HomeViewState, HomeViewStateType } from './view.type';
+import { ChallengeService } from '../challenge/challenge.service';
+import { ChallengeDocument } from '../challenge/schema/challenge.schema';
+import { CommitService } from '../commit/commit.service';
 import { CommitDocument } from '../commit/schema/commit.schema';
 
 @Injectable()
 export class HomeViewService {
   constructor(
-    private readonly userSvc: UserService,
     private readonly challengeSvc: ChallengeService,
     private readonly commitSvc: CommitService,
   ) {}

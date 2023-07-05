@@ -4,11 +4,11 @@ import { IsString } from 'class-validator';
 import { LOGIN_STATE } from '../user.service';
 import { LoginType } from '../user.types';
 
-export class UserResponse {
+export class UserResDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    example: '1',
+    example: 1,
     description: '사용자 번호',
     required: true,
   })
@@ -19,12 +19,13 @@ export class UserResponse {
   @ApiProperty({
     example: '공주',
     description: '사용할 닉네임',
+    required: true,
   })
   nickname!: string;
 
   @IsNumber()
   @ApiProperty({
-    example: '2',
+    example: 2,
     description: '파트너 번호',
   })
   partnerNo?: number;
@@ -42,6 +43,7 @@ export class UserResponse {
   @ApiProperty({
     example: 'Kakao',
     description: '로그인 타입 (Kakao | Apple)',
+    required: true,
   })
   loginType!: string;
 
@@ -50,11 +52,12 @@ export class UserResponse {
   @ApiProperty({
     example: 'FCM Token',
     description: '파이어베이스 토큰',
+    required: true,
   })
   deviceToken!: string;
 }
 
-export class signUpPayload {
+export class SignUpPayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -80,7 +83,7 @@ export class signUpPayload {
   deviceToken!: string;
 }
 
-export class SignUpResult extends UserResponse {
+export class SignUpResDto extends UserResDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -91,7 +94,7 @@ export class SignUpResult extends UserResponse {
   accessToken!: string;
 }
 
-export class signInPayload {
+export class SignInPayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -101,15 +104,22 @@ export class signInPayload {
   deviceToken!: string;
 }
 
-export class SignInResult extends UserResponse {
+export class SignInResDto extends UserResDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: '로그인 상태',
+    enum: LOGIN_STATE,
+    required: true,
+  })
   state!: LOGIN_STATE;
 }
 
-export class UserInfoResponse {
+export class UserInfoResDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    example: '1',
+    example: 1,
     description: '사용자 번호',
     required: true,
   })
@@ -118,13 +128,13 @@ export class UserInfoResponse {
   @IsString()
   @ApiProperty({
     example: '공주',
-    description: '사용할 닉네임',
+    description: '닉네임',
   })
   nickname!: string;
 
   @IsNumber()
   @ApiProperty({
-    example: '2',
+    example: 2,
     description: '파트너 번호',
   })
   partnerNo?: number;
@@ -141,7 +151,16 @@ export class SetNicknameAndPartnerPayload {
 
   @IsNumber()
   @ApiProperty({
-    example: '2',
+    example: 2,
+    description: '파트너 번호',
+  })
+  partnerNo?: number;
+}
+
+export class GetPartnerResDto {
+  @IsNumber()
+  @ApiProperty({
+    example: 2,
     description: '파트너 번호',
   })
   partnerNo?: number;

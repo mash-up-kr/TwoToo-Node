@@ -78,7 +78,7 @@ export class ChallengeResDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '민들레꽃',
+    example: 'FIG',
     enum: FlowerType,
     description: 'user1(생성자)의 꽃',
   })
@@ -87,7 +87,7 @@ export class ChallengeResDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '해바라기',
+    example: 'SUNFLOWER',
     enum: FlowerType,
     description: 'user2(생성자)의 꽃',
   })
@@ -122,7 +122,7 @@ export class CreateChallengePayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '해바라기',
+    example: 'SUNFLOWER',
     enum: FlowerType,
     description: 'user2(수락자)의 꽃',
   })
@@ -133,7 +133,7 @@ export class AcceptChallengePayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '민들레꽃',
+    example: 'FIG',
     enum: FlowerType,
     description: 'user1(생성자)의 꽃',
   })

@@ -192,6 +192,15 @@ export class ChallengeHistoryResDto {
   })
   user1CommitCnt: number;
 
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 10,
+    description: 'user2(수락자) 현재 챌린지의 인증 횟수',
+    required: true,
+  })
+  user2CommitCnt: number;
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({

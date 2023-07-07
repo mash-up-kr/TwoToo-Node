@@ -146,3 +146,67 @@ export class CreateChallenge {
   user2Flower: string;
   startDate: Date;
 }
+
+export class ChallengeHistoryResDto {
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 1,
+    description: '챌린지 번호',
+    required: true,
+  })
+  challengeNo!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '아침 7시 기상',
+    description: '챌린지 이름',
+  })
+  name!: string;
+
+  @IsDate()
+  @IsNotEmpty()
+  @ApiProperty({
+    type: Number,
+    default: new Date(),
+    description: '챌린지 시작일',
+  })
+  startDate!: Date;
+
+  @IsDate()
+  @IsNotEmpty()
+  @ApiProperty({
+    type: Number,
+    default: new Date(new Date().getTime() + 86400000 * 23),
+    description: '챌린지 종료일',
+  })
+  endDate!: Date;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 10,
+    description: 'user1(생성자) 현재 챌린지의 인증 횟수',
+    required: true,
+  })
+  user1CommitCnt: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'FIG',
+    enum: FlowerType,
+    description: 'user1(생성자)의 꽃',
+  })
+  user1Flower: FlowerType;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'SUNFLOWER',
+    enum: FlowerType,
+    description: 'user2(생성자)의 꽃',
+  })
+  user2Flower: FlowerType;
+}

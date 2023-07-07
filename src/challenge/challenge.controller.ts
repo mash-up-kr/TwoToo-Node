@@ -12,6 +12,7 @@ import {
   ChallengeResDto,
   CreateChallenge,
   CreateChallengePayload,
+  ChallengeHistoryResDto,
 } from './dto/challenge.dto';
 
 @ApiTags('challenge')
@@ -21,6 +22,16 @@ export class ChallengeController {
     private readonly userSvc: UserService,
     private readonly challengeSvc: ChallengeService,
   ) {}
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Get('histories')
+  @ApiOperation({ description: '히스토리 목록을 조회합니다.', summary: '히스토리 확면 조회' })
+  @ApiResponse({ status: 200, type: [ChallengeHistoryResDto] })
+  async getHistories(@JwtParam() JwtParam: JwtPayload): Promise<ChallengeHistoryResDto[]> {
+    const userNo = JwtParam.userNo;
+    return await this.challengeSvc.getChallengeHistories({ userNo });
+  }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)

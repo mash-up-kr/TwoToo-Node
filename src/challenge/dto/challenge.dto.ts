@@ -2,6 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { UserResDto } from '../../user/dto/user.dto';
 
+export enum FlowerType {
+  FIG = 'FIG',
+  TULIP = 'TULIP',
+  ROSE = 'ROSE',
+  COTTON = 'COTTON',
+  CHRYSANTHEMUM = 'CHRYSANTHEMUM',
+  SUNFLOWER = 'SUNFLOWER',
+  CAMELLIA = 'CAMELLIA',
+  DELPHINIUM = 'DELPHINIUM',
+}
+
 export class ChallengeResDto {
   @IsNumber()
   @IsNotEmpty()
@@ -33,7 +44,7 @@ export class ChallengeResDto {
   @ApiProperty({
     type: Number,
     default: new Date(),
-    description: '챌린지 시작일'
+    description: '챌린지 시작일',
   })
   startDate!: Date;
 
@@ -42,7 +53,7 @@ export class ChallengeResDto {
   @ApiProperty({
     type: Number,
     default: new Date(new Date().getTime() + 86400000 * 23),
-    description: '챌린지 종료일'
+    description: '챌린지 종료일',
   })
   endDate!: Date;
 
@@ -67,18 +78,20 @@ export class ChallengeResDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '민들레꽃',
+    example: 'FIG',
+    enum: FlowerType,
     description: 'user1(생성자)의 꽃',
   })
-  user1Flower: string;
+  user1Flower: FlowerType;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '해바라기',
+    example: 'SUNFLOWER',
+    enum: FlowerType,
     description: 'user2(생성자)의 꽃',
   })
-  user2Flower: string;
+  user2Flower: FlowerType;
 
   @IsBoolean()
   @IsNotEmpty()
@@ -109,20 +122,22 @@ export class CreateChallengePayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '해바라기',
+    example: 'SUNFLOWER',
+    enum: FlowerType,
     description: 'user2(수락자)의 꽃',
   })
-  user2Flower: string;
+  user2Flower: FlowerType;
 }
 
 export class AcceptChallengePayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: '민들레꽃',
+    example: 'FIG',
+    enum: FlowerType,
     description: 'user1(생성자)의 꽃',
   })
-  user1Flower: string;
+  user1Flower: FlowerType;
 }
 
 export class CreateChallenge {

@@ -7,7 +7,7 @@ import { UserService } from '../user/user.service';
 import { Challenge, ChallengeDocument } from './schema/challenge.schema';
 import { TWOTWO } from '../constants/number';
 import { ChallengeCounter, ChallengeCounterDocument } from './schema/challenge-counter.schema';
-import { ChallengeResDto, CreateChallenge } from './dto/challenge.dto';
+import { ChallengeResDto, CreateChallenge, ChallengeHistoryResDto } from './dto/challenge.dto';
 
 @Injectable()
 export class ChallengeService {
@@ -98,5 +98,32 @@ export class ChallengeService {
     }
 
     return result!.count;
+  }
+
+  async getChallengeHistories({ userNo }: { userNo: number }): Promise<ChallengeHistoryResDto[]> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // 시간을 0으로 설정
+
+    const challenges = await this.challengeModel
+      .find(
+        {
+          $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+          endDate: { $lt: today },
+        },
+        {
+          _id: 0,
+          name: 1,
+          user1Flower: 1,
+          user2Flower: 1,
+          user1CommitCnt: 1,
+          user2CommitCnt: 1,
+          startDate: 1,
+          endDate: 1,
+        },
+      )
+      .lean()
+      .exec();
+
+    return challenges;
   }
 }

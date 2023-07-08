@@ -10,6 +10,7 @@ import { UserModule } from '../user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { multerOptionsFactory } from './multer.option';
 import { MulterModule } from '@nestjs/platform-express';
+import { FileService } from './s3.service';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { MulterModule } from '@nestjs/platform-express';
     }),
     UserModule,
   ],
-  providers: [CommitService],
+  providers: [CommitService, FileService],
   controllers: [CommitController],
   exports: [CommitService],
 })

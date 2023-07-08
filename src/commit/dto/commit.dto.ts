@@ -66,24 +66,6 @@ export class CommitPayload {
     required: true,
   })
   photoUrl!: string;
-
-  @IsDate()
-  @IsNotEmpty()
-  @ApiProperty({
-    type: Number,
-    default: new Date(),
-    description: '생성 시각',
-  })
-  createdAt!: number;
-
-  @IsDate()
-  @IsNotEmpty()
-  @ApiProperty({
-    type: Number,
-    default: new Date(),
-    description: '수정 시각',
-  })
-  updatedAt!: number;
 }
 
 export class CommitCommentPayload {

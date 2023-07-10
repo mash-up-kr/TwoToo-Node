@@ -57,7 +57,7 @@ export class UserResDto {
   deviceToken!: string;
 }
 
-export class SignUpPayload {
+export class AuhtorizationPayload {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -83,28 +83,7 @@ export class SignUpPayload {
   deviceToken!: string;
 }
 
-export class SignUpResDto extends UserResDto {
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: 'ngI0v2YUJ9e2UPfBFjlKriIZvXvOGKfgh59hda0v....',
-    description: 'Access Token',
-    required: true,
-  })
-  accessToken!: string;
-}
-
-export class SignInPayload {
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: 'FCM Token',
-    description: '파이어베이스 토큰',
-  })
-  deviceToken!: string;
-}
-
-export class SignInResDto extends UserResDto {
+export class AuthorizationResDto extends UserResDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -113,6 +92,15 @@ export class SignInResDto extends UserResDto {
     required: true,
   })
   state!: LOGIN_STATE;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'ngI0v2YUJ9e2UPfBFjlKriIZvXvOGKfgh59hda0v....',
+    description: 'Access Token',
+    required: true,
+  })
+  accessToken!: string;
 }
 
 export class UserInfoResDto {

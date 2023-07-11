@@ -49,7 +49,8 @@ export class ChallengeResDto {
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
-    type: Number,
+    type: String,
+    format: 'date',
     default: new Date(),
     description: '챌린지 시작일',
   })
@@ -58,7 +59,8 @@ export class ChallengeResDto {
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
-    type: Number,
+    type: String,
+    format: 'date',
     default: new Date(new Date().getTime() + 86400000 * 23),
     description: '챌린지 종료일',
   })
@@ -200,7 +202,8 @@ export class ChallengeHistoryResDto {
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
-    type: Number,
+    type: String,
+    format: 'date',
     default: new Date(),
     description: '챌린지 시작일',
   })
@@ -209,7 +212,8 @@ export class ChallengeHistoryResDto {
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
-    type: Number,
+    type: String,
+    format: 'date',
     default: new Date(new Date().getTime() + 86400000 * 23),
     description: '챌린지 종료일',
   })

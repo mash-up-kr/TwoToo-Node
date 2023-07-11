@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { CommitService } from './commit.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -28,6 +28,7 @@ export class CommitController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('/:commitNo')
+  @ApiParam({ name: 'commitNo', type: Number })
   @ApiOperation({ description: '챌린지 인증 정보를 조회합니다.', summary: '챌린지 인증 조회' })
   @ApiResponse({ status: 200, type: CommitResDto })
   async getCommit(@Param('commitNo') commitNo: string): Promise<CommitResDto> {
@@ -38,6 +39,7 @@ export class CommitController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post('/:commitNo/comment')
+  @ApiParam({ name: 'commitNo', type: Number })
   @ApiOperation({
     description: '파트너의 챌린지 인증에 칭찬 문구를 추가합니다.',
     summary: '칭찬하기',

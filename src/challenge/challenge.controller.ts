@@ -50,8 +50,7 @@ export class ChallengeController {
       description: data.description,
       user1No: user.userNo,
       user2Flower: data.user2Flower,
-      // TODO: 날짜 정책 정하기
-      startDate: new Date(),
+      startDate: new Date(data.startDate),
     };
     const challenge = await this.challengeSvc.createChallenge(challengeInfo);
     return challenge;

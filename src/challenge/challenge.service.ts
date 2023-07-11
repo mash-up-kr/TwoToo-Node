@@ -31,6 +31,7 @@ export class ChallengeService {
     const challenge = await this.challengeModel.create({
       challengeNo,
       name: challengeInfo.name,
+      description: challengeInfo.description,
       user1: user1,
       user2: user2,
       startDate: challengeInfo.startDate,
@@ -113,6 +114,7 @@ export class ChallengeService {
         {
           _id: 0,
           name: 1,
+          description: 1,
           user1Flower: 1,
           user2Flower: 1,
           user1CommitCnt: 1,

@@ -47,6 +47,7 @@ export class ChallengeController {
     const user = await this.userSvc.getUser(jwtParam.userNo);
     const challengeInfo: CreateChallenge = {
       name: data.name,
+      description: data.description,
       user1No: user.userNo,
       user2Flower: data.user2Flower,
       // TODO: 날짜 정책 정하기

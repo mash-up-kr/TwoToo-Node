@@ -4,6 +4,7 @@ import { ChallengeDocument } from '../schema/challenge.schema';
 export class FindChallengeResDto {
   challengeNo: number;
   name: string;
+  description: string;
   user1: User; // 챌린지 생성자
   user2: User; // 챌린지 수락자
   startDate: Date;
@@ -21,6 +22,7 @@ export class FindChallengeResDtoMapper {
     const dto: FindChallengeResDto = {
       challengeNo: challenge.challengeNo,
       name: challenge.name,
+      description: challenge.description,
       user1: challenge.user1,
       user2: challenge.user2,
       startDate: challenge.startDate,

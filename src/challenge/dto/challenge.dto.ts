@@ -28,15 +28,16 @@ export class ChallengeResDto {
   @ApiProperty({
     example: '아침 7시 기상',
     description: '챌린지 이름',
+    required: true,
   })
   name!: string;
 
   @IsNotEmpty()
-  @ApiProperty({ type: UserResDto, description: 'user1 - 챌린지 생성자' })
+  @ApiProperty({ type: UserResDto, description: 'user1 - 챌린지 생성자', required: true })
   user1!: UserResDto;
 
   @IsNotEmpty()
-  @ApiProperty({ type: UserResDto, description: 'user2 - 챌린지 수락자' })
+  @ApiProperty({ type: UserResDto, description: 'user2 - 챌린지 수락자', required: true })
   user2!: UserResDto;
 
   @IsDate()
@@ -45,6 +46,7 @@ export class ChallengeResDto {
     type: Number,
     default: new Date(),
     description: '챌린지 시작일',
+    required: true,
   })
   startDate!: Date;
 
@@ -54,6 +56,7 @@ export class ChallengeResDto {
     type: Number,
     default: new Date(new Date().getTime() + 86400000 * 23),
     description: '챌린지 종료일',
+    required: true,
   })
   endDate!: Date;
 
@@ -81,6 +84,7 @@ export class ChallengeResDto {
     example: 'FIG',
     enum: FlowerType,
     description: 'user1(생성자)의 꽃',
+    required: true,
   })
   user1Flower: FlowerType;
 
@@ -90,6 +94,7 @@ export class ChallengeResDto {
     example: 'SUNFLOWER',
     enum: FlowerType,
     description: 'user2(생성자)의 꽃',
+    required: true,
   })
   user2Flower: FlowerType;
 
@@ -98,6 +103,7 @@ export class ChallengeResDto {
   @ApiProperty({
     example: true,
     description: '챌린지 승인 여부',
+    required: true,
   })
   isApproved!: boolean;
 
@@ -106,6 +112,7 @@ export class ChallengeResDto {
   @ApiProperty({
     example: false,
     description: '챌린지 완료 여부',
+    required: true,
   })
   isFinished!: boolean;
 }
@@ -116,6 +123,7 @@ export class CreateChallengePayload {
   @ApiProperty({
     example: '아침 7시 기상',
     description: '챌린지 이름',
+    required: true,
   })
   name: string;
 
@@ -125,6 +133,7 @@ export class CreateChallengePayload {
     example: 'SUNFLOWER',
     enum: FlowerType,
     description: 'user2(수락자)의 꽃',
+    required: true,
   })
   user2Flower: FlowerType;
 }
@@ -136,6 +145,7 @@ export class AcceptChallengePayload {
     example: 'FIG',
     enum: FlowerType,
     description: 'user1(생성자)의 꽃',
+    required: true,
   })
   user1Flower: FlowerType;
 }
@@ -162,6 +172,7 @@ export class ChallengeHistoryResDto {
   @ApiProperty({
     example: '아침 7시 기상',
     description: '챌린지 이름',
+    required: true,
   })
   name!: string;
 
@@ -171,6 +182,7 @@ export class ChallengeHistoryResDto {
     type: Number,
     default: new Date(),
     description: '챌린지 시작일',
+    required: true,
   })
   startDate!: Date;
 
@@ -180,6 +192,7 @@ export class ChallengeHistoryResDto {
     type: Number,
     default: new Date(new Date().getTime() + 86400000 * 23),
     description: '챌린지 종료일',
+    required: true,
   })
   endDate!: Date;
 
@@ -207,6 +220,7 @@ export class ChallengeHistoryResDto {
     example: 'FIG',
     enum: FlowerType,
     description: 'user1(생성자)의 꽃',
+    required: true,
   })
   user1Flower: FlowerType;
 
@@ -216,6 +230,7 @@ export class ChallengeHistoryResDto {
     example: 'SUNFLOWER',
     enum: FlowerType,
     description: 'user2(생성자)의 꽃',
+    required: true,
   })
   user2Flower: FlowerType;
 }

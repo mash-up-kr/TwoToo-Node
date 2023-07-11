@@ -44,6 +44,7 @@ export class CommitResDto {
   @ApiProperty({
     example: '꾸준히 하는 모습 칭찬해',
     description: '상대방이 남길 칭찬 문구',
+    required: true,
   })
   partnerComment: string;
 }

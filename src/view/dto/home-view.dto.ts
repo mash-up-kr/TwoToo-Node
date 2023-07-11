@@ -28,18 +28,21 @@ export class HomeViewResDto {
   @ApiProperty({
     type: ChallengeResDto,
     description: '현재 진행중인 챌린지 정보',
+    required: true,
   })
   onGoingChallenge: Challenge | null;
 
   @ApiProperty({
     type: CommitResDto,
     description: 'user1(생성자)의 오늘 인증 정보',
+    required: true,
   })
   user1Commit: Commit | null;
 
   @ApiProperty({
     type: CommitResDto,
     description: 'user2(수락자)의 오늘 인증 정보',
+    required: true,
   })
   user2Commit: Commit | null;
 }

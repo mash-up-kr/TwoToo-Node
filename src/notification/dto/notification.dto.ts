@@ -7,6 +7,7 @@ export class PushPayload {
   @ApiProperty({
     example: '왜 인증 안해!?!',
     description: 'Push 메세지',
+    required: true,
   })
   message!: string;
 
@@ -15,6 +16,7 @@ export class PushPayload {
   @ApiProperty({
     example: 'FCMTOKEN',
     description: 'FCM Device Token',
+    required: true,
   })
   deviceToken!: string;
 }
@@ -25,6 +27,7 @@ export class StingPayload {
   @ApiProperty({
     example: '왜 인증 안해!?!',
     description: 'Push 메세지',
+    required: true,
   })
   message!: string;
 }
@@ -35,6 +38,7 @@ export class PushResDto {
   @ApiProperty({
     example: 'FCMTOKEN',
     description: 'FCM Device Token',
+    required: true,
   })
   deviceToken!: string;
 
@@ -43,6 +47,7 @@ export class PushResDto {
   @ApiProperty({
     example: '왜 인증 안해!?!',
     description: 'Push 메세지',
+    required: true,
   })
   message!: string;
 
@@ -51,6 +56,7 @@ export class PushResDto {
   @ApiProperty({
     example: 'TwoToo',
     description: 'Push 알림 전송 주체',
+    required: true,
   })
   title!: string;
 }
@@ -70,6 +76,7 @@ export class NotificationResDto {
   @ApiProperty({
     example: '왜 인증 안해!?!',
     description: 'Push 메세지',
+    required: true,
   })
   message!: string;
 }

@@ -28,10 +28,7 @@ import { FileService } from './s3.service';
 @ApiTags('commit')
 @Controller('commit')
 export class CommitController {
-  constructor(
-    private readonly commitSvc: CommitService,
-    private readonly fileService: FileService,
-  ) {}
+  constructor(private readonly commitSvc: CommitService, private readonly fileSvc: FileService) {}
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
@@ -57,7 +54,7 @@ export class CommitController {
     @Body() data: CommitPayload,
     @JwtParam() jwtparam: JwtPayload,
   ) {
-    this.fileService.validateFile(file);
+    this.fileSvc.validateFile(file);
 
     data.photoUrl = file.location;
     const commit = await this.commitSvc.createCommit({ userNo: jwtparam.userNo, data });

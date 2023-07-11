@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber } from 'class-validator';
 import { IsString } from 'class-validator';
 import { LOGIN_STATE } from '../user.service';
@@ -24,7 +24,7 @@ export class UserResDto {
   nickname!: string;
 
   @IsNumber()
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 2,
     description: '파트너 번호',
   })
@@ -35,6 +35,7 @@ export class UserResDto {
   @ApiProperty({
     example: 'example@kakao.com',
     description: '소셜 아이디',
+    required: true,
   })
   socialId!: string;
 
@@ -63,6 +64,7 @@ export class SignUpPayload {
   @ApiProperty({
     example: 'example@kakao.com',
     description: '소셜 아이디',
+    required: true,
   })
   socialId!: string;
 
@@ -71,6 +73,7 @@ export class SignUpPayload {
   @ApiProperty({
     example: 'Kakao',
     description: '로그인 타입 (Kakao | Apple)',
+    required: true,
   })
   loginType!: LoginType;
 
@@ -79,6 +82,7 @@ export class SignUpPayload {
   @ApiProperty({
     example: 'FCM Token',
     description: '파이어베이스 토큰',
+    required: true,
   })
   deviceToken!: string;
 }
@@ -100,6 +104,7 @@ export class SignInPayload {
   @ApiProperty({
     example: 'FCM Token',
     description: '파이어베이스 토큰',
+    required: true,
   })
   deviceToken!: string;
 }
@@ -129,11 +134,12 @@ export class UserInfoResDto {
   @ApiProperty({
     example: '공주',
     description: '닉네임',
+    required: true,
   })
   nickname!: string;
 
   @IsNumber()
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 2,
     description: '파트너 번호',
   })
@@ -150,7 +156,7 @@ export class SetNicknameAndPartnerPayload {
   nickname!: string;
 
   @IsNumber()
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 2,
     description: '파트너 번호',
   })
@@ -159,7 +165,7 @@ export class SetNicknameAndPartnerPayload {
 
 export class GetPartnerResDto {
   @IsNumber()
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 2,
     description: '파트너 번호',
   })

@@ -21,11 +21,11 @@ export class HomeViewService {
     const recentChallenge = await this.challengeSvc.findRecentChallenge(userNo);
     let user1Commit: CommitDocument | null = null;
     let user2Commit: CommitDocument | null = null;
+    let userStingCnt = 0;
     if (recentChallenge !== null) {
       user1Commit = await this.commitSvc.getTodayCommit(recentChallenge.user1.userNo);
       user2Commit = await this.commitSvc.getTodayCommit(recentChallenge.user2.userNo);
-      user1StingCnt = await this.notificationSvc.getStingCount(recentChallenge.user1.userNo);
-      user2StingCnt = await this.notificationSvc.getStingCount(recentChallenge.user2.userNo);
+      userStingCnt = await this.notificationSvc.getStingCount(userNo);
     }
 
     return {
@@ -34,8 +34,7 @@ export class HomeViewService {
       onGoingChallenge: recentChallenge,
       user1Commit,
       user2Commit,
-      user1StingCnt,
-      user2StingCnt,
+      userStingCnt,
     };
   }
 

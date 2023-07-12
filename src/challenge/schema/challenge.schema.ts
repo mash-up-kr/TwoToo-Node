@@ -11,6 +11,9 @@ export class Challenge {
   @Prop()
   name: string;
 
+  @Prop()
+  description: string;
+
   @Prop({ type: UserSchema })
   user1: User; // 챌린지 생성자
 

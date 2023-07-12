@@ -19,5 +19,6 @@ import { UserCounter, UserCounterSchema } from 'src/user/schema/user-counter.sch
   ],
   controllers: [NotificationController],
   providers: [NotificationService, AuthGuard, JwtService, UserService],
+  exports: [NotificationService],
 })
 export class NotificationModule {}

@@ -1,14 +1,12 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
-import { UserService } from './user.service';
+import { LOGIN_STATE, UserService } from './user.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   SetNicknameAndPartnerPayload,
-  SignInResDto,
-  SignUpPayload,
-  SignUpResDto,
   UserInfoResDto,
-  SignInPayload,
   GetPartnerResDto,
+  AuhtorizationPayload,
+  AuthorizationResDto,
 } from './dto/user.dto';
 import { JwtPayload } from 'src/auth/auth.types';
 import { JwtParam } from 'src/auth/auth.user.decorator';
@@ -19,20 +17,25 @@ import { AuthGuard } from '../auth/auth.guard';
 export class UserController {
   constructor(private readonly user: UserService) {}
 
-  @Post('/signup')
-  @ApiOperation({ description: '회원가입을 진행합니다.', summary: '회원가입' })
-  @ApiResponse({ status: 200, type: SignUpResDto })
-  async signUp(@Body() data: SignUpPayload): Promise<SignUpResDto> {
+  @Post('/authorize')
+  @ApiOperation({
+    description:
+      '회원가입 및 로그인을 진행합니다. 토큰이 있다면 로그인 없다면 유저 조회 후 회원가입',
+    summary: '회원인증',
+  })
+  @ApiResponse({ status: 200, type: AuthorizationResDto })
+  async authorize(@Body() data: AuhtorizationPayload): Promise<AuthorizationResDto> {
     const { socialId, loginType, deviceToken } = data;
 
     let user = await this.user.getUserBySocialIdAndLoginType(socialId, loginType);
     if (user) {
+      const curState = await this.user.checkCurrentLoginState(user);
       await this.user.updateDeviceToken({
         userNo: user.userNo,
         deviceToken: deviceToken,
       });
-
       return {
+        state: curState,
         accessToken: user.accessToken,
         userNo: user.userNo,
         nickname: user.nickname,
@@ -42,40 +45,15 @@ export class UserController {
         deviceToken: deviceToken,
       };
     }
-
     user = await this.user.signUp({ socialId, loginType, deviceToken });
     if (!user) {
       throw new Error('Create User Failed');
     }
+
     return {
+      //회원가입을 하면 무조건 NEED_NICKNAME상태
+      state: LOGIN_STATE.NEED_NICKNAME,
       accessToken: user.accessToken,
-      userNo: user.userNo,
-      nickname: user.nickname,
-      partnerNo: user.partnerNo,
-      socialId: user.socialId,
-      loginType: user.loginType,
-      deviceToken: user.deviceToken,
-    };
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
-  @Post('/signin')
-  @ApiOperation({ description: '로그인을 진행합니다.', summary: '로그인' })
-  @ApiResponse({ status: 200, type: SignInResDto })
-  async signIn(
-    @Body() data: SignInPayload,
-    @JwtParam() jwtParam: JwtPayload,
-  ): Promise<SignInResDto> {
-    const { deviceToken } = data;
-    const { userNo } = jwtParam;
-    const user = await this.user.signIn(userNo);
-    const curState = await this.user.checkCurrentLoginState(user);
-
-    await this.user.updateDeviceToken({ userNo: user.userNo, deviceToken: deviceToken });
-
-    return {
-      state: curState,
       userNo: user.userNo,
       nickname: user.nickname,
       partnerNo: user.partnerNo,

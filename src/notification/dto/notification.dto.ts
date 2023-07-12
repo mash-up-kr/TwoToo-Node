@@ -31,7 +31,6 @@ export class StingPayload {
   })
   message!: string;
 }
-
 export class PushResDto {
   @IsString()
   @IsNotEmpty()
@@ -65,8 +64,8 @@ export class NotificationResDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    example: 1,
-    description: '찌르기를 전송하는 사용자 번호',
+    example: '1',
+    description: '사용자 번호',
     required: true,
   })
   userNo!: number;

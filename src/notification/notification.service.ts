@@ -30,7 +30,7 @@ export class NotificationService {
   async sendPush({ deviceToken, title, message }: PushResDto): Promise<string> {
     const sendMessage = {
       token: deviceToken,
-      notification: {
+      data: {
         title,
         message,
       },

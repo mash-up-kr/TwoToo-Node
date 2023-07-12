@@ -24,6 +24,7 @@ export class CommitService {
     const commitNo = await this.autoIncrement('commitNo');
     const commit = await this.commitModel.create({
       commitNo,
+      challengeNo: data.challengeNo,
       userNo: userNo,
       text: data.text,
       photoUrl: data.photoUrl,

@@ -32,6 +32,13 @@ export class ChallengeResDto {
   })
   name!: string;
 
+  @IsString()
+  @ApiProperty({
+    example: '매일 운동 인증을 하는 챌린지',
+    description: '챌린지 설명',
+  })
+  description: string;
+
   @IsNotEmpty()
   @ApiProperty({ type: UserResDto, description: 'user1 - 챌린지 생성자', required: true })
   user1!: UserResDto;
@@ -43,7 +50,8 @@ export class ChallengeResDto {
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
-    type: Number,
+    type: String,
+    format: 'date',
     default: new Date(),
     description: '챌린지 시작일',
     required: true,
@@ -53,7 +61,8 @@ export class ChallengeResDto {
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
-    type: Number,
+    type: String,
+    format: 'date',
     default: new Date(new Date().getTime() + 86400000 * 23),
     description: '챌린지 종료일',
     required: true,
@@ -128,6 +137,13 @@ export class CreateChallengePayload {
   name: string;
 
   @IsString()
+  @ApiProperty({
+    example: '매일 운동 인증을 하는 챌린지',
+    description: '챌린지 설명',
+  })
+  description: string;
+
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({
     example: 'SUNFLOWER',
@@ -136,6 +152,16 @@ export class CreateChallengePayload {
     required: true,
   })
   user2Flower: FlowerType;
+
+  @IsDate()
+  @IsNotEmpty()
+  @ApiProperty({
+    type: String,
+    format: 'date',
+    default: new Date(),
+    description: '챌린지 시작일',
+  })
+  startDate!: Date;
 }
 
 export class AcceptChallengePayload {
@@ -152,6 +178,7 @@ export class AcceptChallengePayload {
 
 export class CreateChallenge {
   name: string;
+  description: string;
   user1No: number;
   user2Flower: string;
   startDate: Date;
@@ -176,10 +203,18 @@ export class ChallengeHistoryResDto {
   })
   name!: string;
 
+  @IsString()
+  @ApiProperty({
+    example: '매일 운동 인증을 하는 챌린지',
+    description: '챌린지 설명',
+  })
+  description: string;
+
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
-    type: Number,
+    type: String,
+    format: 'date',
     default: new Date(),
     description: '챌린지 시작일',
     required: true,
@@ -189,7 +224,8 @@ export class ChallengeHistoryResDto {
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
-    type: Number,
+    type: String,
+    format: 'date',
     default: new Date(new Date().getTime() + 86400000 * 23),
     description: '챌린지 종료일',
     required: true,

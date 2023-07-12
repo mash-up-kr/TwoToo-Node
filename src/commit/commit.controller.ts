@@ -13,7 +13,7 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
-  ApiResponse,
+  ApiParam, ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -64,10 +64,11 @@ export class CommitController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('/:commitNo')
+  @ApiParam({ name: 'commitNo', type: Number })
   @ApiOperation({ description: '챌린지 인증 정보를 조회합니다.', summary: '챌린지 인증 조회' })
   @ApiResponse({ status: 200, type: CommitResDto })
-  async getCommit(@Param('commitNo') commitNo: string): Promise<CommitResDto> {
-    const commit = await this.commitSvc.getCommit(parseInt(commitNo));
+  async getCommit(@Param('commitNo') commitNo: number): Promise<CommitResDto> {
+    const commit = await this.commitSvc.getCommit(commitNo);
     return commit;
   }
 
@@ -81,10 +82,10 @@ export class CommitController {
   @ApiResponse({ status: 200, type: CommitResDto })
   async createComment(
     @Body() data: CommitCommentPayload,
-    @Param('commitNo') commitNo: string,
+    @Param('commitNo') commitNo: number,
   ): Promise<CommitResDto> {
     const commit = await this.commitSvc.updateCommit({
-      commitNo: parseInt(commitNo),
+      commitNo: commitNo,
       partnerComment: data.partnerComment,
     });
 

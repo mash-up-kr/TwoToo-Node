@@ -27,6 +27,7 @@ export class CommitController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
+  @Get('/:commitNo')
   @ApiParam({ name: 'commitNo', type: Number })
   @ApiOperation({ description: '챌린지 인증 정보를 조회합니다.', summary: '챌린지 인증 조회' })
   @ApiResponse({ status: 200, type: CommitResDto })
@@ -37,6 +38,7 @@ export class CommitController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
+  @Post('/:commitNo/comment')
   @ApiOperation({
     description: '파트너의 챌린지 인증에 칭찬 문구를 추가합니다.',
     summary: '칭찬하기',

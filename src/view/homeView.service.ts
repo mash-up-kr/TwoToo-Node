@@ -7,12 +7,14 @@ import { ChallengeService } from '../challenge/challenge.service';
 import { ChallengeDocument } from '../challenge/schema/challenge.schema';
 import { CommitService } from '../commit/commit.service';
 import { CommitDocument } from '../commit/schema/commit.schema';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class HomeViewService {
   constructor(
     private readonly challengeSvc: ChallengeService,
     private readonly commitSvc: CommitService,
+    private readonly notificationSvc: NotificationService,
   ) {}
 
   async createHomeViewResponse(userNo: number): Promise<HomeViewResDto> {
@@ -22,6 +24,8 @@ export class HomeViewService {
     if (recentChallenge !== null) {
       user1Commit = await this.commitSvc.getTodayCommit(recentChallenge.user1.userNo);
       user2Commit = await this.commitSvc.getTodayCommit(recentChallenge.user2.userNo);
+      user1StingCnt = await this.notificationSvc.getStingCount(recentChallenge.user1.userNo);
+      user2StingCnt = await this.notificationSvc.getStingCount(recentChallenge.user2.userNo);
     }
 
     return {
@@ -30,6 +34,8 @@ export class HomeViewService {
       onGoingChallenge: recentChallenge,
       user1Commit,
       user2Commit,
+      user1StingCnt,
+      user2StingCnt,
     };
   }
 

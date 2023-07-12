@@ -45,4 +45,20 @@ export class HomeViewResDto {
     required: true,
   })
   user2Commit: Commit | null;
+
+  @IsNumber()
+  @ApiProperty({
+    example: 3,
+    description: 'user1(생성자)오늘 찌르기 한 횟수',
+    required: true,
+  })
+  user1StingCnt: number;
+
+  @IsNumber()
+  @ApiProperty({
+    example: 3,
+    description: 'user2(수락자)오늘 찌르기 한 횟수',
+    required: true,
+  })
+  user1StingCnt: number;
 }

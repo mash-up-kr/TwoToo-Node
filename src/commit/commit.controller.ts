@@ -39,6 +39,7 @@ export class CommitController {
       type: 'object',
       properties: {
         text: { type: 'string' },
+        challengeNo: { type: 'number' },
         img: {
           type: 'string',
           format: 'binary',
@@ -50,8 +51,8 @@ export class CommitController {
   @ApiResponse({ status: 200, type: CommitResDto })
   @UseInterceptors(FileInterceptor('img')) // img가 key인 file 처리
   async createCommit(
-    @UploadedFile() file: Express.MulterS3.File,
     @Body() data: CommitPayload,
+    @UploadedFile() file: Express.MulterS3.File,
     @JwtParam() jwtparam: JwtPayload,
   ) {
     this.fileSvc.validateFile(file);

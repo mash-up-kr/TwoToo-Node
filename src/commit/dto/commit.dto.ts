@@ -44,6 +44,7 @@ export class CommitResDto {
   @ApiProperty({
     example: '꾸준히 하는 모습 칭찬해',
     description: '상대방이 남길 칭찬 문구',
+    required: true,
   })
   partnerComment: string;
 }
@@ -66,24 +67,6 @@ export class CommitPayload {
     required: true,
   })
   photoUrl!: string;
-
-  @IsDate()
-  @IsNotEmpty()
-  @ApiProperty({
-    type: Number,
-    default: new Date(),
-    description: '생성 시각',
-  })
-  createdAt!: number;
-
-  @IsDate()
-  @IsNotEmpty()
-  @ApiProperty({
-    type: Number,
-    default: new Date(),
-    description: '수정 시각',
-  })
-  updatedAt!: number;
 }
 
 export class CommitCommentPayload {

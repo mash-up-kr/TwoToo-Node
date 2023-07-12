@@ -21,6 +21,15 @@ export class CommitResDto {
   })
   userNo!: number;
 
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 1,
+    description: '챌린지 번호',
+    required: true,
+  })
+  challengeNo!: number;
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -67,6 +76,15 @@ export class CommitPayload {
     required: true,
   })
   photoUrl!: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 1,
+    description: '챌린지 번호',
+    required: true,
+  })
+  challengeNo!: number;
 }
 
 export class CommitCommentPayload {

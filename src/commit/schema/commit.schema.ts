@@ -7,6 +7,9 @@ export class Commit {
   commitNo: number;
 
   @Prop()
+  challengeNo: number;
+
+  @Prop()
   userNo: number;
 
   @Prop()

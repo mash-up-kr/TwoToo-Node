@@ -7,6 +7,7 @@ import {
   GetPartnerResDto,
   AuhtorizationPayload,
   AuthorizationResDto,
+  DelUserPayload,
 } from './dto/user.dto';
 import { JwtPayload } from 'src/auth/auth.types';
 import { JwtParam } from 'src/auth/auth.user.decorator';
@@ -118,5 +119,19 @@ export class UserController {
       nickname: user.nickname,
       partnerNo: user.partnerNo,
     };
+  }
+
+  @Post('/del')
+  @ApiOperation({ description: '임시 유저 삭제 api', summary: '유저 삭제' })
+  @ApiResponse({ status: 200, type: Boolean })
+  async delUser(@Body() data: DelUserPayload): Promise<Boolean> {
+    const { socialId } = data;
+    try {
+      await this.user.delUser(socialId);
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+    return true;
   }
 }

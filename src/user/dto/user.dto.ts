@@ -97,7 +97,6 @@ export class AuthorizationResDto extends UserResDto {
   })
   state!: LOGIN_STATE;
 
-
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -158,4 +157,15 @@ export class GetPartnerResDto {
     description: '파트너 번호',
   })
   partnerNo?: number;
+}
+
+export class DelUserPayload {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'example@kakao.com',
+    description: '소셜 아이디',
+    required: true,
+  })
+  socialId!: string;
 }

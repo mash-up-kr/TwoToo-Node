@@ -179,4 +179,14 @@ export class UserService {
 
     return ret;
   }
+
+  async delUser(socialId: string) {
+    if (_.isNil(socialId)) {
+      throw new Error('No socialId');
+    }
+
+    await this.userModel.deleteOne({
+      socialId: socialId,
+    });
+  }
 }

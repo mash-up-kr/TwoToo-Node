@@ -77,6 +77,7 @@ export class ChallengeService {
     const challenge = await this.challengeModel.findOneAndUpdate(
       { challengeNo },
       { $set: { user1Flower, isApproved: true } },
+      { new: true },
     );
     if (challenge === null) throw new Error('존재하지 않는 챌린지입니다');
     return challenge;

@@ -95,6 +95,7 @@ export class ChallengeController {
     @JwtParam() jwtParam: JwtPayload,
   ): Promise<ChallengeResDto> {
     await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
+    await this.challengeValidator.validateChallengeYetApproved(challengeNo);
 
     const challenge = await this.challengeSvc.acceptChallenge(challengeNo, data.user1Flower);
     return challenge;

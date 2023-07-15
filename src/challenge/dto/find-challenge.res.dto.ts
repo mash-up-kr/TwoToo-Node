@@ -21,7 +21,7 @@ export class FindChallengeResDto {
 }
 
 export class FindChallengeResDtoMapper {
-  static toDto(challenge: ChallengeDocument, commit: CommitDocument[]): FindChallengeResDto {
+  static toDto(challenge: ChallengeDocument, commitList: CommitDocument[]): FindChallengeResDto {
     const dto: FindChallengeResDto = {
       challengeNo: challenge.challengeNo,
       name: challenge.name,
@@ -36,8 +36,8 @@ export class FindChallengeResDtoMapper {
       user2Flower: challenge.user2Flower,
       isApproved: challenge.isApproved,
       isFinished: challenge.isFinished,
-      user1CommitList: commit,
-      user2CommitList: commit,
+      user1CommitList: commitList,
+      user2CommitList: commitList,
     };
     return dto;
   }

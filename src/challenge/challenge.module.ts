@@ -7,9 +7,9 @@ import { UserModule } from '../user/user.module';
 import { ChallengeCounter, ChallengeCounterSchema } from './schema/challenge-counter.schema';
 import { ChallengeValidator } from './challenge.validator';
 
-import { CommitService } from 'src/commit/commit.service';
-import { Commit, CommitSchema } from 'src/commit/schema/commit.schema';
-import { CommitCounter, CommitCounterSchema } from 'src/commit/schema/commit-counter.schema';
+import { CommitService } from '../commit/commit.service';
+import { Commit, CommitSchema } from '../commit/schema/commit.schema';
+import { CommitCounter, CommitCounterSchema } from '../commit/schema/commit-counter.schema';
 
 @Module({
   imports: [

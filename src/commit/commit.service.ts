@@ -38,8 +38,8 @@ export class CommitService {
         },
         {
           $inc: {
-            user1CommitCount: { $cond: [{ $eq: ['$user1.userNo', userNo] }, 1, 0] },
-            user2CommitCount: { $cond: [{ $eq: ['$user2.userNo', userNo] }, 1, 0] },
+            user1CommitCnt: { $cond: [{ $eq: ['$user1.userNo', userNo] }, 1, 0] },
+            user2CommitCnt: { $cond: [{ $eq: ['$user2.userNo', userNo] }, 1, 0] },
           },
         },
         {

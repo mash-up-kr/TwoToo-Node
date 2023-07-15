@@ -187,10 +187,6 @@ export class UserService {
     deviceToken: string;
     userNo: number;
   }): Promise<User> {
-    if (_.isNull(deviceToken)) {
-      throw new BadRequestException('deviceToken이 존재하지 않습니다.');
-    }
-
     const updatedUser = await this.userModel.findOneAndUpdate(
       { userNo: userNo },
       {

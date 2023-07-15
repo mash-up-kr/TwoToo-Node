@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Challenge, ChallengeSchema } from './schema/challenge.schema';
 import { UserModule } from '../user/user.module';
 import { ChallengeCounter, ChallengeCounterSchema } from './schema/challenge-counter.schema';
+import { ChallengeValidator } from './challenge.validator';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { ChallengeCounter, ChallengeCounterSchema } from './schema/challenge-cou
     ]),
     UserModule,
   ],
-  providers: [ChallengeService],
+  providers: [ChallengeService, ChallengeValidator],
   controllers: [ChallengeController],
   exports: [ChallengeService],
 })

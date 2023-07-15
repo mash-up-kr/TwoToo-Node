@@ -125,7 +125,7 @@ export class ChallengeController {
     @JwtParam() jwtParam: JwtPayload,
   ): Promise<ChallengeResDto> {
     await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
-    await this.challengeValidator.validateChallengeYetApproved(challengeNo);
+    await this.challengeValidator.validateChallengeYetFinished(challengeNo);
     //TODO: 챌린지 종료일이 지났을 때 종료 가능 validate
 
     return this.challengeSvc.finishChallenge(challengeNo);

@@ -14,12 +14,14 @@ import {
   CreateChallengePayload,
   ChallengeHistoryResDto,
 } from './dto/challenge.dto';
+import { ChallengeValidator } from './challenge.validator';
 
 @ApiTags('challenge')
 @Controller('challenge')
 export class ChallengeController {
   constructor(
     private readonly userSvc: UserService,
+    private readonly challengeValidator: ChallengeValidator,
     private readonly challengeSvc: ChallengeService,
   ) {}
 
@@ -61,7 +63,12 @@ export class ChallengeController {
   @Get(':challengeNo')
   @ApiOperation({ description: '특정 챌린지를 조회합니다.', summary: '챌린지 조회' })
   @ApiResponse({ status: 200, type: ChallengeResDto })
-  async findChallenge(@Param('challengeNo') challengeNo: number): Promise<FindChallengeResDto> {
+  async findChallenge(
+    @Param('challengeNo') challengeNo: number,
+    @JwtParam() jwtParam: JwtPayload,
+  ): Promise<FindChallengeResDto> {
+    await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
+
     const challenge = await this.challengeSvc.findChallenge(challengeNo);
     return challenge;
   }
@@ -85,7 +92,10 @@ export class ChallengeController {
   async acceptChallenge(
     @Param('challengeNo') challengeNo: number,
     @Body() data: AcceptChallengePayload,
+    @JwtParam() jwtParam: JwtPayload,
   ): Promise<ChallengeResDto> {
+    await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
+
     const challenge = await this.challengeSvc.acceptChallenge(challengeNo, data.user1Flower);
     return challenge;
   }
@@ -95,7 +105,12 @@ export class ChallengeController {
   @Delete(':challengeNo')
   @ApiOperation({ description: '챌린지를 삭제합니다.', summary: '챌린지 그만두기' })
   @ApiResponse({ status: 200, type: Number })
-  async deleteChallenge(@Param('challengeNo') challengeNo: number): Promise<number> {
+  async deleteChallenge(
+    @Param('challengeNo') challengeNo: number,
+    @JwtParam() jwtParam: JwtPayload,
+  ): Promise<number> {
+    await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
+
     return this.challengeSvc.deleteChallenge(challengeNo);
   }
 }

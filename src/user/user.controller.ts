@@ -67,7 +67,8 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Patch('/nickname')
   @ApiOperation({
-    description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 닉네임 설정 후 매칭도 진행합니다.',
+    description:
+      '유저의 닉네임을 설정합니다. 초대를 할 유저는 nickname만 설정하고 partnerNo: null로 요청합니다. 초대를 받은 유저는 nickname과 partnerNo를 모두 설정해야 합니다.',
     summary: '닉네임 설정 및 파트너 매칭',
   })
   @ApiResponse({ status: 200, type: UserInfoResDto })

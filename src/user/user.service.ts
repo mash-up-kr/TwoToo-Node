@@ -173,17 +173,25 @@ export class UserService {
     return ret!.deviceToken;
   }
 
-  async updateDeviceToken({ userNo, deviceToken }: { deviceToken: string; userNo: number }) {
-    if (_.isNil(deviceToken)) {
-      throw new Error('No deviceToken');
+  async updateDeviceToken({
+    userNo,
+    deviceToken,
+  }: {
+    deviceToken: string;
+    userNo: number;
+  }): Promise<User> {
+    if (_.isNull(deviceToken)) {
+      throw new Error('deviceToken이 존재하지 않습니다.');
     }
-    const ret = await this.userModel.findOneAndUpdate(
+
+    const updatedUser = await this.userModel.findOneAndUpdate(
       { userNo: userNo },
       {
         deviceToken: deviceToken,
       },
+      { new: true },
     );
 
-    return ret;
+    return updatedUser as User;
   }
 }

@@ -22,4 +22,9 @@ export class ChallengeValidator {
     const challenge = await this.challengeSvc.findChallenge(challengeNo);
     if (challenge.isApproved) throw new ConflictException('이미 수락된 챌린지입니다.');
   }
+
+  async validateChallengeYetFinished(challengeNo: number) {
+    const challenge = await this.challengeSvc.findChallenge(challengeNo);
+    if (challenge.isFinished) throw new ConflictException('이미 종료된 챌린지입니다.');
+  }
 }

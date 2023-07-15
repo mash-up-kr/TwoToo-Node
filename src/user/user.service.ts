@@ -106,10 +106,10 @@ export class UserService {
     }
 
     if (_.isNull(updatedUser)) {
-      throw new Error('Not Found User - failed to update user');
+      throw new Error('닉네임 설정 혹은 파트너 매칭에 실패했습니다.');
     }
 
-    return updatedUser;
+    return updatedUser as User;
   }
 
   async checkPartner(userNo: number): Promise<number> {

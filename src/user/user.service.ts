@@ -162,15 +162,22 @@ export class UserService {
     return await this.userModel.findOne({ socialId: socialId, loginType: loginType });
   }
 
-  async getPartnerDeviceToken(userNo: number) {
-    const ret = await this.userModel.findOne({ partnerNo: userNo }, { _id: 0, deviceToken: 1 });
-    if (_.isNil(ret)) {
-      throw new Error('No Partner');
+  async getPartnerDeviceToken(userNo: number): Promise<string> {
+    const ret = await this.userModel
+      .findOne({ partnerNo: userNo }, { _id: 0, deviceToken: 1 })
+      .lean();
+
+    if (_.isNull(ret)) {
+      throw new Error('해당 유저가 존재하지 않습니다.');
     }
-    if (_.isNil(ret.deviceToken)) {
-      throw new Error('No deviceToken');
+
+    const partnerDeviceToken = ret ? ret.deviceToken : null;
+
+    if (_.isNull(partnerDeviceToken)) {
+      throw new Error('deviceToken이 존재하지 않습니다.');
     }
-    return ret!.deviceToken;
+
+    return partnerDeviceToken as string;
   }
 
   async updateDeviceToken({

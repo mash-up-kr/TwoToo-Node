@@ -130,57 +130,17 @@ export class ChallengeResDto {
 export class ChallengeAndCommitListResDto extends ChallengeResDto {
   @IsArray()
   @ApiProperty({
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        text: {
-          example: '오늘도 7시 기상 완료',
-          description: '텍스트',
-        },
-        photoUrl: {
-          example: '',
-          description: '사진 URL',
-        },
-        partnerComment: {
-          example: '꾸준히 하는 모습 칭찬해',
-          description: '파트너 코멘트',
-        },
-        createdAt: {
-          example: '2023.07.16',
-          description: '생성일',
-        },
-      },
-    },
+    type: [CommitResDto],
     description: 'user1 Commit 리스트',
+    required: true,
   })
   user1CommitList!: CommitResDto[];
 
   @IsArray()
   @ApiProperty({
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        text: {
-          example: '오늘도 7시 기상 완료',
-          description: '텍스트',
-        },
-        photoUrl: {
-          example: '',
-          description: '사진 URL',
-        },
-        partnerComment: {
-          example: '꾸준히 하는 모습 칭찬해',
-          description: '파트너 코멘트',
-        },
-        createdAt: {
-          example: '2023.07.16',
-          description: '생성일',
-        },
-      },
-    },
+    type: [CommitResDto],
     description: 'user2 Commit 리스트',
+    required: true,
   })
   user2CommitList!: CommitResDto[];
 }

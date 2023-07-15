@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { UserResDto } from '../../user/dto/user.dto';
-import { Commit } from 'src/commit/schema/commit.schema';
 import { CommitResDto } from 'src/commit/dto/commit.dto';
 
 export enum FlowerType {
@@ -129,41 +128,59 @@ export class ChallengeResDto {
 }
 
 export class ChallengeAndCommitListResDto extends ChallengeResDto {
+  @IsArray()
   @ApiProperty({
-    type: [CommitResDto],
-    description: 'user1 Commit 리스트',
-    examples: {
-      example1: {
-        value: [
-          {
-            text: '오늘도 7시 기상 완료',
-            photoUrl: '',
-            partnerComment: '꾸준히 하는 모습 칭찬해',
-            createdAt: '2023.07.16',
-          },
-        ],
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        text: {
+          example: '오늘도 7시 기상 완료',
+          description: '텍스트',
+        },
+        photoUrl: {
+          example: '',
+          description: '사진 URL',
+        },
+        partnerComment: {
+          example: '꾸준히 하는 모습 칭찬해',
+          description: '파트너 코멘트',
+        },
+        createdAt: {
+          example: '2023.07.16',
+          description: '생성일',
+        },
       },
     },
-    required: true,
+    description: 'user1 Commit 리스트',
   })
   user1CommitList!: CommitResDto[];
 
+  @IsArray()
   @ApiProperty({
-    type: [CommitResDto],
-    description: 'user2 Commit 리스트',
-    examples: {
-      example1: {
-        value: [
-          {
-            text: '오늘도 7시 기상 완료',
-            photoUrl: '',
-            partnerComment: '꾸준히 하는 모습 칭찬해',
-            createdAt: '2023.07.16',
-          },
-        ],
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        text: {
+          example: '오늘도 7시 기상 완료',
+          description: '텍스트',
+        },
+        photoUrl: {
+          example: '',
+          description: '사진 URL',
+        },
+        partnerComment: {
+          example: '꾸준히 하는 모습 칭찬해',
+          description: '파트너 코멘트',
+        },
+        createdAt: {
+          example: '2023.07.16',
+          description: '생성일',
+        },
       },
     },
-    required: true,
+    description: 'user2 Commit 리스트',
   })
   user2CommitList!: CommitResDto[];
 }

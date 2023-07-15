@@ -113,4 +113,22 @@ export class CommitService {
 
     return result!.count;
   }
+
+  async getCommitList(challengeNo: number, userNo: number) {
+    const result = await this.commitModel.find(
+      {
+        challengeNo: challengeNo,
+        userNo: userNo,
+      },
+      {
+        _id: 0,
+        text: 1,
+        photoUrl: 1,
+        partnerComment: 1,
+        createdAt: 1,
+      },
+    );
+
+    return result;
+  }
 }

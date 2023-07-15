@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { UserResDto } from '../../user/dto/user.dto';
+import { Commit } from 'src/commit/schema/commit.schema';
+import { CommitResDto } from 'src/commit/dto/commit.dto';
 
 export enum FlowerType {
   FIG = 'FIG',
@@ -124,6 +126,46 @@ export class ChallengeResDto {
     required: true,
   })
   isFinished!: boolean;
+}
+
+export class ChallengeAndCommitListResDto extends ChallengeResDto {
+  @ApiProperty({
+    type: [CommitResDto],
+    description: 'user1 Commit 리스트',
+    examples: {
+      example1: {
+        value: [
+          {
+            text: '오늘도 7시 기상 완료',
+            photoUrl: '',
+            partnerComment: '꾸준히 하는 모습 칭찬해',
+            createdAt: '2023.07.16',
+          },
+        ],
+      },
+    },
+    required: true,
+  })
+  user1CommitList!: CommitResDto[];
+
+  @ApiProperty({
+    type: [CommitResDto],
+    description: 'user2 Commit 리스트',
+    examples: {
+      example1: {
+        value: [
+          {
+            text: '오늘도 7시 기상 완료',
+            photoUrl: '',
+            partnerComment: '꾸준히 하는 모습 칭찬해',
+            createdAt: '2023.07.16',
+          },
+        ],
+      },
+    },
+    required: true,
+  })
+  user2CommitList!: CommitResDto[];
 }
 
 export class CreateChallengePayload {

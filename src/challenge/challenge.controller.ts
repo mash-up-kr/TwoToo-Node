@@ -13,8 +13,10 @@ import {
   CreateChallenge,
   CreateChallengePayload,
   ChallengeHistoryResDto,
+  ChallengeAndCommitListResDto,
 } from './dto/challenge.dto';
 import { ChallengeValidator } from './challenge.validator';
+import { CommitService } from 'src/commit/commit.service';
 
 @ApiTags('challenge')
 @Controller('challenge')
@@ -23,6 +25,7 @@ export class ChallengeController {
     private readonly userSvc: UserService,
     private readonly challengeValidator: ChallengeValidator,
     private readonly challengeSvc: ChallengeService,
+    private readonly commitSvc: CommitService,
   ) {}
 
   @ApiBearerAuth()
@@ -62,15 +65,21 @@ export class ChallengeController {
   @UseGuards(AuthGuard)
   @Get(':challengeNo')
   @ApiOperation({ description: '특정 챌린지를 조회합니다.', summary: '챌린지 조회' })
-  @ApiResponse({ status: 200, type: ChallengeResDto })
+  @ApiResponse({ status: 200, type: ChallengeAndCommitListResDto })
   async findChallenge(
     @Param('challengeNo') challengeNo: number,
     @JwtParam() jwtParam: JwtPayload,
   ): Promise<FindChallengeResDto> {
     await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
-
     const challenge = await this.challengeSvc.findChallenge(challengeNo);
-    return challenge;
+    const user1CommitList = await this.commitSvc.getCommitList(challengeNo, challenge.user1.userNo);
+    const user2CommitList = await this.commitSvc.getCommitList(challengeNo, challenge.user2.userNo);
+
+    return {
+      ...challenge,
+      user1CommitList,
+      user2CommitList,
+    };
   }
 
   @ApiBearerAuth()

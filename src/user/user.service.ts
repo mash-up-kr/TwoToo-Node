@@ -58,13 +58,16 @@ export class UserService {
   async setNicknameAndPartner({ userNo, data }: { userNo: number; data: any }): Promise<User> {
     const user = await this.getUser(userNo);
 
-    // TODO: nickname validation
     if (!_.has(data, 'nickname')) {
-      throw new Error('Nickname does not exists! Invalid Nickname');
+      throw new Error('nickname 필드가 필요합니다.');
     }
 
-    if (user.partnerNo) {
-      throw new Error('Partner already matched!');
+    if (!_.has(data, 'partnerNo')) {
+      throw new Error('partnerNo 필드가 필요합니다.');
+    }
+
+    if (!_.isNull(user.partnerNo)) {
+      throw new Error('현재 유저는 이미 파트너 매칭이 완료되었습니다.');
     }
 
     let updatedUser = null;

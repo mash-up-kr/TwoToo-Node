@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as _ from 'lodash';
 import { Model } from 'mongoose';
@@ -25,7 +25,7 @@ export class UserService {
     private readonly userCounterModel: Model<UserCounterDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   async signUp({
     socialId,
@@ -59,15 +59,15 @@ export class UserService {
     const user = await this.getUser(userNo);
 
     if (!_.has(data, 'nickname')) {
-      throw new Error('nickname 필드가 필요합니다.');
+      throw new BadRequestException('nickname 필드가 필요합니다.');
     }
 
     if (!_.has(data, 'partnerNo')) {
-      throw new Error('partnerNo 필드가 필요합니다.');
+      throw new BadRequestException('partnerNo 필드가 필요합니다.');
     }
 
     if (!_.isNull(user.partnerNo)) {
-      throw new Error('현재 유저는 이미 파트너 매칭이 완료되었습니다.');
+      throw new ConflictException('현재 유저는 이미 파트너 매칭이 완료되었습니다.');
     }
 
     let updatedUser = null;
@@ -85,11 +85,11 @@ export class UserService {
       try {
         const partnerUserInfo = await this.getUser(data.partnerNo);
         if (_.isNull(partnerUserInfo.nickname)) {
-          throw new Error('닉네임이 설정되지않은 유저와 매칭할 수 없습니다.');
+          throw new ConflictException('닉네임이 설정되지않은 유저와 매칭할 수 없습니다.');
         }
 
         if (!_.isNull(partnerUserInfo.partnerNo)) {
-          throw new Error('매칭하고자하는 유저가 이미 파트너 매칭이 완료되었습니다.');
+          throw new ConflictException('매칭하고자하는 유저가 이미 파트너 매칭이 완료되었습니다.');
         }
 
         updatedUser = await this.userModel.findOneAndUpdate(
@@ -101,12 +101,12 @@ export class UserService {
         );
       } catch (err) {
         // partnerNo에 해당하는 유저 없음
-        throw new Error('해당 유저가 존재하지 않습니다. 매칭할 수 없습니다.');
+        throw new NotFoundException('해당 유저가 존재하지 않습니다. 매칭할 수 없습니다.');
       }
     }
 
     if (_.isNull(updatedUser)) {
-      throw new Error('닉네임 설정 혹은 파트너 매칭에 실패했습니다.');
+      throw new NotFoundException('닉네임 설정 혹은 파트너 매칭에 실패했습니다.');
     }
 
     return updatedUser as User;
@@ -122,7 +122,7 @@ export class UserService {
     const user = (await this.userModel.findOne({ userNo: userNo })) as User;
 
     if (_.isNull(user)) {
-      throw new Error('해당 유저가 존재하지 않습니다.');
+      throw new NotFoundException('해당 유저가 존재하지 않습니다.');
     }
 
     return user;
@@ -168,13 +168,13 @@ export class UserService {
       .lean();
 
     if (_.isNull(ret)) {
-      throw new Error('해당 유저가 존재하지 않습니다.');
+      throw new NotFoundException('해당 유저가 존재하지 않습니다.');
     }
 
     const partnerDeviceToken = ret ? ret.deviceToken : null;
 
     if (_.isNull(partnerDeviceToken)) {
-      throw new Error('deviceToken이 존재하지 않습니다.');
+      throw new NotFoundException('deviceToken이 존재하지 않습니다.');
     }
 
     return partnerDeviceToken as string;
@@ -188,7 +188,7 @@ export class UserService {
     userNo: number;
   }): Promise<User> {
     if (_.isNull(deviceToken)) {
-      throw new Error('deviceToken이 존재하지 않습니다.');
+      throw new BadRequestException('deviceToken이 존재하지 않습니다.');
     }
 
     const updatedUser = await this.userModel.findOneAndUpdate(

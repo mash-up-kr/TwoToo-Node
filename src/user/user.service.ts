@@ -118,8 +118,8 @@ export class UserService {
     return user.partnerNo || 0;
   }
 
-  async getUser(userNo: number): Promise<User> {
-    const user = (await this.userModel.findOne({ userNo: userNo })) as User;
+  async getUser(userNo: number): Promise<UserDocument> {
+    const user = (await this.userModel.findOne({ userNo: userNo })) as UserDocument;
 
     if (_.isNull(user)) {
       throw new NotFoundException('해당 유저가 존재하지 않습니다.');

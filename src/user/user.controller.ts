@@ -15,7 +15,7 @@ import { AuthGuard } from '../auth/auth.guard';
 @ApiTags('user')
 @Controller('user')
 export class UserController {
-  constructor(private readonly user: UserService) {}
+  constructor(private readonly userSvc: UserService) {}
 
   @Post('/authorize')
   @ApiOperation({
@@ -27,10 +27,10 @@ export class UserController {
   async authorize(@Body() data: AuhtorizationPayload): Promise<AuthorizationResDto> {
     const { socialId, loginType, deviceToken } = data;
 
-    let user = await this.user.getUserBySocialIdAndLoginType(socialId, loginType);
+    let user = await this.userSvc.getUserBySocialIdAndLoginType(socialId, loginType);
     if (user) {
-      const curState = await this.user.checkCurrentLoginState(user);
-      await this.user.updateDeviceToken({
+      const curState = await this.userSvc.checkCurrentLoginState(user);
+      await this.userSvc.updateDeviceToken({
         userNo: user.userNo,
         deviceToken: deviceToken,
       });
@@ -45,7 +45,7 @@ export class UserController {
         deviceToken: deviceToken,
       };
     }
-    user = await this.user.signUp({ socialId, loginType, deviceToken });
+    user = await this.userSvc.signUp({ socialId, loginType, deviceToken });
     if (!user) {
       throw new Error('Create User Failed');
     }
@@ -77,7 +77,7 @@ export class UserController {
     @Body() data: SetNicknameAndPartnerPayload,
   ): Promise<UserInfoResDto> {
     const { userNo } = jwtParam;
-    const updatedUser = await this.user.setNicknameAndPartner({
+    const updatedUser = await this.userSvc.setNicknameAndPartner({
       userNo: userNo,
       data,
     });
@@ -99,7 +99,7 @@ export class UserController {
   @ApiResponse({ status: 200, type: GetPartnerResDto })
   async getPartner(@JwtParam() jwtParam: JwtPayload): Promise<GetPartnerResDto> {
     const { userNo } = jwtParam;
-    const partnerNo = await this.user.checkPartner(userNo);
+    const partnerNo = await this.userSvc.checkPartner(userNo);
 
     return {
       partnerNo: partnerNo,
@@ -113,7 +113,7 @@ export class UserController {
   @ApiResponse({ status: 200, type: UserInfoResDto })
   async me(@JwtParam() jwtParam: JwtPayload): Promise<UserInfoResDto> {
     const { userNo } = jwtParam;
-    const user = await this.user.getUser(userNo);
+    const user = await this.userSvc.getUser(userNo);
     return {
       userNo: user.userNo,
       nickname: user.nickname,

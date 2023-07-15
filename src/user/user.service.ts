@@ -82,27 +82,27 @@ export class UserService {
       );
     } else {
       // 닉네임 설정 및 파트너 매칭(초대받은자)
-      try {
-        const partnerUserInfo = await this.getUser(data.partnerNo);
-        if (_.isNull(partnerUserInfo.nickname)) {
-          throw new ConflictException('닉네임이 설정되지않은 유저와 매칭할 수 없습니다.');
-        }
+      const partnerUserInfo = await this.getUser(data.partnerNo);
 
-        if (!_.isNull(partnerUserInfo.partnerNo)) {
-          throw new ConflictException('매칭하고자하는 유저가 이미 파트너 매칭이 완료되었습니다.');
-        }
-
-        updatedUser = await this.userModel.findOneAndUpdate(
-          { userNo: userNo },
-          {
-            $set: { nickname: data.nickname, partnerNo: data.partnerNo },
-          },
-          { new: true },
-        );
-      } catch (err) {
-        // partnerNo에 해당하는 유저 없음
+      if (_.isNull(partnerUserInfo)) {
         throw new NotFoundException('해당 유저가 존재하지 않습니다. 매칭할 수 없습니다.');
       }
+
+      if (_.isNull(partnerUserInfo.nickname)) {
+        throw new ConflictException('닉네임이 설정되지않은 유저와 매칭할 수 없습니다.');
+      }
+
+      if (!_.isNull(partnerUserInfo.partnerNo)) {
+        throw new ConflictException('매칭하고자하는 유저가 이미 파트너 매칭이 완료되었습니다.');
+      }
+
+      updatedUser = await this.userModel.findOneAndUpdate(
+        { userNo: userNo },
+        {
+          $set: { nickname: data.nickname, partnerNo: data.partnerNo },
+        },
+        { new: true },
+      );
     }
 
     if (_.isNull(updatedUser)) {

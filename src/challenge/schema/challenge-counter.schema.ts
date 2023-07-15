@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-@Schema({ collection: 'challenge' })
+@Schema({ collection: 'challenge', versionKey: false })
 export class ChallengeCounter {
   @Prop()
   key: string;

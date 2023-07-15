@@ -119,9 +119,10 @@ export class UserService {
   }
 
   async getUser(userNo: number): Promise<User> {
-    const user = await this.userModel.findOne({ userNo: userNo }).lean();
-    if (!user) {
-      throw new Error('Not Found User');
+    const user = (await this.userModel.findOne({ userNo: userNo })) as User;
+
+    if (_.isNull(user)) {
+      throw new Error('해당 유저가 존재하지 않습니다.');
     }
 
     return user;
@@ -140,7 +141,7 @@ export class UserService {
     return state;
   }
 
-  private async autoIncrement(key: string) {
+  private async autoIncrement(key: string): Promise<number> {
     let result: { count: number } | null = null;
 
     while (result === null) {

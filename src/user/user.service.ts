@@ -55,16 +55,6 @@ export class UserService {
     return user;
   }
 
-  async signIn(userNo: number): Promise<User> {
-    const user = await this.userModel.findOne({ userNo: userNo }).lean();
-
-    if (_.isNull(user)) {
-      throw new Error('Not Found User');
-    }
-
-    return user;
-  }
-
   async setNicknameAndPartner({ userNo, data }: { userNo: number; data: any }): Promise<User> {
     const user = await this.getUser(userNo);
 

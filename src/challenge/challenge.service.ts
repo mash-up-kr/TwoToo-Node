@@ -110,6 +110,7 @@ export class ChallengeService {
         {
           $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
           endDate: { $lt: today },
+          isFinished: true,
         },
         {
           _id: 0,

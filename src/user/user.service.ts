@@ -71,18 +71,14 @@ export class UserService {
     }
 
     let updatedUser = null;
-    if (data.partnerNo) {
+    if (_.isNull(data.partnerNo)) {
+      // 닉네임만 설정하는 경우(초대자)
       updatedUser = await this.userModel.findOneAndUpdate(
         { userNo: userNo },
         {
-          $set: { nickname: data.nickname, partnerNo: data.partnerNo },
+          $set: { nickname: data.nickname },
         },
         { new: true },
-      );
-
-      await this.userModel.findOneAndUpdate(
-        { userNo: data.partnerNo },
-        { $set: { partnerNo: userNo } },
       );
     } else {
       updatedUser = await this.userModel.findOneAndUpdate(

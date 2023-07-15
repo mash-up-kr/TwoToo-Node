@@ -114,7 +114,7 @@ export class CommitService {
     return result!.count;
   }
 
-  async getCommitList(challengeNo: number, userNo: number) {
+  async getCommitList(challengeNo: number, userNo: number): Commit[] {
     const result = await this.commitModel.find({
       challengeNo: challengeNo,
       userNo: userNo,

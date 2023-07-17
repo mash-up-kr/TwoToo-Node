@@ -11,6 +11,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { multerOptionsFactory } from './multer.option';
 import { MulterModule } from '@nestjs/platform-express';
 import { FileService } from './s3.service';
+import { User, UserSchema } from '../user/schema/user.schema';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { FileService } from './s3.service';
       { name: Commit.name, schema: CommitSchema },
       { name: Challenge.name, schema: ChallengeSchema },
       { name: CommitCounter.name, schema: CommitCounterSchema },
+      { name: User.name, schema: UserSchema },
     ]),
     MulterModule.registerAsync({
       imports: [ConfigModule],

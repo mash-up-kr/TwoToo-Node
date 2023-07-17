@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ChallengeService } from './challenge.service';
 
 @Injectable()
@@ -11,5 +16,15 @@ export class ChallengeValidator {
     if (challenge.user1.userNo !== userNo && challenge.user2.userNo !== userNo) {
       throw new UnauthorizedException('해당 챌린지에 접근할 수 있는 유저가 아닙니다.');
     }
+  }
+
+  async validateChallengeYetApproved(challengeNo: number) {
+    const challenge = await this.challengeSvc.findChallenge(challengeNo);
+    if (challenge.isApproved) throw new ConflictException('이미 수락된 챌린지입니다.');
+  }
+
+  async validateChallengeYetFinished(challengeNo: number) {
+    const challenge = await this.challengeSvc.findChallenge(challengeNo);
+    if (challenge.isFinished) throw new ConflictException('이미 종료된 챌린지입니다.');
   }
 }

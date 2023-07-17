@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { setupSwagger } from './swagger';
 import * as FirebaseAdmin from 'firebase-admin';
 import { ConfigService } from '@nestjs/config';
+import { HttpExceptionFilter } from './httpException.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +22,7 @@ async function bootstrap() {
   });
 
   setupSwagger(app);
+  app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(3000);
 }
 

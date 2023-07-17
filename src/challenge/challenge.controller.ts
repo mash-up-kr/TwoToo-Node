@@ -13,14 +13,19 @@ import {
   CreateChallenge,
   CreateChallengePayload,
   ChallengeHistoryResDto,
+  ChallengeAndCommitListResDto,
 } from './dto/challenge.dto';
+import { ChallengeValidator } from './challenge.validator';
+import { CommitService } from 'src/commit/commit.service';
 
 @ApiTags('challenge')
 @Controller('challenge')
 export class ChallengeController {
   constructor(
     private readonly userSvc: UserService,
+    private readonly challengeValidator: ChallengeValidator,
     private readonly challengeSvc: ChallengeService,
+    private readonly commitSvc: CommitService,
   ) {}
 
   @ApiBearerAuth()
@@ -60,10 +65,21 @@ export class ChallengeController {
   @UseGuards(AuthGuard)
   @Get(':challengeNo')
   @ApiOperation({ description: '특정 챌린지를 조회합니다.', summary: '챌린지 조회' })
-  @ApiResponse({ status: 200, type: ChallengeResDto })
-  async findChallenge(@Param('challengeNo') challengeNo: number): Promise<FindChallengeResDto> {
+  @ApiResponse({ status: 200, type: ChallengeAndCommitListResDto })
+  async findChallenge(
+    @Param('challengeNo') challengeNo: number,
+    @JwtParam() jwtParam: JwtPayload,
+  ): Promise<FindChallengeResDto> {
+    await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
     const challenge = await this.challengeSvc.findChallenge(challengeNo);
-    return challenge;
+    const user1CommitList = await this.commitSvc.getCommitList(challengeNo, challenge.user1.userNo);
+    const user2CommitList = await this.commitSvc.getCommitList(challengeNo, challenge.user2.userNo);
+
+    return {
+      ...challenge,
+      user1CommitList,
+      user2CommitList,
+    };
   }
 
   @ApiBearerAuth()
@@ -85,7 +101,11 @@ export class ChallengeController {
   async acceptChallenge(
     @Param('challengeNo') challengeNo: number,
     @Body() data: AcceptChallengePayload,
+    @JwtParam() jwtParam: JwtPayload,
   ): Promise<ChallengeResDto> {
+    await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
+    await this.challengeValidator.validateChallengeYetApproved(challengeNo);
+
     const challenge = await this.challengeSvc.acceptChallenge(challengeNo, data.user1Flower);
     return challenge;
   }
@@ -95,7 +115,28 @@ export class ChallengeController {
   @Delete(':challengeNo')
   @ApiOperation({ description: '챌린지를 삭제합니다.', summary: '챌린지 그만두기' })
   @ApiResponse({ status: 200, type: Number })
-  async deleteChallenge(@Param('challengeNo') challengeNo: number): Promise<number> {
+  async deleteChallenge(
+    @Param('challengeNo') challengeNo: number,
+    @JwtParam() jwtParam: JwtPayload,
+  ): Promise<number> {
+    await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
+
     return this.challengeSvc.deleteChallenge(challengeNo);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Post(':challengeNo/finish')
+  @ApiOperation({ description: '챌린지를 완료합니다.', summary: '챌린지 완료' })
+  @ApiResponse({ status: 200, type: ChallengeResDto })
+  async finishChallenge(
+    @Param('challengeNo') challengeNo: number,
+    @JwtParam() jwtParam: JwtPayload,
+  ): Promise<ChallengeResDto> {
+    await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
+    await this.challengeValidator.validateChallengeYetFinished(challengeNo);
+    //TODO: 챌린지 종료일이 지났을 때 종료 가능 validate
+
+    return this.challengeSvc.finishChallenge(challengeNo);
   }
 }

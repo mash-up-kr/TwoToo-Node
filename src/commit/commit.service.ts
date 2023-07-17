@@ -38,8 +38,8 @@ export class CommitService {
         },
         {
           $inc: {
-            user1CommitCount: { $cond: [{ $eq: ['$user1.userNo', userNo] }, 1, 0] },
-            user2CommitCount: { $cond: [{ $eq: ['$user2.userNo', userNo] }, 1, 0] },
+            user1CommitCnt: { $cond: [{ $eq: ['$user1.userNo', userNo] }, 1, 0] },
+            user2CommitCnt: { $cond: [{ $eq: ['$user2.userNo', userNo] }, 1, 0] },
           },
         },
         {
@@ -112,5 +112,14 @@ export class CommitService {
     }
 
     return result!.count;
+  }
+
+  async getCommitList(challengeNo: number, userNo: number): Commit[] {
+    const result = await this.commitModel.find({
+      challengeNo: challengeNo,
+      userNo: userNo,
+    });
+
+    return result;
   }
 }

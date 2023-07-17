@@ -1,3 +1,4 @@
+import { CommitDocument } from 'src/commit/schema/commit.schema';
 import { User } from '../../user/schema/user.schema';
 import { ChallengeDocument } from '../schema/challenge.schema';
 
@@ -15,10 +16,12 @@ export class FindChallengeResDto {
   user2Flower: string;
   isApproved: boolean;
   isFinished: boolean;
+  user1CommitList: CommitDocument[];
+  user2CommitList: CommitDocument[];
 }
 
 export class FindChallengeResDtoMapper {
-  static toDto(challenge: ChallengeDocument): FindChallengeResDto {
+  static toDto(challenge: ChallengeDocument, commitList: CommitDocument[]): FindChallengeResDto {
     const dto: FindChallengeResDto = {
       challengeNo: challenge.challengeNo,
       name: challenge.name,
@@ -33,6 +36,8 @@ export class FindChallengeResDtoMapper {
       user2Flower: challenge.user2Flower,
       isApproved: challenge.isApproved,
       isFinished: challenge.isFinished,
+      user1CommitList: commitList,
+      user2CommitList: commitList,
     };
     return dto;
   }

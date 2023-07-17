@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as _ from 'lodash';
 import { Model } from 'mongoose';
@@ -21,6 +21,9 @@ export class CommitService {
   ) {}
 
   async createCommit({ userNo, data }: { userNo: number; data: CommitPayload }): Promise<Commit> {
+    if (!_.has(data, 'challengeNo')) {
+      throw new BadRequestException('challengeNo 필드가 필요합니다.');
+    }
     const commitNo = await this.autoIncrement('commitNo');
     const commit = await this.commitModel.create({
       commitNo,
@@ -114,7 +117,7 @@ export class CommitService {
     return result!.count;
   }
 
-  async getCommitList(challengeNo: number, userNo: number): Commit[] {
+  async getCommitList(challengeNo: number, userNo: number): Promise<Commit[]> {
     const result = await this.commitModel.find({
       challengeNo: challengeNo,
       userNo: userNo,

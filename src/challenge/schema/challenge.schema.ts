@@ -3,7 +3,7 @@ import { HydratedDocument } from 'mongoose';
 import { User, UserSchema } from '../../user/schema/user.schema';
 import { FlowerType } from '../dto/challenge.dto';
 
-@Schema({ collection: 'challenge', timestamps: true })
+@Schema({ collection: 'challenge', timestamps: true, versionKey: false })
 export class Challenge {
   @Prop()
   challengeNo!: number;

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-@Schema({ collection: 'notification', timestamps: true })
+@Schema({ collection: 'notification', timestamps: true, versionKey: false })
 export class Notification {
   @Prop()
   message!: string;

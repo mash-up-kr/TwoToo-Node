@@ -62,16 +62,12 @@ export class UserService {
       throw new BadRequestException('nickname 필드가 필요합니다.');
     }
 
-    if (!_.has(data, 'partnerNo')) {
-      throw new BadRequestException('partnerNo 필드가 필요합니다.');
-    }
-
     if (!_.isNull(user.partnerNo)) {
       throw new ConflictException('현재 유저는 이미 파트너 매칭이 완료되었습니다.');
     }
 
     let updatedUser = null;
-    if (_.isNull(data.partnerNo)) {
+    if (!_.has(data, 'partnerNo')) {
       // 닉네임만 설정하는 경우(초대자)
       updatedUser = await this.userModel.findOneAndUpdate(
         { userNo: userNo },
@@ -82,6 +78,10 @@ export class UserService {
       );
     } else {
       // 닉네임 설정 및 파트너 매칭(초대받은자)
+      if (_.isNull(data.partnerNo)) {
+        throw new BadRequestException('닉네임 설정 및 파트너 매칭에는 파트너 번호가 필요합니다.');
+      }
+
       const partnerUserInfo = await this.getUser(data.partnerNo);
 
       if (_.isNull(partnerUserInfo)) {

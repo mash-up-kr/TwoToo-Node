@@ -65,26 +65,36 @@ export class CommitService {
       partnerComment: '',
     });
 
-    const curChallenge = await this.challengeModel
-      .findOneAndUpdate(
+    const curChallenge = await this.challengeModel.findOneAndUpdate(
+      {
+        challengeNo: data.challengeNo,
+        $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+      },
+      [
         {
-          challengeNo: data.challengeNo,
-          $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
-        },
-        {
-          $inc: {
-            user1CommitCnt: { $cond: [{ $eq: ['$user1.userNo', userNo] }, 1, 0] },
-            user2CommitCnt: { $cond: [{ $eq: ['$user2.userNo', userNo] }, 1, 0] },
+          $set: {
+            user1CommitCnt: {
+              $cond: {
+                if: { $eq: ['$user1.userNo', userNo] },
+                then: { $add: ['$user1CommitCnt', 1] },
+                else: '$user1CommitCnt',
+              },
+            },
+            user2CommitCnt: {
+              $cond: {
+                if: { $eq: ['$user2.userNo', userNo] },
+                then: { $add: ['$user2CommitCnt', 1] },
+                else: '$user2CommitCnt',
+              },
+            },
           },
         },
-        {
-          new: true,
-          sort: { endDate: -1 },
-        },
-      )
-      .exec();
-
-    console.log(curChallenge);
+      ],
+      {
+        new: true,
+        sort: { endDate: -1 },
+      },
+    );
 
     if (_.isNull(curChallenge)) {
       throw new Error('Not Found Challenge');

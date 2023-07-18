@@ -143,10 +143,9 @@ export class SetNicknameAndPartnerPayload {
   nickname!: string;
 
   @IsNumber()
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 2,
     description: '파트너 번호',
-    required: true,
   })
   partnerNo!: number | null;
 }

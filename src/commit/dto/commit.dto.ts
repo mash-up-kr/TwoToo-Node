@@ -95,5 +95,5 @@ export class CommitCommentPayload {
     description: '파트너의 챌린지 인증에 남길 칭찬 문구',
     required: true,
   })
-  partnerComment!: string;
+  comment!: string;
 }

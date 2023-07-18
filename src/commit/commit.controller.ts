@@ -13,7 +13,8 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
-  ApiParam, ApiResponse,
+  ApiParam,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -68,8 +69,11 @@ export class CommitController {
   @ApiParam({ name: 'commitNo', type: Number })
   @ApiOperation({ description: '챌린지 인증 정보를 조회합니다.', summary: '챌린지 인증 조회' })
   @ApiResponse({ status: 200, type: CommitResDto })
-  async getCommit(@Param('commitNo') commitNo: number): Promise<CommitResDto> {
-    const commit = await this.commitSvc.getCommit(commitNo);
+  async getCommit(
+    @Param('commitNo') commitNo: number,
+    @JwtParam() jwtparam: JwtPayload,
+  ): Promise<CommitResDto> {
+    const commit = await this.commitSvc.getCommit(commitNo, jwtparam.userNo);
     return commit;
   }
 
@@ -83,11 +87,13 @@ export class CommitController {
   @ApiResponse({ status: 200, type: CommitResDto })
   async createComment(
     @Body() data: CommitCommentPayload,
-    @Param('commitNo') commitNo: number,
+    @Param('commitNo') partnerCommitNo: number,
+    @JwtParam() jwtparam: JwtPayload,
   ): Promise<CommitResDto> {
     const commit = await this.commitSvc.updateCommit({
-      commitNo: commitNo,
-      partnerComment: data.partnerComment,
+      partnerCommitNo: partnerCommitNo,
+      comment: data.comment,
+      userNo: jwtparam.userNo,
     });
 
     return commit;

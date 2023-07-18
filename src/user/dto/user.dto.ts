@@ -97,7 +97,6 @@ export class AuthorizationResDto extends UserResDto {
   })
   state!: LOGIN_STATE;
 
-
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -144,11 +143,12 @@ export class SetNicknameAndPartnerPayload {
   nickname!: string;
 
   @IsNumber()
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: 2,
     description: '파트너 번호',
+    required: true,
   })
-  partnerNo?: number;
+  partnerNo!: number | null;
 }
 
 export class GetPartnerResDto {

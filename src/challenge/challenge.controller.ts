@@ -104,6 +104,7 @@ export class ChallengeController {
     @JwtParam() jwtParam: JwtPayload,
   ): Promise<ChallengeResDto> {
     await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
+    await this.challengeValidator.validateChallengeYetApproved(challengeNo);
 
     const challenge = await this.challengeSvc.acceptChallenge(challengeNo, data.user1Flower);
     return challenge;
@@ -121,5 +122,21 @@ export class ChallengeController {
     await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
 
     return this.challengeSvc.deleteChallenge(challengeNo);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Post(':challengeNo/finish')
+  @ApiOperation({ description: '챌린지를 완료합니다.', summary: '챌린지 완료' })
+  @ApiResponse({ status: 200, type: ChallengeResDto })
+  async finishChallenge(
+    @Param('challengeNo') challengeNo: number,
+    @JwtParam() jwtParam: JwtPayload,
+  ): Promise<ChallengeResDto> {
+    await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
+    await this.challengeValidator.validateChallengeYetFinished(challengeNo);
+    //TODO: 챌린지 종료일이 지났을 때 종료 가능 validate
+
+    return this.challengeSvc.finishChallenge(challengeNo);
   }
 }

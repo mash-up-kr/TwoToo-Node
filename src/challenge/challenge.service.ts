@@ -23,7 +23,7 @@ export class ChallengeService {
     const user1 = await this.userSvc.getUser(challengeInfo.user1No);
 
     // TODO: Validate 로직 깔끔하게 하기
-    if (user1.partnerNo === undefined) throw new Error('파트너가 존재하지 않습니다');
+    if (user1.partnerNo == undefined) throw new NotFoundException('파트너가 존재하지 않습니다');
     const user2 = await this.userSvc.getUser(user1.partnerNo);
     const endDate: Date = add(challengeInfo.startDate, { days: TWOTWO });
 
@@ -79,7 +79,7 @@ export class ChallengeService {
       { $set: { user1Flower, isApproved: true } },
       { new: true },
     );
-    if (challenge === null) throw new Error('존재하지 않는 챌린지입니다');
+    if (challenge == null) throw new NotFoundException('존재하지 않는 챌린지입니다');
     return challenge;
   }
 
@@ -88,7 +88,19 @@ export class ChallengeService {
     return challengeNo;
   }
 
-  private async autoIncrement(key: string) {
+
+  async finishChallenge(challengeNo: number): Promise<ChallengeDocument> {
+    const challenge = await this.challengeModel.findOneAndUpdate(
+      { challengeNo },
+      { $set: { isFinished: true } },
+      { new: true },
+    );
+    if (challenge == null) throw new NotFoundException('존재하지 않는 챌린지입니다');
+    return challenge;
+  }
+
+ private async autoIncrement(key: string) {
+
     let result: { count: number } | null = null;
 
     while (result === null) {

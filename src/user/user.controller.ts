@@ -15,7 +15,7 @@ import { AuthGuard } from '../auth/auth.guard';
 @ApiTags('user')
 @Controller('user')
 export class UserController {
-  constructor(private readonly user: UserService) {}
+  constructor(private readonly userSvc: UserService) {}
 
   @Post('/authorize')
   @ApiOperation({
@@ -27,10 +27,10 @@ export class UserController {
   async authorize(@Body() data: AuhtorizationPayload): Promise<AuthorizationResDto> {
     const { socialId, loginType, deviceToken } = data;
 
-    let user = await this.user.getUserBySocialIdAndLoginType(socialId, loginType);
+    let user = await this.userSvc.getUserBySocialIdAndLoginType(socialId, loginType);
     if (user) {
-      const curState = await this.user.checkCurrentLoginState(user);
-      await this.user.updateDeviceToken({
+      const curState = await this.userSvc.checkCurrentLoginState(user);
+      await this.userSvc.updateDeviceToken({
         userNo: user.userNo,
         deviceToken: deviceToken,
       });
@@ -45,7 +45,7 @@ export class UserController {
         deviceToken: deviceToken,
       };
     }
-    user = await this.user.signUp({ socialId, loginType, deviceToken });
+    user = await this.userSvc.signUp({ socialId, loginType, deviceToken });
     if (!user) {
       throw new Error('Create User Failed');
     }
@@ -67,7 +67,8 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Patch('/nickname')
   @ApiOperation({
-    description: '유저의 닉네임을 설정합니다. 초대를 받은 유저는 닉네임 설정 후 매칭도 진행합니다.',
+    description:
+      '유저의 닉네임을 설정합니다. 초대를 할 유저는 nickname만 설정하고 partnerNo: null로 요청합니다. 초대를 받은 유저는 nickname과 partnerNo를 모두 설정해야 합니다.',
     summary: '닉네임 설정 및 파트너 매칭',
   })
   @ApiResponse({ status: 200, type: UserInfoResDto })
@@ -76,7 +77,7 @@ export class UserController {
     @Body() data: SetNicknameAndPartnerPayload,
   ): Promise<UserInfoResDto> {
     const { userNo } = jwtParam;
-    const updatedUser = await this.user.setNicknameAndPartner({
+    const updatedUser = await this.userSvc.setNicknameAndPartner({
       userNo: userNo,
       data,
     });
@@ -98,7 +99,7 @@ export class UserController {
   @ApiResponse({ status: 200, type: GetPartnerResDto })
   async getPartner(@JwtParam() jwtParam: JwtPayload): Promise<GetPartnerResDto> {
     const { userNo } = jwtParam;
-    const partnerNo = await this.user.checkPartner(userNo);
+    const partnerNo = await this.userSvc.checkPartner(userNo);
 
     return {
       partnerNo: partnerNo,
@@ -112,7 +113,7 @@ export class UserController {
   @ApiResponse({ status: 200, type: UserInfoResDto })
   async me(@JwtParam() jwtParam: JwtPayload): Promise<UserInfoResDto> {
     const { userNo } = jwtParam;
-    const user = await this.user.getUser(userNo);
+    const user = await this.userSvc.getUser(userNo);
     return {
       userNo: user.userNo,
       nickname: user.nickname,

@@ -104,22 +104,22 @@ export class CommitService {
   }
 
   async updateCommit({
-    PartnerCommitNo,
+    partnerCommitNo,
     comment,
     userNo,
   }: {
-    PartnerCommitNo: number;
+    partnerCommitNo: number;
     comment: string;
     userNo: number;
   }): Promise<Commit> {
     const userInfo = await this.userModel.findOne({ userNo: userNo });
-    const commitInfo = await this.commitModel.findOne({ commitNo: PartnerCommitNo });
+    if (_.isNull(userInfo)) {
+      throw new BadRequestException('없는 유저 번호 입니다.');
+    }
+    const commitInfo = await this.commitModel.findOne({ commitNo: partnerCommitNo });
 
     if (_.isNull(commitInfo)) {
       throw new BadRequestException('없는 커밋 번호 입니다.');
-    }
-    if (_.isNull(userInfo)) {
-      throw new BadRequestException('없는 유저 번호 입니다.');
     }
     if (commitInfo.partnerComment !== '') {
       throw new ConflictException('이미 칭찬을 했습니다.');
@@ -129,7 +129,7 @@ export class CommitService {
     }
 
     const updatedCommit = await this.commitModel.findOneAndUpdate(
-      { commitNo: PartnerCommitNo },
+      { commitNo: partnerCommitNo },
       { $set: { partnerComment: comment, updatedAt: new Date() } },
       { new: true },
     );

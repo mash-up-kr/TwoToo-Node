@@ -87,11 +87,11 @@ export class CommitController {
   @ApiResponse({ status: 200, type: CommitResDto })
   async createComment(
     @Body() data: CommitCommentPayload,
-    @Param('commitNo') PartnerCommitNo: number,
+    @Param('commitNo') partnerCommitNo: number,
     @JwtParam() jwtparam: JwtPayload,
   ): Promise<CommitResDto> {
     const commit = await this.commitSvc.updateCommit({
-      PartnerCommitNo: PartnerCommitNo,
+      partnerCommitNo: partnerCommitNo,
       comment: data.comment,
       userNo: jwtparam.userNo,
     });

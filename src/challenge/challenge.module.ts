@@ -10,6 +10,7 @@ import { ChallengeValidator } from './challenge.validator';
 import { CommitService } from '../commit/commit.service';
 import { Commit, CommitSchema } from '../commit/schema/commit.schema';
 import { CommitCounter, CommitCounterSchema } from '../commit/schema/commit-counter.schema';
+import { User, UserSchema } from 'src/user/schema/user.schema';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CommitCounter, CommitCounterSchema } from '../commit/schema/commit-coun
       { name: ChallengeCounter.name, schema: ChallengeCounterSchema },
       { name: Commit.name, schema: CommitSchema },
       { name: CommitCounter.name, schema: CommitCounterSchema },
+      { name: User.name, schema: UserSchema },
     ]),
     UserModule,
   ],

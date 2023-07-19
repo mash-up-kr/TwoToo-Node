@@ -27,7 +27,7 @@ export class ChallengeService {
     const user2 = await this.userSvc.getUser(user1.partnerNo);
     const endDate: Date = add(challengeInfo.startDate, { days: TWOTWO });
 
-    const challengeNo = await this.autoIncrement();
+    const challengeNo = await this.autoIncrement('challengeNo');
     const challenge = await this.challengeModel.create({
       challengeNo,
       name: challengeInfo.name,
@@ -44,7 +44,7 @@ export class ChallengeService {
   }
 
   async findChallenge(challengeNo: number): Promise<ChallengeDocument> {
-    const challenge = await this.challengeModel.findOne({ challengeNo });
+    const challenge = await this.challengeModel.findOne({ challengeNo }).lean().exec();
     if (challenge === null) throw new NotFoundException('존재하지 않는 챌린지입니다');
     return challenge;
   }
@@ -88,6 +88,7 @@ export class ChallengeService {
     return challengeNo;
   }
 
+
   async finishChallenge(challengeNo: number): Promise<ChallengeDocument> {
     const challenge = await this.challengeModel.findOneAndUpdate(
       { challengeNo },
@@ -98,12 +99,13 @@ export class ChallengeService {
     return challenge;
   }
 
-  private async autoIncrement() {
+ private async autoIncrement(key: string) {
+
     let result: { count: number } | null = null;
 
     while (result === null) {
       result = await this.challengeCounterModel.findOneAndUpdate(
-        { key: 'challengeNo' },
+        { key },
         { $inc: { count: 1 } },
         { upsert: true, returnOriginal: false },
       );

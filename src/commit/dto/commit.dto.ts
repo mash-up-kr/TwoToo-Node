@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsNumber, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsUrl } from 'class-validator';
 import { IsString } from 'class-validator';
 
 export class CommitResDto {

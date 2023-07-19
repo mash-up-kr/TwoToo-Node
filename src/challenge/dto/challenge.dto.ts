@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { UserResDto } from '../../user/dto/user.dto';
 import { CommitResDto } from 'src/commit/dto/commit.dto';
@@ -48,6 +49,7 @@ export class ChallengeResDto {
   @ApiProperty({ type: UserResDto, description: 'user2 - 챌린지 수락자', required: true })
   user2!: UserResDto;
 
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
@@ -59,6 +61,7 @@ export class ChallengeResDto {
   })
   startDate!: Date;
 
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
@@ -172,6 +175,7 @@ export class CreateChallengePayload {
   })
   user2Flower: FlowerType;
 
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
@@ -229,6 +233,7 @@ export class ChallengeHistoryResDto {
   })
   description: string;
 
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({
@@ -240,6 +245,7 @@ export class ChallengeHistoryResDto {
   })
   startDate!: Date;
 
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
   @ApiProperty({

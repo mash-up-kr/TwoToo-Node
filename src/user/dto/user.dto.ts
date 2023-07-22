@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { IsString } from 'class-validator';
 import { LOGIN_STATE } from '../user.service';
 import { LoginType } from '../user.types';
@@ -133,6 +133,24 @@ export class UserInfoResDto {
   partnerNo?: number;
 }
 
+export class GetMyInfoResDto extends UserInfoResDto {
+  @IsString()
+  @ApiProperty({
+    example: '왕자',
+    description: '파트너 닉네임',
+    required: true,
+  })
+  partnerNickname!: string | null;
+
+  @IsNumber()
+  @ApiProperty({
+    example: 3,
+    description: '현재까지 진행중인 챌린지 개수',
+    required: true,
+  })
+  totalChallengeCount!: number | 0;
+}
+
 export class SetNicknameAndPartnerPayload {
   @IsString()
   @ApiProperty({
@@ -143,6 +161,7 @@ export class SetNicknameAndPartnerPayload {
   nickname!: string;
 
   @IsNumber()
+  @IsOptional()
   @ApiPropertyOptional({
     example: 2,
     description: '파트너 번호',

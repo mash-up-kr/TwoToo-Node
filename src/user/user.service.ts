@@ -92,17 +92,26 @@ export class UserService {
         throw new ConflictException('매칭하고자하는 유저가 이미 파트너 매칭이 완료되었습니다.');
       }
 
-      updatedUser = await this.userModel.findOneAndUpdate(
-        { userNo: userNo },
-        {
-          $set: { nickname: data.nickname, partnerNo: data.partnerNo },
-        },
-        { new: true },
-      );
-    }
-
-    if (_.isNull(updatedUser)) {
-      throw new NotFoundException('닉네임 설정 혹은 파트너 매칭에 실패했습니다.');
+      // 서로 매칭 진행
+      try {
+        await Promise.all([
+          this.userModel.findOneAndUpdate(
+            { userNo: userNo },
+            {
+              $set: { nickname: data.nickname, partnerNo: data.partnerNo },
+            },
+            { new: true },
+          ),
+          this.userModel.findOneAndUpdate(
+            { userNo: data.partnerNo },
+            {
+              $set: { partnerNo: userNo },
+            },
+          ),
+        ]);
+      } catch (err) {
+        throw new NotFoundException('파트너 매칭에 실패했습니다.');
+      }
     }
 
     return updatedUser as User;

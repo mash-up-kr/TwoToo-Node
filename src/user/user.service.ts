@@ -73,6 +73,9 @@ export class UserService {
         { new: true },
       );
     } else {
+      if (data.partnerNo === userNo) {
+        throw new ConflictException('자기 자신과 파트너 매칭할 수 없습니다.');
+      }
       // 닉네임 설정 및 파트너 매칭(초대받은자)
       if (_.isNull(data.partnerNo)) {
         throw new BadRequestException('닉네임 설정 및 파트너 매칭에는 파트너 번호가 필요합니다.');

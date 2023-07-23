@@ -1,21 +1,28 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
-import { LOGIN_STATE, UserService } from './user.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import * as _ from 'lodash';
+
+import { LOGIN_STATE, UserService } from './user.service';
 import {
   SetNicknameAndPartnerPayload,
   UserInfoResDto,
   GetPartnerResDto,
   AuhtorizationPayload,
   AuthorizationResDto,
+  GetMyInfoResDto,
 } from './dto/user.dto';
 import { JwtPayload } from 'src/auth/auth.types';
 import { JwtParam } from 'src/auth/auth.user.decorator';
 import { AuthGuard } from '../auth/auth.guard';
+import { ChallengeService } from 'src/challenge/challenge.service';
 
 @ApiTags('user')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userSvc: UserService) {}
+  constructor(
+    private readonly userSvc: UserService,
+    private readonly challengeSvc: ChallengeService,
+  ) {}
 
   @Post('/authorize')
   @ApiOperation({
@@ -110,14 +117,25 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('/me')
   @ApiOperation({ description: '내 정보를 조회합니다.', summary: '내 정보 조회' })
-  @ApiResponse({ status: 200, type: UserInfoResDto })
-  async me(@JwtParam() jwtParam: JwtPayload): Promise<UserInfoResDto> {
+  @ApiResponse({ status: 200, type: GetMyInfoResDto })
+  async me(@JwtParam() jwtParam: JwtPayload): Promise<GetMyInfoResDto> {
     const { userNo } = jwtParam;
     const user = await this.userSvc.getUser(userNo);
+
+    let partnerNickname = null;
+    if (!_.isNull(user.partnerNo)) {
+      const partner = await this.userSvc.getUser(user.partnerNo as number);
+      partnerNickname = partner.nickname;
+    }
+
+    const totalChallengeCount = await this.challengeSvc.countUserChallenges(userNo);
+
     return {
       userNo: user.userNo,
       nickname: user.nickname,
       partnerNo: user.partnerNo,
+      partnerNickname: partnerNickname,
+      totalChallengeCount,
     };
   }
 }

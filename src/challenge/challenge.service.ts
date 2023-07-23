@@ -88,7 +88,6 @@ export class ChallengeService {
     return challengeNo;
   }
 
-
   async finishChallenge(challengeNo: number): Promise<ChallengeDocument> {
     const challenge = await this.challengeModel.findOneAndUpdate(
       { challengeNo },
@@ -99,8 +98,7 @@ export class ChallengeService {
     return challenge;
   }
 
- private async autoIncrement(key: string) {
-
+  private async autoIncrement(key: string) {
     let result: { count: number } | null = null;
 
     while (result === null) {

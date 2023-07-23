@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { endOfDay, startOfDay } from 'date-fns';
+import * as _ from 'lodash';
 
 import { HomeViewResDto } from './dto/home-view.dto';
 import { HomeViewState, HomeViewStateType } from './view.type';
@@ -8,10 +9,13 @@ import { ChallengeDocument } from '../challenge/schema/challenge.schema';
 import { CommitService } from '../commit/commit.service';
 import { CommitDocument } from '../commit/schema/commit.schema';
 import { NotificationService } from '../notification/notification.service';
+import { UserService } from '../user/user.service';
+import { UserDocument } from '../user/schema/user.schema';
 
 @Injectable()
 export class HomeViewService {
   constructor(
+    private readonly userSvc: UserService,
     private readonly challengeSvc: ChallengeService,
     private readonly commitSvc: CommitService,
     private readonly notificationSvc: NotificationService,
@@ -19,10 +23,18 @@ export class HomeViewService {
 
   async createHomeViewResponse(userNo: number): Promise<HomeViewResDto> {
     const recentChallenge = await this.challengeSvc.findRecentChallenge(userNo);
+    const user1: UserDocument = await this.userSvc.getUser(userNo);
     let user1Commit: CommitDocument | null = null;
+
+    if (_.isNull(user1.partnerNo)) {
+      throw new BadRequestException('파트너 매칭이 완료되지 않았습니다.');
+    }
+
+    const user2: UserDocument = await this.userSvc.getUser(user1.partnerNo as number);
     let user2Commit: CommitDocument | null = null;
     let userStingCnt = 0;
-    if (recentChallenge !== null) {
+
+    if (!_.isNull(recentChallenge)) {
       user1Commit = await this.commitSvc.getTodayCommit(recentChallenge.user1.userNo);
       user2Commit = await this.commitSvc.getTodayCommit(recentChallenge.user2.userNo);
       userStingCnt = await this.notificationSvc.getStingCount(userNo);
@@ -32,7 +44,9 @@ export class HomeViewService {
       viewState: this.getHomeViewState(recentChallenge, userNo),
       challengeTotal: await this.challengeSvc.countUserChallenges(userNo),
       onGoingChallenge: recentChallenge,
+      user1: this.userSvc.getPartialUserInfo(user1),
       user1Commit,
+      user2: this.userSvc.getPartialUserInfo(user2),
       user2Commit,
       userStingCnt,
     };

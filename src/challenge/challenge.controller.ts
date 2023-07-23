@@ -6,7 +6,6 @@ import { AuthGuard } from '../auth/auth.guard';
 import { JwtPayload } from '../auth/auth.types';
 import { JwtParam } from '../auth/auth.user.decorator';
 import { ChallengeService } from './challenge.service';
-import { FindChallengeResDto } from './dto/find-challenge.res.dto';
 import {
   AcceptChallengePayload,
   ChallengeResDto,
@@ -69,7 +68,7 @@ export class ChallengeController {
   async findChallenge(
     @Param('challengeNo') challengeNo: number,
     @JwtParam() jwtParam: JwtPayload,
-  ): Promise<FindChallengeResDto> {
+  ): Promise<ChallengeAndCommitListResDto> {
     await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
     const challenge = await this.challengeSvc.findChallenge(challengeNo);
     const user1CommitList = await this.commitSvc.getCommitList(challengeNo, challenge.user1.userNo);

@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as _ from 'lodash';
@@ -94,7 +95,7 @@ export class CommitService {
     );
 
     if (_.isNull(curChallenge)) {
-      throw new Error('Not Found Challenge');
+      throw new NotFoundException('존재하지 않는 챌린지입니다.');
     }
 
     return commit;
@@ -144,7 +145,7 @@ export class CommitService {
     const commit = await this.commitModel.findOne({ commitNo: commitNo }).lean();
 
     if (_.isNull(commit)) {
-      throw new Error('존재하지 않는 인증 정보입니다.');
+      throw new NotFoundException('존재하지 않는 인증 정보입니다.');
     }
 
     if (commit.userNo !== userNo) {

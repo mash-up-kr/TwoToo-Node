@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, ConflictException, BadRequestException } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -51,7 +51,7 @@ export class NotificationController {
 
     const stingCount = await this.notificationService.getStingCount(userNo);
     if (stingCount >= 5) {
-      throw new Error('No more Sting');
+      throw new ConflictException('이미 찌르기 5회를 진행했습니다.');
     }
 
     const partnerDeviceToken = await this.userService.getPartnerDeviceToken(userNo);
@@ -65,6 +65,6 @@ export class NotificationController {
       return await this.notificationService.createSting({ message, userNo });
     }
 
-    throw new Error('Fail to Sting');
+    throw new BadRequestException('찌르기 실패했습니다.');
   }
 }

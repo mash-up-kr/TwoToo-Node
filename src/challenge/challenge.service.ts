@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { add } from 'date-fns';
+import * as _ from 'lodash';
 
 import { UserService } from '../user/user.service';
 import { Challenge, ChallengeDocument } from './schema/challenge.schema';
@@ -22,9 +23,11 @@ export class ChallengeService {
   async createChallenge(challengeInfo: CreateChallenge): Promise<ChallengeResDto> {
     const user1 = await this.userSvc.getUser(challengeInfo.user1No);
 
-    // TODO: Validate 로직 깔끔하게 하기
-    if (user1.partnerNo == undefined) throw new NotFoundException('파트너가 존재하지 않습니다');
-    const user2 = await this.userSvc.getUser(user1.partnerNo);
+    if (_.isNull(user1.partnerNo)) {
+      throw new NotFoundException('파트너가 존재하지 않습니다');
+    }
+
+    const user2 = await this.userSvc.getUser(user1.partnerNo as number);
     const endDate: Date = add(challengeInfo.startDate, { days: TWOTWO });
 
     const challengeNo = await this.autoIncrement('challengeNo');
@@ -32,8 +35,8 @@ export class ChallengeService {
       challengeNo,
       name: challengeInfo.name,
       description: challengeInfo.description,
-      user1: user1,
-      user2: user2,
+      user1: this.userSvc.getPartialUserInfo(user1),
+      user2: this.userSvc.getPartialUserInfo(user2),
       startDate: challengeInfo.startDate,
       endDate: endDate,
       user2Flower: challengeInfo.user2Flower,

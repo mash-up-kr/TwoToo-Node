@@ -1,4 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as _ from 'lodash';
 import { Model } from 'mongoose';
@@ -25,7 +30,7 @@ export class UserService {
     private readonly userCounterModel: Model<UserCounterDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   async signUp({
     socialId,
@@ -58,10 +63,6 @@ export class UserService {
   async setNicknameAndPartner({ userNo, data }: { userNo: number; data: any }): Promise<User> {
     const user = await this.getUser(userNo);
 
-    if (!_.has(data, 'nickname')) {
-      throw new BadRequestException('nickname 필드가 필요합니다.');
-    }
-
     if (!_.isNull(user.partnerNo)) {
       throw new ConflictException('현재 유저는 이미 파트너 매칭이 완료되었습니다.');
     }
@@ -77,6 +78,9 @@ export class UserService {
         { new: true },
       );
     } else {
+      if (data.partnerNo === userNo) {
+        throw new ConflictException('자기 자신과 파트너 매칭할 수 없습니다.');
+      }
       // 닉네임 설정 및 파트너 매칭(초대받은자)
       if (_.isNull(data.partnerNo)) {
         throw new BadRequestException('닉네임 설정 및 파트너 매칭에는 파트너 번호가 필요합니다.');
@@ -96,17 +100,26 @@ export class UserService {
         throw new ConflictException('매칭하고자하는 유저가 이미 파트너 매칭이 완료되었습니다.');
       }
 
-      updatedUser = await this.userModel.findOneAndUpdate(
-        { userNo: userNo },
-        {
-          $set: { nickname: data.nickname, partnerNo: data.partnerNo },
-        },
-        { new: true },
-      );
-    }
-
-    if (_.isNull(updatedUser)) {
-      throw new NotFoundException('닉네임 설정 혹은 파트너 매칭에 실패했습니다.');
+      // 서로 매칭 진행
+      try {
+        await Promise.all([
+          this.userModel.findOneAndUpdate(
+            { userNo: userNo },
+            {
+              $set: { nickname: data.nickname, partnerNo: data.partnerNo },
+            },
+            { new: true },
+          ),
+          this.userModel.findOneAndUpdate(
+            { userNo: data.partnerNo },
+            {
+              $set: { partnerNo: userNo },
+            },
+          ),
+        ]);
+      } catch (err) {
+        throw new NotFoundException('파트너 매칭에 실패했습니다.');
+      }
     }
 
     return updatedUser as User;
@@ -198,6 +211,7 @@ export class UserService {
     return updatedUser as User;
   }
 
+
   async delUser(socialId: string) {
     if (_.isNil(socialId)) {
       throw new Error('No socialId');
@@ -206,5 +220,12 @@ export class UserService {
     await this.userModel.deleteOne({
       socialId: socialId,
     });
+  }
+
+  getPartialUserInfo(user: User): Pick<User, 'nickname' | 'userNo' | 'partnerNo'> {
+    // 민감하지않은 정보들만 추출
+    const { userNo, nickname, partnerNo } = user;
+
+    return { userNo, nickname, partnerNo };
   }
 }

@@ -3,18 +3,19 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as _ from 'lodash';
 import { Model } from 'mongoose';
-
-import { Commit, CommitDocument } from './schema/commit.schema';
-import { CommitCounter, CommitCounterDocument } from './schema/commit-counter.schema';
-import { CommitPayload } from './dto/commit.dto';
-import { Challenge, ChallengeDocument } from '../challenge/schema/challenge.schema';
 import { startOfToday } from 'date-fns';
 import * as moment from 'moment-timezone';
+
+import { CommitPayload } from './dto/commit.dto';
+import { Commit, CommitDocument } from './schema/commit.schema';
 import { User, UserDocument } from '../user/schema/user.schema';
+import { Challenge, ChallengeDocument } from '../challenge/schema/challenge.schema';
+import { CommitCounter, CommitCounterDocument } from './schema/commit-counter.schema';
 
 @Injectable()
 export class CommitService {
@@ -30,9 +31,6 @@ export class CommitService {
   ) {}
 
   async createCommit({ userNo, data }: { userNo: number; data: CommitPayload }): Promise<Commit> {
-    if (!_.has(data, 'challengeNo')) {
-      throw new BadRequestException('challengeNo 필드가 필요합니다.');
-    }
     const today = moment().tz('Asia/Seoul').toDate();
     const inProgressChallenge = await this.challengeModel.findOne({
       challengeNo: data.challengeNo,
@@ -42,8 +40,8 @@ export class CommitService {
       isFinished: false,
     });
 
-    if (!inProgressChallenge) {
-      throw new BadRequestException('진행중인 challenge 번호가 아닙니다.');
+    if (_.isNull(inProgressChallenge)) {
+      throw new BadRequestException('진행중인 챌린지가 아닙니다.');
     }
 
     const todayCommit = await this.commitModel.findOne({
@@ -97,7 +95,7 @@ export class CommitService {
     );
 
     if (_.isNull(curChallenge)) {
-      throw new Error('Not Found Challenge');
+      throw new NotFoundException('존재하지 않는 챌린지입니다.');
     }
 
     return commit;
@@ -114,18 +112,20 @@ export class CommitService {
   }): Promise<Commit> {
     const userInfo = await this.userModel.findOne({ userNo: userNo });
     if (_.isNull(userInfo)) {
-      throw new BadRequestException('없는 유저 번호 입니다.');
+      throw new BadRequestException('존재하지 않는 유저입니다.');
     }
-    const commitInfo = await this.commitModel.findOne({ commitNo: partnerCommitNo });
 
+    const commitInfo = await this.commitModel.findOne({ commitNo: partnerCommitNo });
     if (_.isNull(commitInfo)) {
-      throw new BadRequestException('없는 커밋 번호 입니다.');
+      throw new BadRequestException('존재하지 않는 인증 정보입니다.');
     }
+
     if (commitInfo.partnerComment !== '') {
-      throw new ConflictException('이미 칭찬을 했습니다.');
+      throw new ConflictException('오늘 이미 칭찬을 완료했습니다.');
     }
+
     if (userInfo.partnerNo !== commitInfo.userNo) {
-      throw new ForbiddenException('해당 유저 파트너의 커밋이 아닙니다.');
+      throw new ForbiddenException('해당 유저 파트너의 인증 정보가 아닙니다.');
     }
 
     const updatedCommit = await this.commitModel.findOneAndUpdate(
@@ -135,7 +135,7 @@ export class CommitService {
     );
 
     if (_.isNull(updatedCommit)) {
-      throw new BadRequestException('없는 커밋 번호 입니다.');
+      throw new BadRequestException('존재하지 않는 인증 정보입니다.');
     }
 
     return updatedCommit;
@@ -145,10 +145,11 @@ export class CommitService {
     const commit = await this.commitModel.findOne({ commitNo: commitNo }).lean();
 
     if (_.isNull(commit)) {
-      throw new Error('Not Found Commit');
+      throw new NotFoundException('존재하지 않는 인증 정보입니다.');
     }
+
     if (commit.userNo !== userNo) {
-      throw new ForbiddenException('해당 유저의 커밋이 아닙니다.');
+      throw new ForbiddenException('해당 유저의 인증 정보가 아닙니다.');
     }
 
     return commit;

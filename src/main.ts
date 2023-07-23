@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
+import * as FirebaseAdmin from 'firebase-admin';
 
 import { AppModule } from './app.module';
 import { setupSwagger } from './swagger';
-import * as FirebaseAdmin from 'firebase-admin';
-import { ConfigService } from '@nestjs/config';
 import { HttpExceptionFilter } from './httpException.filter';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,13 +17,14 @@ async function bootstrap() {
     privateKey: configService.get<string>('FCM_PRIVATE_KEY')!.replace(/\\n/g, '\n'),
     clientEmail: configService.get<string>('FCM_CLIENT_EMAIL'),
   };
-  // Initialize the firebase admin app
+
   FirebaseAdmin.initializeApp({
     credential: FirebaseAdmin.credential.cert(fcmConfig),
   });
 
   setupSwagger(app);
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
 }
 

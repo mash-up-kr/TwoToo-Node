@@ -5,6 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ChallengeResDto } from 'src/challenge/dto/challenge.dto';
 import { CommitResDto } from 'src/commit/dto/commit.dto';
+import { UserResDto, UserInfoResDto } from '../../user/dto/user.dto';
 
 export class HomeViewResDto {
   @IsString()
@@ -33,11 +34,25 @@ export class HomeViewResDto {
   onGoingChallenge: Challenge | null;
 
   @ApiProperty({
+    type: UserResDto,
+    description: 'user1(생성자) 정보',
+    required: true,
+  })
+  user1: UserInfoResDto;
+
+  @ApiProperty({
     type: CommitResDto,
     description: 'user1(생성자)의 오늘 인증 정보',
     required: true,
   })
   user1Commit: Commit | null;
+
+  @ApiProperty({
+    type: UserResDto,
+    description: 'user2(수락자) 정보',
+    required: true,
+  })
+  user2: UserInfoResDto;
 
   @ApiProperty({
     type: CommitResDto,

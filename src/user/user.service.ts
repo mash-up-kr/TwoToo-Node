@@ -1,4 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as _ from 'lodash';
 import { Model } from 'mongoose';
@@ -25,7 +30,7 @@ export class UserService {
     private readonly userCounterModel: Model<UserCounterDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   async signUp({
     socialId,
@@ -192,5 +197,12 @@ export class UserService {
     );
 
     return updatedUser as User;
+  }
+
+  getPartialUserInfo(user: User): Pick<User, 'nickname' | 'userNo' | 'partnerNo'> {
+    // 민감하지않은 정보들만 추출
+    const { userNo, nickname, partnerNo } = user;
+
+    return { userNo, nickname, partnerNo };
   }
 }

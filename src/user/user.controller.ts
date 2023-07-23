@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
-import { LOGIN_STATE, UserService } from './user.service';
+import { BadRequestException, Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import * as _ from 'lodash';
 import {
   SetNicknameAndPartnerPayload,
   UserInfoResDto,
@@ -8,6 +8,7 @@ import {
   AuhtorizationPayload,
   AuthorizationResDto,
 } from './dto/user.dto';
+import { LOGIN_STATE, UserService } from './user.service';
 import { JwtPayload } from 'src/auth/auth.types';
 import { JwtParam } from 'src/auth/auth.user.decorator';
 import { AuthGuard } from '../auth/auth.guard';
@@ -46,8 +47,8 @@ export class UserController {
       };
     }
     user = await this.userSvc.signUp({ socialId, loginType, deviceToken });
-    if (!user) {
-      throw new Error('Create User Failed');
+    if (_.isNull(user)) {
+    throw new BadRequestException('유저 생성에 실패했습니다.');
     }
 
     return {

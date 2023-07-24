@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsUrl } from 'class-validator';
 import { IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CommitResDto {
   @IsNumber()
@@ -39,8 +40,6 @@ export class CommitResDto {
   })
   text!: string;
 
-  @IsUrl()
-  @IsNotEmpty()
   @ApiProperty({
     example: '',
     description: '인증 사진 업로드 주소',
@@ -68,8 +67,6 @@ export class CommitPayload {
   })
   text!: string;
 
-  @IsUrl()
-  @IsNotEmpty()
   @ApiProperty({
     example: '',
     description: '인증 사진 업로드 주소',
@@ -77,6 +74,7 @@ export class CommitPayload {
   })
   photoUrl!: string;
 
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({

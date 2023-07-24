@@ -117,6 +117,8 @@ export class UserService {
             },
           ),
         ]);
+
+        updatedUser = await this.getUser(userNo);
       } catch (err) {
         throw new NotFoundException('파트너 매칭에 실패했습니다.');
       }

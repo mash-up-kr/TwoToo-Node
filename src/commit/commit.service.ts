@@ -8,7 +8,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import * as _ from 'lodash';
 import { Model } from 'mongoose';
-import { startOfToday } from 'date-fns';
+import { endOfToday, startOfToday } from 'date-fns';
 import * as moment from 'moment-timezone';
 
 import { CommitPayload } from './dto/commit.dto';
@@ -46,7 +46,7 @@ export class CommitService {
 
     const todayCommit = await this.commitModel.findOne({
       userNo: userNo,
-      createdAt: { $gte: today },
+      createdAt: { $gte: startOfToday(), $lte: endOfToday() },
     });
 
     if (todayCommit) {
@@ -159,9 +159,7 @@ export class CommitService {
     const commit = await this.commitModel
       .findOne({
         userNo: userNo,
-        createdAt: {
-          $gte: startOfToday(),
-        },
+        createdAt: { $gte: startOfToday(), $lte: endOfToday() },
       })
       .sort({ createdAt: -1 })
       .lean();

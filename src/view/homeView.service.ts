@@ -23,32 +23,32 @@ export class HomeViewService {
 
   async createHomeViewResponse(userNo: number): Promise<HomeViewResDto> {
     const recentChallenge = await this.challengeSvc.findRecentChallenge(userNo);
-    const user1: UserDocument = await this.userSvc.getUser(userNo);
-    let user1Commit: CommitDocument | null = null;
+    const myInfo: UserDocument = await this.userSvc.getUser(userNo);
+    let myCommit: CommitDocument | null = null;
 
-    if (_.isNull(user1.partnerNo)) {
+    if (_.isNull(myInfo.partnerNo)) {
       throw new BadRequestException('파트너 매칭이 완료되지 않았습니다.');
     }
 
-    const user2: UserDocument = await this.userSvc.getUser(user1.partnerNo as number);
-    let user2Commit: CommitDocument | null = null;
-    let userStingCnt = 0;
+    const partnerInfo: UserDocument = await this.userSvc.getUser(myInfo.partnerNo as number);
+    let partnerCommit: CommitDocument | null = null;
+    let myStingCnt = 0;
 
     if (!_.isNull(recentChallenge)) {
-      user1Commit = await this.commitSvc.getTodayCommit(recentChallenge.user1.userNo);
-      user2Commit = await this.commitSvc.getTodayCommit(recentChallenge.user2.userNo);
-      userStingCnt = await this.notificationSvc.getStingCount(userNo);
+      myCommit = await this.commitSvc.getTodayCommit(myInfo.userNo);
+      partnerCommit = await this.commitSvc.getTodayCommit(partnerInfo.userNo);
+      myStingCnt = await this.notificationSvc.getStingCount(userNo);
     }
 
     return {
       viewState: this.getHomeViewState(recentChallenge, userNo),
       challengeTotal: await this.challengeSvc.countUserChallenges(userNo),
       onGoingChallenge: recentChallenge,
-      user1: this.userSvc.getPartialUserInfo(user1),
-      user1Commit,
-      user2: this.userSvc.getPartialUserInfo(user2),
-      user2Commit,
-      userStingCnt,
+      myInfo: this.userSvc.getPartialUserInfo(myInfo),
+      myCommit,
+      partnerInfo: this.userSvc.getPartialUserInfo(partnerInfo),
+      partnerCommit,
+      myStingCnt,
     };
   }
 

@@ -35,37 +35,37 @@ export class HomeViewResDto {
 
   @ApiProperty({
     type: UserResDto,
-    description: 'user1(생성자) 정보',
+    description: '조회한 사람 정보',
     required: true,
   })
-  user1: UserInfoResDto;
+  myInfo: UserInfoResDto;
 
   @ApiProperty({
     type: CommitResDto,
-    description: 'user1(생성자)의 오늘 인증 정보',
+    description: '조회한 사람의 오늘 인증 정보',
     required: true,
   })
-  user1Commit: Commit | null;
+  myCommit: Commit | null;
 
   @ApiProperty({
     type: UserResDto,
-    description: 'user2(수락자) 정보',
+    description: '조회한 사람의 파트너 정보',
     required: true,
   })
-  user2: UserInfoResDto;
+  partnerInfo: UserInfoResDto;
 
   @ApiProperty({
     type: CommitResDto,
-    description: 'user2(수락자)의 오늘 인증 정보',
+    description: '조회한 사람의 파트너의 오늘 인증 정보',
     required: true,
   })
-  user2Commit: Commit | null;
+  partnerCommit: Commit | null;
 
   @IsNumber()
   @ApiProperty({
     example: 3,
-    description: '현재 유저의 오늘 찌르기 한 횟수',
+    description: '조회한 사람의 오늘 찌르기 한 횟수',
     required: true,
   })
-  userStingCnt: number;
+  myStingCnt: number;
 }

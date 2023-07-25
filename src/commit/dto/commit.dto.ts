@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 import { IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -55,6 +55,22 @@ export class CommitResDto {
     required: true,
   })
   partnerComment: string;
+
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '2023-07-25T05:54:50.431Z',
+    description: '상대방이 칭찬한 시간',
+    required: true,
+  })
+  createdAt: Date;
+
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '2023-07-25T05:54:50.431Z',
+    description: '상대방이 칭찬한 시간',
+    required: true,
+  })
+  updatedAt: Date;
 }
 
 export class CommitPayload {

@@ -151,7 +151,8 @@ export class CommitService {
     if (commit.userNo !== userNo) {
       throw new ForbiddenException('해당 유저의 인증 정보가 아닙니다.');
     }
-
+    commit.updatedAt.setHours(commit.updatedAt.getHours() + 9);
+    commit.createdAt.setHours(commit.createdAt.getHours() + 9);
     return commit;
   }
 

@@ -1,5 +1,5 @@
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 
 import { UserService } from '../user/user.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -13,6 +13,7 @@ import {
   CreateChallengePayload,
   ChallengeHistoryResDto,
   ChallengeAndCommitListResDto,
+  UpdateChallengePayload,
 } from './dto/challenge.dto';
 import { ChallengeValidator } from './challenge.validator';
 import { CommitService } from 'src/commit/commit.service';
@@ -107,6 +108,24 @@ export class ChallengeController {
 
     const challenge = await this.challengeSvc.acceptChallenge(challengeNo, data.user1Flower);
     return challenge;
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Patch(':challengeNo')
+  @ApiOperation({
+    description: '챌린지를 수정합니다. 수정 할 필드 값만 인자로 전달합니다.',
+    summary: '챌린지 수정하기',
+  })
+  @ApiResponse({ status: 200, type: ChallengeResDto })
+  async updateChallenge(
+    @Param('challengeNo') challengeNo: number,
+    @Body() data: UpdateChallengePayload,
+    @JwtParam() jwtParam: JwtPayload,
+  ): Promise<ChallengeResDto> {
+    await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
+
+    return this.challengeSvc.updateChallenge(challengeNo, data);
   }
 
   @ApiBearerAuth()

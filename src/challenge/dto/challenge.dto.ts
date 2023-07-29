@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { UserInfoResDto } from '../../user/dto/user.dto';
 import { CommitResDto } from 'src/commit/dto/commit.dto';
 
@@ -205,6 +213,93 @@ export class CreateChallenge {
   user1No: number;
   user2Flower: string;
   startDate: Date;
+}
+
+export class UpdateChallengePayload {
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    example: '아침 7시 기상',
+    description: '챌린지 이름',
+    required: true,
+  })
+  name: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    example: '매일 운동 인증을 하는 챌린지',
+    description: '챌린지 설명',
+  })
+  description: string;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({
+    example: 1,
+  })
+  user1No: number;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({
+    example: 2,
+  })
+  user2No: number;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    example: 'FIG',
+    enum: FlowerType,
+    description: 'user1(생성자)의 꽃',
+  })
+  user1Flower: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    example: 'FIG',
+    enum: FlowerType,
+    description: 'user2(생성자)의 꽃',
+  })
+  user2Flower: string;
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  @ApiProperty({
+    type: String,
+    format: 'date',
+    description: '챌린지 시작일',
+  })
+  startDate: Date;
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  @ApiProperty({
+    type: String,
+    format: 'date',
+    description: '챌린지 종료일',
+  })
+  endDate: Date;
+
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty({
+    type: Boolean,
+    description: '수락 여부',
+  })
+  isApproved: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty({
+    type: Boolean,
+    description: '종료 여부',
+  })
+  isFinished: boolean;
 }
 
 export class ChallengeHistoryResDto {

@@ -31,7 +31,7 @@ export class CommitService {
   ) {}
 
   async createCommit({ userNo, data }: { userNo: number; data: CommitPayload }): Promise<Commit> {
-    const today = moment().tz('Asia/Seoul').toDate();
+    const today = new Date();
     const inProgressChallenge = await this.challengeModel.findOne({
       challengeNo: data.challengeNo,
       startDate: { $lte: today },

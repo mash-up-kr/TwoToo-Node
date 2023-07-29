@@ -14,11 +14,13 @@ import {
   ChallengeHistoryResDto,
   UpdateChallengePayload,
 } from './dto/challenge.dto';
+import { CommitService } from 'src/commit/commit.service';
 
 @Injectable()
 export class ChallengeService {
   constructor(
     private readonly userSvc: UserService,
+    private readonly commitSvc: CommitService,
     @InjectModel(Challenge.name)
     private readonly challengeModel: Model<ChallengeDocument>,
     @InjectModel(ChallengeCounter.name)
@@ -108,6 +110,8 @@ export class ChallengeService {
 
   async deleteChallenge(challengeNo: number): Promise<number> {
     await this.challengeModel.deleteOne({ challengeNo });
+    await this.commitSvc.deleteCommitWithChallengeNo(challengeNo);
+
     return challengeNo;
   }
 

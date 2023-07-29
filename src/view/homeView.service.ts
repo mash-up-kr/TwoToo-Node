@@ -35,8 +35,11 @@ export class HomeViewService {
     let myStingCnt = 0;
 
     if (!_.isNull(recentChallenge)) {
-      myCommit = await this.commitSvc.getTodayCommit(myInfo.userNo);
-      partnerCommit = await this.commitSvc.getTodayCommit(partnerInfo.userNo);
+      myCommit = await this.commitSvc.getTodayCommit(myInfo.userNo, recentChallenge.challengeNo);
+      partnerCommit = await this.commitSvc.getTodayCommit(
+        partnerInfo.userNo,
+        recentChallenge.challengeNo,
+      );
       myStingCnt = await this.notificationSvc.getStingCount(userNo);
     }
 

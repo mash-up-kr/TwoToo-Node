@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ChallengeService } from './challenge.service';
 import { ChallengeController } from './challenge.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -7,10 +7,10 @@ import { UserModule } from '../user/user.module';
 import { ChallengeCounter, ChallengeCounterSchema } from './schema/challenge-counter.schema';
 import { ChallengeValidator } from './challenge.validator';
 
-import { CommitService } from '../commit/commit.service';
 import { Commit, CommitSchema } from '../commit/schema/commit.schema';
 import { CommitCounter, CommitCounterSchema } from '../commit/schema/commit-counter.schema';
 import { User, UserSchema } from 'src/user/schema/user.schema';
+import { CommitModule } from 'src/commit/commit.module';
 
 @Module({
   imports: [
@@ -21,9 +21,10 @@ import { User, UserSchema } from 'src/user/schema/user.schema';
       { name: CommitCounter.name, schema: CommitCounterSchema },
       { name: User.name, schema: UserSchema },
     ]),
-    UserModule,
+    forwardRef(() => UserModule),
+    forwardRef(() => CommitModule)
   ],
-  providers: [ChallengeService, CommitService, ChallengeValidator],
+  providers: [ChallengeService, ChallengeValidator],
   controllers: [ChallengeController],
   exports: [ChallengeService],
 })

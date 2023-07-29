@@ -156,10 +156,11 @@ export class CommitService {
     return commit;
   }
 
-  async getTodayCommit(userNo: number): Promise<CommitDocument | null> {
+  async getTodayCommit(userNo: number, challengeNo: number): Promise<CommitDocument | null> {
     const commit = await this.commitModel
       .findOne({
         userNo: userNo,
+        challengeNo,
         createdAt: { $gte: startOfToday(), $lte: endOfToday() },
       })
       .sort({ createdAt: -1 })
@@ -189,5 +190,16 @@ export class CommitService {
     });
 
     return result;
+  }
+
+  async deleteCommit(commitNo: number): Promise<CommitDocument> {
+    const deletedCommit = (await this.commitModel.findOneAndDelete({ commitNo })) as CommitDocument;
+    return deletedCommit;
+  }
+
+  async deleteCommitWithChallengeNo(challengeNo: number): Promise<void> {
+    await this.commitModel.deleteMany({ challengeNo });
+
+    return;
   }
 }

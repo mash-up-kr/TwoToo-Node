@@ -8,7 +8,12 @@ import { UserService } from '../user/user.service';
 import { Challenge, ChallengeDocument } from './schema/challenge.schema';
 import { TWOTWO } from '../constants/number';
 import { ChallengeCounter, ChallengeCounterDocument } from './schema/challenge-counter.schema';
-import { ChallengeResDto, CreateChallenge, ChallengeHistoryResDto } from './dto/challenge.dto';
+import {
+  ChallengeResDto,
+  CreateChallenge,
+  ChallengeHistoryResDto,
+  UpdateChallengePayload,
+} from './dto/challenge.dto';
 
 @Injectable()
 export class ChallengeService {
@@ -57,6 +62,21 @@ export class ChallengeService {
       $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
     });
     return challenges;
+  }
+
+  async updateChallenge(
+    challengeNo: number,
+    challengeInfo: UpdateChallengePayload,
+  ): Promise<ChallengeDocument> {
+    const challenge: ChallengeDocument | null = await this.challengeModel.findOneAndUpdate(
+      { challengeNo },
+      challengeInfo,
+      {
+        new: true,
+      },
+    );
+    if (challenge === null) throw new NotFoundException('존재하지 않는 챌린지입니다');
+    return challenge;
   }
 
   async findRecentChallenge(userNo: number): Promise<ChallengeDocument | null> {

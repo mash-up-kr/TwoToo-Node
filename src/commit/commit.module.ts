@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { CommitService } from './commit.service';
@@ -26,7 +26,7 @@ import { User, UserSchema } from '../user/schema/user.schema';
       useFactory: multerOptionsFactory,
       inject: [ConfigService],
     }),
-    UserModule,
+    forwardRef(() => UserModule),
   ],
   providers: [CommitService, FileService],
   controllers: [CommitController],

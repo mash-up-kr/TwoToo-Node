@@ -108,6 +108,8 @@ export class ChallengeService {
 
   async deleteChallenge(challengeNo: number): Promise<number> {
     await this.challengeModel.deleteOne({ challengeNo });
+    await this.commitSvc.deleteCommit(challengeNo);
+
     return challengeNo;
   }
 

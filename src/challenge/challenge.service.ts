@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { add } from 'date-fns';
+import { add, endOfDay } from 'date-fns';
 import * as _ from 'lodash';
 
 import { UserService } from '../user/user.service';
@@ -35,7 +35,7 @@ export class ChallengeService {
     }
 
     const user2 = await this.userSvc.getUser(user1.partnerNo as number);
-    const endDate: Date = add(challengeInfo.startDate, { days: TWOTWO });
+    const endDate: Date = add(endOfDay(challengeInfo.startDate), { days: TWOTWO });
 
     const challengeNo = await this.autoIncrement('challengeNo');
     const challenge = await this.challengeModel.create({

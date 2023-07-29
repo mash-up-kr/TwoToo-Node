@@ -231,12 +231,6 @@ export class UpdateChallengePayload {
     example: '매일 운동 인증을 하는 챌린지',
     description: '챌린지 설명',
   })
-  @IsOptional()
-  @IsString()
-  @ApiProperty({
-    example: '매일 운동 인증을 하는 챌린지',
-    description: '챌린지 설명',
-  })
   description: string;
 
   @IsOptional()

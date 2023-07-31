@@ -45,6 +45,7 @@ export class CommitService {
     }
 
     const todayCommit = await this.commitModel.findOne({
+      challengeNo: inProgressChallenge.challengeNo,
       userNo: userNo,
       createdAt: { $gte: startOfToday(), $lte: endOfToday() },
     });

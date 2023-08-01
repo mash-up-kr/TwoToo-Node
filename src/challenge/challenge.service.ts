@@ -153,6 +153,8 @@ export class ChallengeService {
         {
           _id: 0,
           name: 1,
+          'user1.userNo': 1,
+          'user2.userNo': 1,
           description: 1,
           user1Flower: 1,
           user2Flower: 1,
@@ -165,6 +167,14 @@ export class ChallengeService {
       .lean()
       .exec();
 
-    return challenges;
+    const modifiedChallenges = challenges.map((challenge) => ({
+      ...challenge,
+      user1No: challenge.user1.userNo,
+      user2No: challenge.user2.userNo,
+      user1: undefined, // user1 객체는 더 이상 필요 없으므로 제거합니다.
+      user2: undefined, // user2 객체는 더 이상 필요 없으므로 제거합니다.
+    }));
+
+    return modifiedChallenges;
   }
 }

@@ -28,7 +28,18 @@ export class NotificationService {
       token: deviceToken,
       data: {
         title,
-        message,
+        body: message,
+      },
+      notification: {
+        title,
+        body: message,
+      },
+      apns: {
+        payload: {
+          aps: {
+            contentAvailable: true,
+          },
+        },
       },
     };
     const ret = await FirebaseAdmin.messaging().send(sendMessage);

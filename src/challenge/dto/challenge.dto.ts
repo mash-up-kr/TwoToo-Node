@@ -352,6 +352,20 @@ export class ChallengeHistoryResDto {
   })
   endDate!: Date;
 
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({
+    example: 1,
+  })
+  user1No: number;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({
+    example: 2,
+  })
+  user2No: number;
+
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({

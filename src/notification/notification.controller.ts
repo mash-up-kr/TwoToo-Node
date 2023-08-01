@@ -1,4 +1,11 @@
-import { Controller, Post, Body, UseGuards, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -27,6 +34,7 @@ export class NotificationController {
     const { deviceToken, message } = data;
     const title = 'TwoToo';
     return await this.notificationService.sendPush({
+      nickname: 'Twotoo',
       deviceToken,
       title,
       message,
@@ -55,7 +63,9 @@ export class NotificationController {
     }
 
     const partnerDeviceToken = await this.userService.getPartnerDeviceToken(userNo);
+    const user = await this.userService.getUser(userNo);
     const pushRet = await this.notificationService.sendPush({
+      nickname: user.nickname,
       message,
       deviceToken: partnerDeviceToken,
       title,

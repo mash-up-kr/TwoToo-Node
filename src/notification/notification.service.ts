@@ -23,15 +23,15 @@ export class NotificationService {
     return ret;
   }
 
-  async sendPush({ deviceToken, title, message }: PushResDto): Promise<string> {
+  async sendPush({ deviceToken, message, nickname }: PushResDto): Promise<string> {
     const sendMessage = {
       token: deviceToken,
       data: {
-        title,
+        title: nickname,
         body: message,
       },
       notification: {
-        title,
+        title: nickname,
         body: message,
       },
       apns: {

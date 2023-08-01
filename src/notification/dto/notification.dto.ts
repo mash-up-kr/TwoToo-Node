@@ -58,6 +58,15 @@ export class PushResDto {
     required: true,
   })
   title!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '공주',
+    description: '사용할 닉네임',
+    required: true,
+  })
+  nickname!: string;
 }
 
 export class NotificationResDto {

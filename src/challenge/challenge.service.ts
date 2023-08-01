@@ -35,8 +35,10 @@ export class ChallengeService {
     }
 
     const user2 = await this.userSvc.getUser(user1.partnerNo as number);
-    const endDate: Date = add(endOfDay(challengeInfo.startDate), { days: TWOTWO });
 
+    const endDate: Date = add(endOfDay(challengeInfo.startDate), { days: 21 });
+
+    console.log(challengeInfo.startDate, endDate);
     const challengeNo = await this.autoIncrement('challengeNo');
     const challenge = await this.challengeModel.create({
       challengeNo,

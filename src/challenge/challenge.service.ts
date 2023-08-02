@@ -6,7 +6,6 @@ import * as _ from 'lodash';
 
 import { UserService } from '../user/user.service';
 import { Challenge, ChallengeDocument } from './schema/challenge.schema';
-import { TWOTWO } from '../constants/number';
 import { ChallengeCounter, ChallengeCounterDocument } from './schema/challenge-counter.schema';
 import {
   ChallengeResDto,
@@ -35,7 +34,8 @@ export class ChallengeService {
     }
 
     const user2 = await this.userSvc.getUser(user1.partnerNo as number);
-    const endDate: Date = add(endOfDay(challengeInfo.startDate), { days: TWOTWO });
+
+    const endDate: Date = add(endOfDay(challengeInfo.startDate), { days: 21 });
 
     const challengeNo = await this.autoIncrement('challengeNo');
     const challenge = await this.challengeModel.create({

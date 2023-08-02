@@ -152,6 +152,7 @@ export class ChallengeService {
         },
         {
           _id: 0,
+          challengeNo: 1,
           name: 1,
           'user1.userNo': 1,
           'user2.userNo': 1,

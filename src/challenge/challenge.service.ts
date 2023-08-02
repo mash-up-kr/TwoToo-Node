@@ -6,7 +6,6 @@ import * as _ from 'lodash';
 
 import { UserService } from '../user/user.service';
 import { Challenge, ChallengeDocument } from './schema/challenge.schema';
-import { TWOTWO } from '../constants/number';
 import { ChallengeCounter, ChallengeCounterDocument } from './schema/challenge-counter.schema';
 import {
   ChallengeResDto,
@@ -38,7 +37,6 @@ export class ChallengeService {
 
     const endDate: Date = add(endOfDay(challengeInfo.startDate), { days: 21 });
 
-    console.log(challengeInfo.startDate, endDate);
     const challengeNo = await this.autoIncrement('challengeNo');
     const challenge = await this.challengeModel.create({
       challengeNo,

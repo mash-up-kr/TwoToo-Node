@@ -41,10 +41,10 @@ export class ChallengeService {
       // 파트너가 이미 생성한 챌린지가 있는지 확인
       // [챌린지 찾는 조건]
       // isApproved: false - 아직 수락 안됨
-      // user1.userNo === user1.partnerNo - 생성자(user1).userNo === 현재 요청자의 파트너(user1).partnerNo
+      // user1.userNo === user1.partnerNo - 생성자(user1).userNo === 현재 요청자의 파트너(user2).userNo
       const existingChallenge = await this.challengeModel.findOne({
         isApproved: false,
-        'user1.userNo': user1.partnerNo,
+        'user1.userNo': user2.userNo,
       });
 
       // 이미 생성된 챌린지가 있는 경우 삭제 후 생성

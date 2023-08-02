@@ -36,20 +36,23 @@ export class ChallengeService {
 
     // user2: 챌린지 수락할 자
     const user2 = await this.userSvc.getUser(user1.partnerNo as number);
-    
+
     try {
       // 파트너가 이미 생성한 챌린지가 있는지 확인
       // [챌린지 찾는 조건]
       // isApproved: false - 아직 수락 안됨
       // user1.userNo === user1.partnerNo - 생성자(user1).userNo === 현재 요청자의 파트너(user1).partnerNo
-      const existingChallenge = await this.challengeModel.findOne({ isApproved: false, "user1.userNo": user1.partnerNo })
+      const existingChallenge = await this.challengeModel.findOne({
+        isApproved: false,
+        'user1.userNo': user1.partnerNo,
+      });
 
       // 이미 생성된 챌린지가 있는 경우 삭제 후 생성
       if (existingChallenge) {
         await this.deleteChallenge(existingChallenge.challengeNo);
       }
 
-      const endDate: Date = add(endOfDay(challengeInfo.startDate), { days: 21 });  
+      const endDate: Date = add(endOfDay(challengeInfo.startDate), { days: 21 });
       const challengeNo = await this.autoIncrement('challengeNo');
 
       const challenge = await this.challengeModel.create({
@@ -62,7 +65,7 @@ export class ChallengeService {
         endDate: endDate,
         user2Flower: challengeInfo.user2Flower,
       });
-  
+
       await challenge.save();
       return challenge;
     } catch (err) {
@@ -102,7 +105,7 @@ export class ChallengeService {
   async findRecentChallenge(userNo: number): Promise<ChallengeDocument | null> {
     const challenge = await this.challengeModel
       .findOne({
-        $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }]
+        $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
       })
       .sort({ challengeNo: -1 });
     return challenge;

@@ -22,7 +22,7 @@ import { CommitModule } from 'src/commit/commit.module';
       { name: User.name, schema: UserSchema },
     ]),
     forwardRef(() => UserModule),
-    forwardRef(() => CommitModule)
+    forwardRef(() => CommitModule),
   ],
   providers: [ChallengeService, ChallengeValidator],
   controllers: [ChallengeController],

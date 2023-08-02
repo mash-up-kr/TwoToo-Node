@@ -53,7 +53,7 @@ export class UserController {
     }
     user = await this.userSvc.signUp({ socialId, loginType, deviceToken });
     if (_.isNull(user)) {
-    throw new BadRequestException('유저 생성에 실패했습니다.');
+      throw new BadRequestException('유저 생성에 실패했습니다.');
     }
 
     return {

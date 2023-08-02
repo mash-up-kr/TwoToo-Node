@@ -85,6 +85,7 @@ export class ChallengeService {
     const challenge = await this.challengeModel
       .findOne({
         $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+        isDeleted: false
       })
       .sort({ challengeNo: -1 });
     return challenge;

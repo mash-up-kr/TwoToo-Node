@@ -21,7 +21,7 @@ import { ChallengeModule } from 'src/challenge/challenge.module';
       { name: Challenge.name, schema: ChallengeSchema },
       { name: ChallengeCounter.name, schema: ChallengeCounterSchema },
     ]),
-    forwardRef(() => ChallengeModule)
+    forwardRef(() => ChallengeModule),
   ],
   providers: [UserService, AuthGuard, JwtService],
   controllers: [UserController],

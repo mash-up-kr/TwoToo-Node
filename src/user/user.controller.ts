@@ -137,4 +137,20 @@ export class UserController {
       totalChallengeCount,
     };
   }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Patch('/delPartner')
+  @ApiOperation({
+    description: '파트너와 매칭을 해제합니다. 닉네임 설정부터 다시하게 합니다. 파트너도 동일',
+    summary: '파트너 매칭 해제',
+  })
+  @ApiResponse({ status: 200, type: Boolean })
+  async delPartner(@JwtParam() jwtParam: JwtPayload): Promise<Boolean> {
+    const { userNo } = jwtParam;
+    const user = await this.userSvc.getUser(userNo);
+
+    const ret = await this.userSvc.delPartenr(user);
+    return ret;
+  }
 }

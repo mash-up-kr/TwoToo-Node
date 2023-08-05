@@ -219,4 +219,10 @@ export class UserService {
 
     return { userNo, nickname, partnerNo };
   }
+
+  async delUser(userNo: Number) {
+    await this.userModel.deleteOne({
+      userNo: userNo,
+    });
+  }
 }

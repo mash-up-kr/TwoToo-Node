@@ -152,19 +152,20 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Delete('/signOut')
   @ApiOperation({
-    description: '유저를 탈퇴 합니다. 파트너도 같이 삭제 됩니디.',
+    description: '유저를 탈퇴 합니다. 파트너도 같이 삭제 됩니다.',
     summary: '유저 탈퇴',
   })
   @ApiResponse({ status: 200, type: Boolean })
   async signOut(@JwtParam() jwtParam: JwtPayload): Promise<Boolean> {
     const { userNo } = jwtParam;
     const user = await this.userSvc.getUser(userNo);
+    let partenrRet = true;
 
     if (user.partnerNo) {
-      this.userSvc.delUser(user.partnerNo);
+      partenrRet = await this.userSvc.delUser(user.partnerNo);
     }
-    this.userSvc.delUser(userNo);
+    const ret = await this.userSvc.delUser(userNo);
 
-    return true;
+    return ret && partenrRet;
   }
 }

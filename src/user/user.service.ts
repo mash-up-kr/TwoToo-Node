@@ -247,13 +247,15 @@ export class UserService {
     }
   }
 
-  async delUser(userNo: Number): Promise<boolean> {
+  async delUser(userNo: number): Promise<boolean> {
     const user = await this.userModel.findOneAndDelete({
       userNo: userNo,
     });
+
     if (_.isNull(user)) {
       throw new NotFoundException(`${userNo}의 삭제에 실패했습니다.`);
     }
+
     return true;
   }
 }

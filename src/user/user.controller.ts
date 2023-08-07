@@ -169,16 +169,16 @@ export class UserController {
     summary: '유저 탈퇴',
   })
   @ApiResponse({ status: 200, type: Boolean })
-  async signOut(@JwtParam() jwtParam: JwtPayload): Promise<Boolean> {
+  async signOut(@JwtParam() jwtParam: JwtPayload): Promise<boolean> {
     const { userNo } = jwtParam;
     const user = await this.userSvc.getUser(userNo);
-    let partenrRet = true;
+    let partnerRet = true;
 
     if (user.partnerNo) {
-      partenrRet = await this.userSvc.delUser(user.partnerNo);
+      partnerRet = await this.userSvc.delUser(user.partnerNo);
     }
     const ret = await this.userSvc.delUser(userNo);
 
-    return ret && partenrRet;
+    return ret && partnerRet;
   }
 }

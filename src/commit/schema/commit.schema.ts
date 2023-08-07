@@ -26,6 +26,9 @@ export class Commit {
 
   @Prop()
   updatedAt: Date;
+
+  @Prop({ default: false })
+  isDeleted: boolean;
 }
 
 export type CommitDocument = Commit & Document;

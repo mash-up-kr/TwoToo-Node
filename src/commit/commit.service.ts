@@ -37,6 +37,7 @@ export class CommitService {
       endDate: { $gte: today },
       isApproved: true,
       isFinished: false,
+      isDeleted: false,
     });
 
     if (_.isNull(inProgressChallenge)) {
@@ -47,6 +48,7 @@ export class CommitService {
       challengeNo: inProgressChallenge.challengeNo,
       userNo: userNo,
       createdAt: { $gte: startOfToday(), $lte: endOfToday() },
+      isDeleted: false,
     });
 
     if (todayCommit) {
@@ -67,6 +69,7 @@ export class CommitService {
       {
         challengeNo: data.challengeNo,
         $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+        isDeleted: false,
       },
       [
         {
@@ -115,7 +118,10 @@ export class CommitService {
       throw new BadRequestException('존재하지 않는 유저입니다.');
     }
 
-    const commitInfo = await this.commitModel.findOne({ commitNo: partnerCommitNo });
+    const commitInfo = await this.commitModel.findOne({
+      commitNo: partnerCommitNo,
+      isDeleted: false,
+    });
     if (_.isNull(commitInfo)) {
       throw new BadRequestException('존재하지 않는 인증 정보입니다.');
     }
@@ -129,7 +135,7 @@ export class CommitService {
     }
 
     const updatedCommit = await this.commitModel.findOneAndUpdate(
-      { commitNo: partnerCommitNo },
+      { commitNo: partnerCommitNo, isDeleted: false },
       { $set: { partnerComment: comment, updatedAt: new Date() } },
       { new: true },
     );
@@ -142,7 +148,7 @@ export class CommitService {
   }
 
   async getCommit(commitNo: number, userNo: number): Promise<Commit> {
-    const commit = await this.commitModel.findOne({ commitNo: commitNo }).lean();
+    const commit = await this.commitModel.findOne({ commitNo: commitNo, isDeleted: false }).lean();
 
     if (_.isNull(commit)) {
       throw new NotFoundException('존재하지 않는 인증 정보입니다.');
@@ -162,6 +168,7 @@ export class CommitService {
         userNo: userNo,
         challengeNo,
         createdAt: { $gte: startOfToday(), $lte: endOfToday() },
+        isDeleted: false,
       })
       .sort({ createdAt: -1 })
       .lean();
@@ -187,18 +194,22 @@ export class CommitService {
     const result = await this.commitModel.find({
       challengeNo: challengeNo,
       userNo: userNo,
+      isDeleted: false,
     });
 
     return result;
   }
 
   async deleteCommit(commitNo: number): Promise<CommitDocument> {
-    const deletedCommit = (await this.commitModel.findOneAndDelete({ commitNo })) as CommitDocument;
+    const deletedCommit = (await this.commitModel.findOneAndUpdate(
+      { commitNo },
+      { isDeleted: true },
+    )) as CommitDocument;
     return deletedCommit;
   }
 
   async deleteCommitWithChallengeNo(challengeNo: number): Promise<void> {
-    await this.commitModel.deleteMany({ challengeNo });
+    await this.commitModel.updateMany({ challengeNo }, { isDeleted: false });
 
     return;
   }

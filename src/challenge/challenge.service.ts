@@ -1,10 +1,17 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { add, endOfDay } from 'date-fns';
 import * as _ from 'lodash';
 
 import { UserService } from '../user/user.service';
+import { CommitService } from '../commit/commit.service';
 import { Challenge, ChallengeDocument } from './schema/challenge.schema';
 import { ChallengeCounter, ChallengeCounterDocument } from './schema/challenge-counter.schema';
 import {
@@ -13,11 +20,11 @@ import {
   ChallengeHistoryResDto,
   UpdateChallengePayload,
 } from './dto/challenge.dto';
-import { CommitService } from 'src/commit/commit.service';
 
 @Injectable()
 export class ChallengeService {
   constructor(
+    @Inject(forwardRef(() => UserService))
     private readonly userSvc: UserService,
     private readonly commitSvc: CommitService,
     @InjectModel(Challenge.name)
@@ -140,6 +147,21 @@ export class ChallengeService {
     await this.commitSvc.deleteCommitWithChallengeNo(challengeNo);
 
     return challengeNo;
+  }
+
+  async deleteAllChallenges(userNo: number): Promise<void> {
+    await this.challengeModel.deleteMany({
+      $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+    });
+
+    // await this.challengeModel.updateMany(
+    //   {
+    //     $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+    //   },
+    //   {
+    //     isDeleted: true,
+    //   },
+    // );
   }
 
   async finishChallenge(challengeNo: number): Promise<ChallengeDocument> {

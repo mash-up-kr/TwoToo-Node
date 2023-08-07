@@ -1,8 +1,10 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as _ from 'lodash';
@@ -14,7 +16,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from '../auth/auth.types';
 import { LoginType } from './user.types';
-import { ChallengeDocument } from '../challenge/schema/challenge.schema';
+import { ChallengeService } from '../challenge/challenge.service';
 
 export enum LOGIN_STATE {
   NEED_NICKNAME = 'NEED_NICKNAME',
@@ -31,7 +33,8 @@ export class UserService {
     private readonly userCounterModel: Model<UserCounterDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private challengeModel: Model<ChallengeDocument>,
+    @Inject(forwardRef(() => ChallengeService))
+    private challengeSvc: ChallengeService,
   ) {}
 
   async signUp({
@@ -236,10 +239,7 @@ export class UserService {
         { nickname: null, partnerNo: null },
       );
 
-      await this.challengeModel.deleteMany({
-        $or: [{ 'user1.userNo': user.userNo }, { 'user2.userNo': user.userNo }],
-      });
-
+      await this.challengeSvc.deleteAllChallenges(user.userNo);
       return true;
     } catch (e) {
       console.log(e);

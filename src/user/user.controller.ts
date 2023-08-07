@@ -1,4 +1,14 @@
-import { BadRequestException, Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import * as _ from 'lodash';
 import {
@@ -136,5 +146,26 @@ export class UserController {
       partnerNickname: partnerNickname,
       totalChallengeCount,
     };
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Delete('/signOut')
+  @ApiOperation({
+    description: '유저를 탈퇴 합니다. 파트너도 같이 삭제 됩니다.',
+    summary: '유저 탈퇴',
+  })
+  @ApiResponse({ status: 200, type: Boolean })
+  async signOut(@JwtParam() jwtParam: JwtPayload): Promise<Boolean> {
+    const { userNo } = jwtParam;
+    const user = await this.userSvc.getUser(userNo);
+    let partenrRet = true;
+
+    if (user.partnerNo) {
+      partenrRet = await this.userSvc.delUser(user.partnerNo);
+    }
+    const ret = await this.userSvc.delUser(userNo);
+
+    return ret && partenrRet;
   }
 }

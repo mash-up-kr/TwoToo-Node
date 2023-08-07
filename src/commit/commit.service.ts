@@ -203,13 +203,13 @@ export class CommitService {
   async deleteCommit(commitNo: number): Promise<CommitDocument> {
     const deletedCommit = (await this.commitModel.findOneAndUpdate(
       { commitNo },
-      { isDeleted: true },
+      { $set: { isDeleted: true } },
     )) as CommitDocument;
     return deletedCommit;
   }
 
   async deleteCommitWithChallengeNo(challengeNo: number): Promise<void> {
-    await this.commitModel.updateMany({ challengeNo }, { isDeleted: true });
+    await this.commitModel.updateMany({ challengeNo }, { $set: { isDeleted: true } });
 
     return;
   }

@@ -35,7 +35,7 @@ export class UserService {
     private configService: ConfigService,
     @Inject(forwardRef(() => ChallengeService))
     private challengeSvc: ChallengeService,
-  ) {}
+  ) { }
 
   async signUp({
     socialId,
@@ -210,7 +210,7 @@ export class UserService {
     const updatedUser = await this.userModel.findOneAndUpdate(
       { userNo: userNo },
       {
-        deviceToken: deviceToken,
+        $set: { deviceToken: deviceToken },
       },
       { new: true },
     );
@@ -236,7 +236,7 @@ export class UserService {
         {
           userNo: { $in: [user.userNo, user.partnerNo] },
         },
-        { nickname: null, partnerNo: null },
+        { $set: { nickname: null, partnerNo: null } },
       );
 
       await this.challengeSvc.deleteAllChallenges(user.userNo);

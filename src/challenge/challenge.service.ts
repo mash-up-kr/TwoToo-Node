@@ -31,7 +31,7 @@ export class ChallengeService {
     private readonly challengeModel: Model<ChallengeDocument>,
     @InjectModel(ChallengeCounter.name)
     private readonly challengeCounterModel: Model<ChallengeCounterDocument>,
-  ) {}
+  ) { }
 
   async createChallenge(challengeInfo: CreateChallenge): Promise<ChallengeResDto> {
     // user1: 챌린지 생성 요청을 보낸 자
@@ -143,7 +143,7 @@ export class ChallengeService {
   }
 
   async deleteChallenge(challengeNo: number): Promise<number> {
-    await this.challengeModel.findOneAndUpdate({ challengeNo }, { isDeleted: true });
+    await this.challengeModel.findOneAndUpdate({ challengeNo }, { $set: { isDeleted: true } });
     await this.commitSvc.deleteCommitWithChallengeNo(challengeNo);
 
     return challengeNo;
@@ -155,7 +155,7 @@ export class ChallengeService {
         $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
       },
       {
-        isDeleted: true,
+        $set: { isDeleted: true },
       },
     );
   }

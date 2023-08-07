@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+  db:
+    container_name: mongo-db
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_URL=mongodb://db:27017
+volumes:
+  mongo-data:

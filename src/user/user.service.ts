@@ -222,7 +222,7 @@ export class UserService {
     return { userNo, nickname, partnerNo };
   }
 
-  async delPartenr(user: User) {
+  async delPartner(user: User): Promise<boolean> {
     const partnerNo = user.partnerNo;
 
     if (partnerNo === null) {
@@ -239,8 +239,11 @@ export class UserService {
       await this.challengeModel.deleteMany({
         $or: [{ 'user1.userNo': user.userNo }, { 'user2.userNo': user.userNo }],
       });
+
+      return true;
     } catch (e) {
       console.log(e);
+      return false;
     }
   }
 

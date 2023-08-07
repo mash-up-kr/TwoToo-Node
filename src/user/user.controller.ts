@@ -155,11 +155,12 @@ export class UserController {
     summary: '파트너 매칭 해제',
   })
   @ApiResponse({ status: 200, type: Boolean })
-  async delPartner(@JwtParam() jwtParam: JwtPayload): Promise<Boolean> {
+  async delPartner(@JwtParam() jwtParam: JwtPayload): Promise<boolean> {
     const { userNo } = jwtParam;
     const user = await this.userSvc.getUser(userNo);
+    const ret = await this.userSvc.delPartner(user);
 
-    const ret = await this.userSvc.delPartenr(user);
+    return ret;
   }
 
   @Delete('/signOut')

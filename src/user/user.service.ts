@@ -14,7 +14,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from '../auth/auth.types';
 import { LoginType } from './user.types';
-import { ChallengeDocument } from 'dist/challenge/schema/challenge.schema';
+import { ChallengeDocument } from '../challenge/schema/challenge.schema';
 
 export enum LOGIN_STATE {
   NEED_NICKNAME = 'NEED_NICKNAME',

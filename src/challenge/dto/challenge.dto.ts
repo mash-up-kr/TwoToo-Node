@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { UserInfoResDto } from '../../user/dto/user.dto';
 import { CommitResDto } from 'src/commit/dto/commit.dto';
+import { User } from 'src/user/schema/user.schema';
 
 export enum FlowerType {
   FIG = 'FIG',
@@ -210,7 +211,7 @@ export class AcceptChallengePayload {
 export class CreateChallenge {
   name: string;
   description: string;
-  user1No: number;
+  user1: User;
   user2Flower: string;
   startDate: Date;
 }

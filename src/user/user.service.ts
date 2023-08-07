@@ -1,8 +1,10 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as _ from 'lodash';
@@ -14,6 +16,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from '../auth/auth.types';
 import { LoginType } from './user.types';
+import { ChallengeService } from '../challenge/challenge.service';
 
 export enum LOGIN_STATE {
   NEED_NICKNAME = 'NEED_NICKNAME',
@@ -30,6 +33,8 @@ export class UserService {
     private readonly userCounterModel: Model<UserCounterDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
+    @Inject(forwardRef(() => ChallengeService))
+    private challengeSvc: ChallengeService,
   ) {}
 
   async signUp({
@@ -229,5 +234,37 @@ export class UserService {
     const { userNo, nickname, partnerNo } = user;
 
     return { userNo, nickname, partnerNo };
+  }
+
+  async delPartner(user: User): Promise<boolean> {
+    const partnerNo = user.partnerNo;
+
+    if (partnerNo === null) {
+      throw new NotFoundException('파트너가 존재하지 않습니다.');
+    }
+    try {
+      await this.userModel.updateMany(
+        {
+          userNo: { $in: [user.userNo, user.partnerNo] },
+        },
+        { nickname: null, partnerNo: null },
+      );
+
+      await this.challengeSvc.deleteAllChallenges(user.userNo);
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
+
+  async delUser(userNo: Number): Promise<boolean> {
+    const user = await this.userModel.findOneAndDelete({
+      userNo: userNo,
+    });
+    if (_.isNull(user)) {
+      throw new NotFoundException(`${userNo}의 삭제에 실패했습니다.`);
+    }
+    return true;
   }
 }

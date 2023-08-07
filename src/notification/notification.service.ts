@@ -46,6 +46,18 @@ export class NotificationService {
     return ret;
   }
 
+  async sendPushAndroid({ deviceToken, message, nickname }: PushResDto): Promise<string> {
+    const sendMessage = {
+      token: deviceToken,
+      data: {
+        title: nickname,
+        body: message,
+      },
+    };
+    const ret = await FirebaseAdmin.messaging().send(sendMessage);
+    return ret;
+  }
+
   async createSting({
     message,
     userNo,

@@ -1,4 +1,14 @@
-import { BadRequestException, Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import * as _ from 'lodash';
 import {
@@ -8,6 +18,7 @@ import {
   AuhtorizationPayload,
   AuthorizationResDto,
   GetMyInfoResDto,
+	DelUserPayload,
 } from './dto/user.dto';
 import { LOGIN_STATE, UserService } from './user.service';
 import { JwtPayload } from 'src/auth/auth.types';
@@ -53,7 +64,7 @@ export class UserController {
     }
     user = await this.userSvc.signUp({ socialId, loginType, deviceToken });
     if (_.isNull(user)) {
-    throw new BadRequestException('유저 생성에 실패했습니다.');
+      throw new BadRequestException('유저 생성에 실패했습니다.');
     }
 
     return {
@@ -144,11 +155,46 @@ export class UserController {
   async delUser(@Body() data: DelUserPayload): Promise<Boolean> {
     const { socialId } = data;
     try {
-      await this.user.delUser(socialId);
+      await this.userSvc.delUser(socialId);
     } catch (e) {
       console.log(e);
       return false;
     }
     return true;
+}
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Patch('/delPartner')
+  @ApiOperation({
+    description: '파트너와 매칭을 해제합니다. 닉네임 설정부터 다시하게 합니다. 파트너도 동일',
+    summary: '파트너 매칭 해제',
+  })
+  @ApiResponse({ status: 200, type: Boolean })
+  async delPartner(@JwtParam() jwtParam: JwtPayload): Promise<boolean> {
+    const { userNo } = jwtParam;
+    const user = await this.userSvc.getUser(userNo);
+
+    const ret = await this.userSvc.delPartner(user);
+    return ret;
+  }
+
+  @Delete('/signOut')
+  @ApiOperation({
+    description: '유저를 탈퇴 합니다. 파트너도 같이 삭제 됩니다.',
+    summary: '유저 탈퇴',
+  })
+  @ApiResponse({ status: 200, type: Boolean })
+  async signOut(@JwtParam() jwtParam: JwtPayload): Promise<boolean> {
+    const { userNo } = jwtParam;
+    const user = await this.userSvc.getUser(userNo);
+    let partnerRet = true;
+
+    if (user.partnerNo) {
+      partnerRet = await this.userSvc.delUser(user.partnerNo);
+    }
+    const ret = await this.userSvc.delUser(userNo);
+
+    return ret && partnerRet;
   }
 }

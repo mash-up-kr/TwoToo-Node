@@ -1,10 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { add, endOfDay } from 'date-fns';
 import * as _ from 'lodash';
 
 import { UserService } from '../user/user.service';
+import { CommitService } from '../commit/commit.service';
 import { Challenge, ChallengeDocument } from './schema/challenge.schema';
 import { ChallengeCounter, ChallengeCounterDocument } from './schema/challenge-counter.schema';
 import {
@@ -13,11 +20,11 @@ import {
   ChallengeHistoryResDto,
   UpdateChallengePayload,
 } from './dto/challenge.dto';
-import { CommitService } from 'src/commit/commit.service';
 
 @Injectable()
 export class ChallengeService {
   constructor(
+    @Inject(forwardRef(() => UserService))
     private readonly userSvc: UserService,
     private readonly commitSvc: CommitService,
     @InjectModel(Challenge.name)
@@ -27,30 +34,51 @@ export class ChallengeService {
   ) {}
 
   async createChallenge(challengeInfo: CreateChallenge): Promise<ChallengeResDto> {
-    const user1 = await this.userSvc.getUser(challengeInfo.user1No);
+    // user1: 챌린지 생성 요청을 보낸 자
+    const user1 = challengeInfo.user1;
 
     if (_.isNull(user1.partnerNo)) {
       throw new NotFoundException('파트너가 존재하지 않습니다');
     }
 
+    // user2: 챌린지 수락할 자
     const user2 = await this.userSvc.getUser(user1.partnerNo as number);
 
-    const endDate: Date = add(endOfDay(challengeInfo.startDate), { days: 21 });
+    try {
+      // 파트너가 이미 생성한 챌린지가 있는지 확인
+      // [챌린지 찾는 조건]
+      // isApproved: false - 아직 수락 안됨
+      // user1.userNo === user1.partnerNo - 생성자(user1).userNo === 현재 요청자의 파트너(user2).userNo
+      const existingChallenge = await this.challengeModel.findOne({
+        isApproved: false,
+        'user1.userNo': user2.userNo,
+      });
 
-    const challengeNo = await this.autoIncrement('challengeNo');
-    const challenge = await this.challengeModel.create({
-      challengeNo,
-      name: challengeInfo.name,
-      description: challengeInfo.description,
-      user1: this.userSvc.getPartialUserInfo(user1),
-      user2: this.userSvc.getPartialUserInfo(user2),
-      startDate: challengeInfo.startDate,
-      endDate: endDate,
-      user2Flower: challengeInfo.user2Flower,
-    });
+      // 이미 생성된 챌린지가 있는 경우 삭제 후 생성
+      if (existingChallenge) {
+        await this.deleteChallenge(existingChallenge.challengeNo);
+      }
 
-    await challenge.save();
-    return challenge;
+      const endDate: Date = add(endOfDay(challengeInfo.startDate), { days: 21 });
+      const challengeNo = await this.autoIncrement('challengeNo');
+
+      const challenge = await this.challengeModel.create({
+        challengeNo,
+        name: challengeInfo.name,
+        description: challengeInfo.description,
+        user1: this.userSvc.getPartialUserInfo(user1),
+        user2: this.userSvc.getPartialUserInfo(user2),
+        startDate: challengeInfo.startDate,
+        endDate: endDate,
+        user2Flower: challengeInfo.user2Flower,
+      });
+
+      await challenge.save();
+      return challenge;
+    } catch (err) {
+      // TODO: error handling for mongodb
+      throw new BadRequestException('챌린지 생성에 실패했습니다.');
+    }
   }
 
   async findChallenge(challengeNo: number): Promise<ChallengeDocument> {
@@ -113,6 +141,21 @@ export class ChallengeService {
     await this.commitSvc.deleteCommitWithChallengeNo(challengeNo);
 
     return challengeNo;
+  }
+
+  async deleteAllChallenges(userNo: number): Promise<void> {
+    await this.challengeModel.deleteMany({
+      $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+    });
+
+    // await this.challengeModel.updateMany(
+    //   {
+    //     $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+    //   },
+    //   {
+    //     isDeleted: true,
+    //   },
+    // );
   }
 
   async finishChallenge(challengeNo: number): Promise<ChallengeDocument> {

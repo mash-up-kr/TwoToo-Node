@@ -53,7 +53,7 @@ export class ChallengeController {
     const challengeInfo: CreateChallenge = {
       name: data.name,
       description: data.description,
-      user1No: user.userNo,
+      user1: user,
       user2Flower: data.user2Flower,
       startDate: new Date(data.startDate),
     };

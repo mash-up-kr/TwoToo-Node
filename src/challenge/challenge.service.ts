@@ -150,18 +150,14 @@ export class ChallengeService {
   }
 
   async deleteAllChallenges(userNo: number): Promise<void> {
-    await this.challengeModel.deleteMany({
-      $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
-    });
-
-    // await this.challengeModel.updateMany(
-    //   {
-    //     $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
-    //   },
-    //   {
-    //     isDeleted: true,
-    //   },
-    // );
+    await this.challengeModel.updateMany(
+      {
+        $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+      },
+      {
+        isDeleted: true,
+      },
+    );
   }
 
   async finishChallenge(challengeNo: number): Promise<ChallengeDocument> {

@@ -75,7 +75,10 @@ export class ChallengeService {
   }
 
   async findChallenge(challengeNo: number): Promise<ChallengeDocument> {
-    const challenge = await this.challengeModel.findOne({ challengeNo }).lean().exec();
+    const challenge = await this.challengeModel
+      .findOne({ challengeNo, isDeleted: false })
+      .lean()
+      .exec();
     if (challenge === null) throw new NotFoundException('존재하지 않는 챌린지입니다');
     return challenge;
   }
@@ -83,6 +86,7 @@ export class ChallengeService {
   async findUserChallenges(userNo: number): Promise<ChallengeDocument[]> {
     const challenges = await this.challengeModel.find({
       $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+      isDeleted: false,
     });
     return challenges;
   }
@@ -92,7 +96,7 @@ export class ChallengeService {
     challengeInfo: UpdateChallengePayload,
   ): Promise<ChallengeDocument> {
     const challenge: ChallengeDocument | null = await this.challengeModel.findOneAndUpdate(
-      { challengeNo },
+      { challengeNo, isDeleted: false },
       challengeInfo,
       {
         new: true,
@@ -102,6 +106,7 @@ export class ChallengeService {
     return challenge;
   }
 
+  // 그만둔(삭제된) 챌린지도 함께 조회한다.
   async findRecentChallenge(userNo: number): Promise<ChallengeDocument | null> {
     const challenge = await this.challengeModel
       .findOne({
@@ -116,12 +121,13 @@ export class ChallengeService {
     return this.challengeModel.countDocuments({
       $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
       isApproved: true,
+      isDeleted: false,
     });
   }
 
   async acceptChallenge(challengeNo: number, user1Flower: string): Promise<ChallengeDocument> {
     const challenge = await this.challengeModel.findOneAndUpdate(
-      { challengeNo },
+      { challengeNo, isDeleted: false },
       { $set: { user1Flower, isApproved: true } },
       { new: true },
     );
@@ -138,7 +144,7 @@ export class ChallengeService {
 
   async finishChallenge(challengeNo: number): Promise<ChallengeDocument> {
     const challenge = await this.challengeModel.findOneAndUpdate(
-      { challengeNo },
+      { challengeNo, isDeleted: false },
       { $set: { isFinished: true } },
       { new: true },
     );
@@ -170,6 +176,7 @@ export class ChallengeService {
           $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
           endDate: { $lt: today },
           isFinished: true,
+          isDeleted: false,
         },
         {
           _id: 0,

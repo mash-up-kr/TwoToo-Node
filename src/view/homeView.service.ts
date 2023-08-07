@@ -46,7 +46,7 @@ export class HomeViewService {
     return {
       viewState: this.getHomeViewState(recentChallenge, userNo),
       challengeTotal: await this.challengeSvc.countUserChallenges(userNo),
-      onGoingChallenge: recentChallenge,
+      onGoingChallenge: recentChallenge?.isDeleted ? null : recentChallenge,
       myInfo: this.userSvc.getPartialUserInfo(myInfo),
       myCommit,
       partnerInfo: this.userSvc.getPartialUserInfo(partnerInfo),
@@ -59,18 +59,20 @@ export class HomeViewService {
   // @ts-ignore
   getHomeViewState(recentChallenge: ChallengeDocument | null, userNo: number): HomeViewStateType {
     const currentDate = new Date();
-    // 가장 최근게 완료된거면 아직 생성 전
-    if (recentChallenge === null || recentChallenge.isFinished) return HomeViewState.BEFORE_CREATE;
+    // 생성 가능
+    // 생성 전, 최근 챌린지 완료, 최근 챌린지 삭제
+    if (recentChallenge === null || recentChallenge.isFinished || recentChallenge.isDeleted)
+      return HomeViewState.BEFORE_CREATE;
 
     const { startDate, endDate, isApproved, user1, user2 } = recentChallenge;
     if (!isApproved) {
-      // When Not Approved
+      // 수락 전
       const approveDeadLine = endOfDay(startDate);
       if (approveDeadLine < currentDate) return HomeViewState.EXPIRED_BY_NOT_APPROVED;
       if (userNo === user1.userNo) return HomeViewState.BEFORE_PARTNER_APPROVE;
       if (userNo === user2.userNo) return HomeViewState.BEFORE_MY_APPROVE;
     } else {
-      // When Approved
+      // 수락 완료
       const challengeStartLine = startOfDay(startDate);
       if (currentDate < challengeStartLine) return HomeViewState.APPROVED_BUT_BEFORE_START_DATE;
       const challengeEndLine = endOfDay(endDate);

@@ -43,7 +43,11 @@ export class Challenge {
 
   @Prop({ default: false })
   isFinished: boolean;
+
+  @Prop({ default: false })
+  isDeleted: boolean;
 }
+
 export type ChallengeDocument = HydratedDocument<Challenge>;
 
 export const ChallengeSchema = SchemaFactory.createForClass(Challenge);

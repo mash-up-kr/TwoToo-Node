@@ -9,7 +9,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as _ from 'lodash';
 import { Model } from 'mongoose';
 import { endOfToday, startOfToday } from 'date-fns';
-import * as moment from 'moment-timezone';
 
 import { CommitPayload } from './dto/commit.dto';
 import { Commit, CommitDocument } from './schema/commit.schema';

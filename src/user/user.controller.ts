@@ -4,7 +4,6 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Patch,
   Post,
   UseGuards,
@@ -159,8 +158,8 @@ export class UserController {
   async delPartner(@JwtParam() jwtParam: JwtPayload): Promise<boolean> {
     const { userNo } = jwtParam;
     const user = await this.userSvc.getUser(userNo);
-
     const ret = await this.userSvc.delPartner(user);
+
     return ret;
   }
 

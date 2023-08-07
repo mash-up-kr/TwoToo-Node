@@ -46,7 +46,7 @@ export class HomeViewService {
     return {
       viewState: this.getHomeViewState(recentChallenge, userNo),
       challengeTotal: await this.challengeSvc.countUserChallenges(userNo),
-      onGoingChallenge: recentChallenge,
+      onGoingChallenge: recentChallenge?.isDeleted ? null : recentChallenge,
       myInfo: this.userSvc.getPartialUserInfo(myInfo),
       myCommit,
       partnerInfo: this.userSvc.getPartialUserInfo(partnerInfo),

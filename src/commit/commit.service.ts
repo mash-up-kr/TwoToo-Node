@@ -209,7 +209,7 @@ export class CommitService {
   }
 
   async deleteCommitWithChallengeNo(challengeNo: number): Promise<void> {
-    await this.commitModel.updateMany({ challengeNo }, { isDeleted: false });
+    await this.commitModel.updateMany({ challengeNo }, { isDeleted: true });
 
     return;
   }

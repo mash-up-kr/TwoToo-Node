@@ -163,6 +163,8 @@ export class UserController {
     return ret;
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Delete('/signOut')
   @ApiOperation({
     description: '유저를 탈퇴 합니다. 파트너도 같이 삭제 됩니다.',

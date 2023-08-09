@@ -9,6 +9,9 @@ export class Notification {
   userNo!: number;
 
   @Prop()
+  challengeNo!: number;
+
+  @Prop()
   createdAt: Date;
 
   @Prop()

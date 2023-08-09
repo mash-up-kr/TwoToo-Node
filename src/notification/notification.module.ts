@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User, UserSchema } from 'src/user/schema/user.schema';
 import { UserCounter, UserCounterSchema } from 'src/user/schema/user-counter.schema';
 import { UserModule } from '../user/user.module';
+import { ChallengeModule } from '../challenge/challenge.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UserModule } from '../user/user.module';
       { name: UserCounter.name, schema: UserCounterSchema },
     ]),
     UserModule,
+    ChallengeModule,
   ],
   controllers: [NotificationController],
   providers: [NotificationService, AuthGuard, JwtService],

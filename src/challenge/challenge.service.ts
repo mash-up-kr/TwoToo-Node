@@ -31,7 +31,7 @@ export class ChallengeService {
     private readonly challengeModel: Model<ChallengeDocument>,
     @InjectModel(ChallengeCounter.name)
     private readonly challengeCounterModel: Model<ChallengeCounterDocument>,
-  ) { }
+  ) {}
 
   async createChallenge(challengeInfo: CreateChallenge): Promise<ChallengeResDto> {
     // user1: 챌린지 생성 요청을 보낸 자
@@ -132,6 +132,48 @@ export class ChallengeService {
     });
   }
 
+  async getInProgressChallenge(userNo: number): Promise<ChallengeHistoryResDto | null> {
+    const today = new Date();
+    let modifiedRet = null;
+    let ret = await this.challengeModel
+      .findOne(
+        {
+          $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+          startDate: { $lte: today },
+          endDate: { $gte: today },
+          isApproved: true,
+          isFinished: false,
+          isDeleted: false,
+        },
+        {
+          _id: 0,
+          challengeNo: 1,
+          name: 1,
+          'user1.userNo': 1,
+          'user2.userNo': 1,
+          description: 1,
+          user1Flower: 1,
+          user2Flower: 1,
+          user1CommitCnt: 1,
+          user2CommitCnt: 1,
+          startDate: 1,
+          endDate: 1,
+        },
+      )
+      .lean()
+      .exec();
+
+    if (ret !== null) {
+      const { user1, user2, ...rest } = ret;
+      modifiedRet = {
+        ...rest,
+        user1No: user1.userNo,
+        user2No: user2.userNo,
+      };
+    }
+    return modifiedRet;
+  }
+
   async acceptChallenge(challengeNo: number, user1Flower: string): Promise<ChallengeDocument> {
     const challenge = await this.challengeModel.findOneAndUpdate(
       { challengeNo, isDeleted: false },
@@ -184,7 +226,7 @@ export class ChallengeService {
     return result!.count;
   }
 
-  async getChallengeHistories({ userNo }: { userNo: number }): Promise<ChallengeHistoryResDto[]> {
+  async getFinishedChalleges({ userNo }: { userNo: number }): Promise<ChallengeHistoryResDto[]> {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // 시간을 0으로 설정
 

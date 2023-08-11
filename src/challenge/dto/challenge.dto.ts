@@ -405,3 +405,19 @@ export class ChallengeHistoryResDto {
   })
   user2Flower: FlowerType;
 }
+
+export class HistoryResDto {
+  @ApiProperty({
+    type: ChallengeHistoryResDto,
+    description: '진행중인 챌린지',
+    required: true,
+  })
+  inProgress: ChallengeHistoryResDto | null;
+
+  @ApiProperty({
+    type: [ChallengeHistoryResDto],
+    description: '이미 종료된 챌린지들',
+    required: true,
+  })
+  finished: ChallengeHistoryResDto[];
+}

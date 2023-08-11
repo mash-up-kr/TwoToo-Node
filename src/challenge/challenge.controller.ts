@@ -35,11 +35,11 @@ export class ChallengeController {
   @ApiResponse({ status: 200, type: HistoryResDto })
   async getHistories(@JwtParam() JwtParam: JwtPayload): Promise<HistoryResDto> {
     const userNo = JwtParam.userNo;
-    const inProgerssChallenge = await this.challengeSvc.getInProgressChallenge(userNo);
+    const inProgressChallenge = await this.challengeSvc.getInProgressChallenge(userNo);
     const finishedChallenges = await this.challengeSvc.getFinishedChalleges({ userNo });
 
     return {
-      inProgress: inProgerssChallenge,
+      inProgress: inProgressChallenge,
       finished: finishedChallenges,
     };
   }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { NotificationController } from './notification.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -17,8 +17,8 @@ import { ChallengeModule } from '../challenge/challenge.module';
       { name: User.name, schema: UserSchema },
       { name: UserCounter.name, schema: UserCounterSchema },
     ]),
-    UserModule,
-    ChallengeModule,
+    forwardRef(() => UserModule),
+    forwardRef(() => ChallengeModule),
   ],
   controllers: [NotificationController],
   providers: [NotificationService, AuthGuard, JwtService],

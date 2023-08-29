@@ -34,7 +34,7 @@ export class CommitController {
   constructor(
     private readonly commitSvc: CommitService,
     private readonly fileSvc: FileService,
-    private readonly UserSvc: UserService,
+    private readonly userSvc: UserService,
     private readonly notificationSvc: NotificationService,
   ) {}
 
@@ -68,9 +68,9 @@ export class CommitController {
     data.photoUrl = file.location;
     const commit = await this.commitSvc.createCommit({ userNo: jwtparam.userNo, data });
 
-    const partnerDeviceToken = await this.UserSvc.getPartnerDeviceToken(jwtparam.userNo);
-    const user = await this.UserSvc.getUser(jwtparam.userNo);
-    const message = '상대방이 인증했어요!';
+    const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtparam.userNo);
+    const user = await this.userSvc.getUser(jwtparam.userNo);
+    const message = '짝궁이 인증을 완료했습니다! 확인해보세요!';
     const title = 'twotoo';
 
     const pushRet = await this.notificationSvc.sendPush({

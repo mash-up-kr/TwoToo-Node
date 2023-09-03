@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as FirebaseAdmin from 'firebase-admin';
@@ -13,6 +19,7 @@ export class NotificationService {
   constructor(
     @InjectModel(Notification.name)
     private readonly notificaitonModel: Model<NotificationDocument>,
+    @Inject(forwardRef(() => ChallengeService))
     private readonly challengeService: ChallengeService,
   ) {}
   async getStingCount(userNo: number): Promise<number> {

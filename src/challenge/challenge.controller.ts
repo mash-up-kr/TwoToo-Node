@@ -13,7 +13,7 @@ import {
   CreateChallengePayload,
   ChallengeAndCommitListResDto,
   UpdateChallengePayload,
-  HistoryResDto,
+  ChallengeHistoryResDto,
 } from './dto/challenge.dto';
 import { ChallengeValidator } from './challenge.validator';
 import { CommitService } from 'src/commit/commit.service';
@@ -32,16 +32,12 @@ export class ChallengeController {
   @UseGuards(AuthGuard)
   @Get('histories')
   @ApiOperation({ description: '히스토리 목록을 조회합니다.', summary: '히스토리 화면 조회' })
-  @ApiResponse({ status: 200, type: HistoryResDto })
-  async getHistories(@JwtParam() JwtParam: JwtPayload): Promise<HistoryResDto> {
+  @ApiResponse({ status: 200, type: ChallengeHistoryResDto })
+  async getHistories(@JwtParam() JwtParam: JwtPayload): Promise<ChallengeHistoryResDto[] | []> {
     const userNo = JwtParam.userNo;
-    const inProgressChallenge = await this.challengeSvc.getInProgressChallenge(userNo);
-    const finishedChallenges = await this.challengeSvc.getFinishedChalleges({ userNo });
+    const ChallengeHistory = await this.challengeSvc.getChallengeHistory({ userNo });
 
-    return {
-      inProgress: inProgressChallenge,
-      finished: finishedChallenges,
-    };
+    return ChallengeHistory;
   }
 
   @ApiBearerAuth()

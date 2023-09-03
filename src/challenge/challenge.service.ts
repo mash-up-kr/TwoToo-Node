@@ -15,11 +15,13 @@ import { CommitService } from '../commit/commit.service';
 import { Challenge, ChallengeDocument } from './schema/challenge.schema';
 import { ChallengeCounter, ChallengeCounterDocument } from './schema/challenge-counter.schema';
 import {
+  ChallengeHistoryResDto,
   ChallengeResDto,
   CreateChallenge,
-  ChallengeHistoryResDto,
   UpdateChallengePayload,
 } from './dto/challenge.dto';
+import { HomeViewService } from 'src/view/homeView.service';
+import { HomeViewState } from 'src/view/view.type';
 
 @Injectable()
 export class ChallengeService {
@@ -31,6 +33,8 @@ export class ChallengeService {
     private readonly challengeModel: Model<ChallengeDocument>,
     @InjectModel(ChallengeCounter.name)
     private readonly challengeCounterModel: Model<ChallengeCounterDocument>,
+    @Inject(forwardRef(() => HomeViewService))
+    private readonly homeViewSvc: HomeViewService,
   ) {}
 
   async createChallenge(challengeInfo: CreateChallenge): Promise<ChallengeResDto> {
@@ -132,48 +136,6 @@ export class ChallengeService {
     });
   }
 
-  async getInProgressChallenge(userNo: number): Promise<ChallengeHistoryResDto | null> {
-    const today = new Date();
-    let modifiedRet = null;
-    let ret = await this.challengeModel
-      .findOne(
-        {
-          $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
-          startDate: { $lte: today },
-          endDate: { $gte: today },
-          isApproved: true,
-          isFinished: false,
-          isDeleted: false,
-        },
-        {
-          _id: 0,
-          challengeNo: 1,
-          name: 1,
-          'user1.userNo': 1,
-          'user2.userNo': 1,
-          description: 1,
-          user1Flower: 1,
-          user2Flower: 1,
-          user1CommitCnt: 1,
-          user2CommitCnt: 1,
-          startDate: 1,
-          endDate: 1,
-        },
-      )
-      .lean()
-      .exec();
-
-    if (ret !== null) {
-      const { user1, user2, ...rest } = ret;
-      modifiedRet = {
-        ...rest,
-        user1No: user1.userNo,
-        user2No: user2.userNo,
-      };
-    }
-    return modifiedRet;
-  }
-
   async acceptChallenge(challengeNo: number, user1Flower: string): Promise<ChallengeDocument> {
     const challenge = await this.challengeModel.findOneAndUpdate(
       { challengeNo, isDeleted: false },
@@ -226,44 +188,53 @@ export class ChallengeService {
     return result!.count;
   }
 
-  async getFinishedChalleges({ userNo }: { userNo: number }): Promise<ChallengeHistoryResDto[]> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // 시간을 0으로 설정
-
+  async getChallengeHistory({
+    userNo,
+  }: {
+    userNo: number;
+  }): Promise<ChallengeHistoryResDto[] | undefined> {
     const challenges = await this.challengeModel
       .find(
         {
           $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
-          endDate: { $lt: today },
-          isFinished: true,
           isDeleted: false,
         },
-        {
-          _id: 0,
-          challengeNo: 1,
-          name: 1,
-          'user1.userNo': 1,
-          'user2.userNo': 1,
-          description: 1,
-          user1Flower: 1,
-          user2Flower: 1,
-          user1CommitCnt: 1,
-          user2CommitCnt: 1,
-          startDate: 1,
-          endDate: 1,
-        },
+        { _id: 0 },
       )
       .lean()
       .exec();
 
-    const modifiedChallenges = challenges.map((challenge) => ({
-      ...challenge,
-      user1No: challenge.user1.userNo,
-      user2No: challenge.user2.userNo,
-      user1: undefined, // user1 객체는 더 이상 필요 없으므로 제거합니다.
-      user2: undefined, // user2 객체는 더 이상 필요 없으므로 제거합니다.
-    }));
+    const histories = challenges
+      .map((challenge) => {
+        // 여기 로직조금 어려울거같아서 주석 남김
+        // BEFORE_CREATE가 Complete로 남기는 이유는 존재하는 챌린지 이기에 null일리 없고 삭제된것은 위에서 불러올리 없기에 getHomeViewState에서
+        // challenge가 finished된 것에만 BEFORE_CREATE 상태가 되어서 넘어옴
+        let challengeState = this.homeViewSvc.getHomeViewState(challenge, userNo);
+        if (
+          challengeState === HomeViewState.BEFORE_CREATE ||
+          challengeState === HomeViewState.IN_PROGRESS
+        ) {
+          if (challengeState === HomeViewState.BEFORE_CREATE) {
+            challengeState = HomeViewState.COMPLETE;
+          }
+          return {
+            challengeNo: challenge.challengeNo,
+            name: challenge.name,
+            description: challenge.description,
+            startDate: challenge.startDate,
+            endDate: challenge.endDate,
+            user1CommitCnt: challenge.user1CommitCnt,
+            user2CommitCnt: challenge.user2CommitCnt,
+            user1Flower: challenge.user1Flower,
+            user2Flower: challenge.user2Flower,
+            user1No: challenge.user1.userNo,
+            user2No: challenge.user2.userNo,
+            state: challengeState,
+          };
+        }
+      })
+      .filter((element) => element);
 
-    return modifiedChallenges;
+    return histories;
   }
 }

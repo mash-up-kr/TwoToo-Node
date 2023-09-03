@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { endOfDay, startOfDay } from 'date-fns';
 import * as _ from 'lodash';
 
@@ -15,7 +15,9 @@ import { UserDocument } from '../user/schema/user.schema';
 @Injectable()
 export class HomeViewService {
   constructor(
+    @Inject(forwardRef(() => UserService))
     private readonly userSvc: UserService,
+    @Inject(forwardRef(() => ChallengeService))
     private readonly challengeSvc: ChallengeService,
     private readonly commitSvc: CommitService,
     private readonly notificationSvc: NotificationService,

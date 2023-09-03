@@ -12,6 +12,7 @@ import {
 import { UserInfoResDto } from '../../user/dto/user.dto';
 import { CommitResDto } from 'src/commit/dto/commit.dto';
 import { User } from 'src/user/schema/user.schema';
+import { HomeViewState, HomeViewStateType } from 'src/view/view.type';
 
 export enum FlowerType {
   FIG = 'FIG',
@@ -304,6 +305,15 @@ export class UpdateChallengePayload {
 }
 
 export class ChallengeHistoryResDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: '홈 화면 상태',
+    required: true,
+    enum: HomeViewState,
+  })
+  viewState!: HomeViewStateType;
+
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
@@ -404,20 +414,4 @@ export class ChallengeHistoryResDto {
     required: true,
   })
   user2Flower: FlowerType;
-}
-
-export class HistoryResDto {
-  @ApiProperty({
-    type: ChallengeHistoryResDto,
-    description: '진행중인 챌린지',
-    required: true,
-  })
-  inProgress: ChallengeHistoryResDto | null;
-
-  @ApiProperty({
-    type: [ChallengeHistoryResDto],
-    description: '이미 종료된 챌린지들',
-    required: true,
-  })
-  finished: ChallengeHistoryResDto[];
 }

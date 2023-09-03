@@ -12,6 +12,7 @@ import { multerOptionsFactory } from './multer.option';
 import { MulterModule } from '@nestjs/platform-express';
 import { FileService } from './s3.service';
 import { User, UserSchema } from '../user/schema/user.schema';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { User, UserSchema } from '../user/schema/user.schema';
       inject: [ConfigService],
     }),
     forwardRef(() => UserModule),
+    NotificationModule,
   ],
   providers: [CommitService, FileService],
   controllers: [CommitController],

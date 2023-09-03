@@ -17,6 +17,7 @@ import {
   AuhtorizationPayload,
   AuthorizationResDto,
   GetMyInfoResDto,
+  ChangeNicknamePayload,
 } from './dto/user.dto';
 import { LOGIN_STATE, UserService } from './user.service';
 import { JwtPayload } from 'src/auth/auth.types';
@@ -182,5 +183,24 @@ export class UserController {
     const ret = await this.userSvc.delUser(userNo);
 
     return ret && partnerRet;
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Patch('/changeNickname')
+  @ApiOperation({
+    description: '유저의 닉네임을 변경합니다.',
+    summary: '유저 닉네임 변경',
+  })
+  @ApiResponse({ status: 200, type: UserInfoResDto })
+  async changeNicknaem(
+    @JwtParam() jwtParam: JwtPayload,
+    @Body() data: ChangeNicknamePayload,
+  ): Promise<UserInfoResDto> {
+    const { userNo } = jwtParam;
+    const { nickname } = data;
+    const userInfo = this.userSvc.changeUserNickname(userNo, nickname);
+
+    return userInfo;
   }
 }

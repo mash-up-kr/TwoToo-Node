@@ -177,3 +177,13 @@ export class GetPartnerResDto {
   })
   partnerNo?: number;
 }
+
+export class ChangeNicknamePayload {
+  @IsString()
+  @ApiProperty({
+    example: '왕자',
+    description: '바꿀 닉네임',
+    required: true,
+  })
+  nickname!: string;
+}

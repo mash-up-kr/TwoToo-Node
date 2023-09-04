@@ -193,7 +193,7 @@ export class UserController {
     summary: '유저 닉네임 변경',
   })
   @ApiResponse({ status: 200, type: UserInfoResDto })
-  async changeNicknaem(
+  async changeNickname(
     @JwtParam() jwtParam: JwtPayload,
     @Body() data: ChangeNicknamePayload,
   ): Promise<UserInfoResDto> {

@@ -312,7 +312,7 @@ export class ChallengeHistoryResDto {
     required: true,
     enum: HomeViewState,
   })
-  viewState!: HomeViewStateType;
+  viewState: HomeViewStateType;
 
   @IsNumber()
   @IsNotEmpty()
@@ -321,7 +321,7 @@ export class ChallengeHistoryResDto {
     description: '챌린지 번호',
     required: true,
   })
-  challengeNo!: number;
+  challengeNo: number;
 
   @IsString()
   @IsNotEmpty()
@@ -330,7 +330,7 @@ export class ChallengeHistoryResDto {
     description: '챌린지 이름',
     required: true,
   })
-  name!: string;
+  name: string;
 
   @IsString()
   @ApiProperty({
@@ -349,7 +349,7 @@ export class ChallengeHistoryResDto {
     description: '챌린지 시작일',
     required: true,
   })
-  startDate!: Date;
+  startDate: Date;
 
   @Type(() => Date)
   @IsDate()
@@ -361,7 +361,7 @@ export class ChallengeHistoryResDto {
     description: '챌린지 종료일',
     required: true,
   })
-  endDate!: Date;
+  endDate: Date;
 
   @IsOptional()
   @IsNumber()

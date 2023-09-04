@@ -22,6 +22,7 @@ import {
 } from './dto/challenge.dto';
 import { HomeViewService } from 'src/view/homeView.service';
 import { HomeViewState } from 'src/view/view.type';
+import { el } from 'date-fns/locale';
 
 @Injectable()
 export class ChallengeService {
@@ -192,7 +193,7 @@ export class ChallengeService {
     userNo,
   }: {
     userNo: number;
-  }): Promise<ChallengeHistoryResDto[] | undefined> {
+  }): Promise<ChallengeHistoryResDto[] | []> {
     const challenges = await this.challengeModel
       .find(
         {
@@ -211,8 +212,9 @@ export class ChallengeService {
         // challenge가 finished된 것에만 BEFORE_CREATE 상태가 되어서 넘어옴
         let challengeState = this.homeViewSvc.getHomeViewState(challenge, userNo);
         if (
-          challengeState === HomeViewState.BEFORE_CREATE ||
-          challengeState === HomeViewState.IN_PROGRESS
+          (challengeState === HomeViewState.BEFORE_CREATE ||
+            challengeState === HomeViewState.IN_PROGRESS) &&
+          challengeState
         ) {
           if (challengeState === HomeViewState.BEFORE_CREATE) {
             challengeState = HomeViewState.COMPLETE;
@@ -229,12 +231,12 @@ export class ChallengeService {
             user2Flower: challenge.user2Flower,
             user1No: challenge.user1.userNo,
             user2No: challenge.user2.userNo,
-            state: challengeState,
+            viewState: challengeState,
           };
         }
+        return {};
       })
-      .filter((element) => element);
-
-    return histories;
+      .filter((element) => Object.keys(element).length > 0) as ChallengeHistoryResDto[];
+    return histories || [];
   }
 }

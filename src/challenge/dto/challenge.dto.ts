@@ -308,11 +308,11 @@ export class ChallengeHistoryResDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
+    example: 'finished',
     description: '홈 화면 상태',
     required: true,
-    enum: HomeViewState,
   })
-  viewState: HomeViewStateType;
+  viewState: string;
 
   @IsNumber()
   @IsNotEmpty()

@@ -32,7 +32,7 @@ export class ChallengeController {
   @UseGuards(AuthGuard)
   @Get('histories')
   @ApiOperation({ description: '히스토리 목록을 조회합니다.', summary: '히스토리 화면 조회' })
-  @ApiResponse({ status: 200, type: ChallengeHistoryResDto })
+  @ApiResponse({ status: 200, type: [ChallengeHistoryResDto] })
   async getHistories(@JwtParam() JwtParam: JwtPayload): Promise<ChallengeHistoryResDto[] | []> {
     const userNo = JwtParam.userNo;
     const ChallengeHistory = await this.challengeSvc.getChallengeHistory({ userNo });

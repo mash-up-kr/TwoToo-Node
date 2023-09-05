@@ -21,8 +21,6 @@ import {
   UpdateChallengePayload,
 } from './dto/challenge.dto';
 import { HomeViewService } from 'src/view/homeView.service';
-import { HomeViewState } from 'src/view/view.type';
-import { el } from 'date-fns/locale';
 
 @Injectable()
 export class ChallengeService {
@@ -34,8 +32,6 @@ export class ChallengeService {
     private readonly challengeModel: Model<ChallengeDocument>,
     @InjectModel(ChallengeCounter.name)
     private readonly challengeCounterModel: Model<ChallengeCounterDocument>,
-    @Inject(forwardRef(() => HomeViewService))
-    private readonly homeViewSvc: HomeViewService,
   ) {}
 
   async createChallenge(challengeInfo: CreateChallenge): Promise<ChallengeResDto> {
@@ -194,49 +190,66 @@ export class ChallengeService {
   }: {
     userNo: number;
   }): Promise<ChallengeHistoryResDto[] | []> {
-    const challenges = await this.challengeModel
+    const today = new Date();
+
+    const finishedChallenges = await this.challengeModel
       .find(
         {
           $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+          isFinished: true,
           isDeleted: false,
         },
         { _id: 0 },
       )
       .lean()
       .exec();
+    const finishedChallengesAddedState = finishedChallenges.map((challenge) => {
+      return {
+        challengeNo: challenge.challengeNo,
+        name: challenge.name,
+        description: challenge.description,
+        startDate: challenge.startDate,
+        endDate: challenge.endDate,
+        user1CommitCnt: challenge.user1CommitCnt,
+        user2CommitCnt: challenge.user2CommitCnt,
+        user1Flower: challenge.user1Flower,
+        user2Flower: challenge.user2Flower,
+        user1No: challenge.user1.userNo,
+        user2No: challenge.user2.userNo,
+        viewState: 'Finished',
+      };
+    });
 
-    const histories = challenges
-      .map((challenge) => {
-        // 여기 로직조금 어려울거같아서 주석 남김
-        // BEFORE_CREATE가 Complete로 남기는 이유는 존재하는 챌린지 이기에 null일리 없고 삭제된것은 위에서 불러올리 없기에 getHomeViewState에서
-        // challenge가 finished된 것에만 BEFORE_CREATE 상태가 되어서 넘어옴
-        let challengeState = this.homeViewSvc.getHomeViewState(challenge, userNo);
-        if (
-          (challengeState === HomeViewState.BEFORE_CREATE ||
-            challengeState === HomeViewState.IN_PROGRESS) &&
-          challengeState
-        ) {
-          if (challengeState === HomeViewState.BEFORE_CREATE) {
-            challengeState = HomeViewState.COMPLETE;
-          }
-          return {
-            challengeNo: challenge.challengeNo,
-            name: challenge.name,
-            description: challenge.description,
-            startDate: challenge.startDate,
-            endDate: challenge.endDate,
-            user1CommitCnt: challenge.user1CommitCnt,
-            user2CommitCnt: challenge.user2CommitCnt,
-            user1Flower: challenge.user1Flower,
-            user2Flower: challenge.user2Flower,
-            user1No: challenge.user1.userNo,
-            user2No: challenge.user2.userNo,
-            viewState: challengeState,
-          };
-        }
-        return {};
+    const inProgressChallege = await this.challengeModel
+      .find({
+        $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+        startDate: { $lte: today },
+        endDate: { $gte: today },
+        isApproved: true,
+        isFinished: false,
+        isDeleted: false,
       })
-      .filter((element) => Object.keys(element).length > 0) as ChallengeHistoryResDto[];
+      .lean()
+      .exec();
+    const inProgressChallegeAddedState = inProgressChallege.map((challenge) => {
+      return {
+        challengeNo: challenge.challengeNo,
+        name: challenge.name,
+        description: challenge.description,
+        startDate: challenge.startDate,
+        endDate: challenge.endDate,
+        user1CommitCnt: challenge.user1CommitCnt,
+        user2CommitCnt: challenge.user2CommitCnt,
+        user1Flower: challenge.user1Flower,
+        user2Flower: challenge.user2Flower,
+        user1No: challenge.user1.userNo,
+        user2No: challenge.user2.userNo,
+        viewState: 'InProgress',
+      };
+    });
+
+    const histories = [...finishedChallengesAddedState, ...inProgressChallegeAddedState];
+
     return histories || [];
   }
 }

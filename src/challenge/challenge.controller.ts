@@ -35,9 +35,9 @@ export class ChallengeController {
   @ApiResponse({ status: 200, type: [ChallengeHistoryResDto] })
   async getHistories(@JwtParam() JwtParam: JwtPayload): Promise<ChallengeHistoryResDto[] | []> {
     const userNo = JwtParam.userNo;
-    const ChallengeHistory = await this.challengeSvc.getChallengeHistory({ userNo });
+    const challengeHistory = await this.challengeSvc.getChallengeHistory({ userNo });
 
-    return ChallengeHistory;
+    return challengeHistory;
   }
 
   @ApiBearerAuth()

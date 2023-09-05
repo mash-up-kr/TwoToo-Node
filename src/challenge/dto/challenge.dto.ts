@@ -308,7 +308,7 @@ export class ChallengeHistoryResDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: 'finished',
+    example: 'Finished',
     description: '홈 화면 상태',
     required: true,
   })

@@ -17,6 +17,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from '../auth/auth.types';
 import { LoginType } from './user.types';
 import { ChallengeService } from '../challenge/challenge.service';
+import { UserInfoResDto } from './dto/user.dto';
 
 export enum LOGIN_STATE {
   NEED_NICKNAME = 'NEED_NICKNAME',
@@ -35,7 +36,7 @@ export class UserService {
     private configService: ConfigService,
     @Inject(forwardRef(() => ChallengeService))
     private challengeSvc: ChallengeService,
-  ) { }
+  ) {}
 
   async signUp({
     socialId,
@@ -257,5 +258,26 @@ export class UserService {
     }
 
     return true;
+  }
+
+  async changeUserNickname(userNo: number, nickname: string): Promise<UserInfoResDto> {
+    const user = await this.userModel.findOneAndUpdate(
+      { userNo: userNo },
+      {
+        $set: {
+          nickname: nickname,
+        },
+      },
+      { new: true },
+    );
+    if (_.isNull(user)) {
+      throw new NotFoundException(`${userNo}닉네임 변경에 실패했습니다.`);
+    }
+
+    return {
+      userNo: user.userNo,
+      nickname: user.nickname,
+      partnerNo: user.partnerNo,
+    };
   }
 }

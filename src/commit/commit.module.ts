@@ -28,7 +28,7 @@ import { NotificationModule } from 'src/notification/notification.module';
       inject: [ConfigService],
     }),
     forwardRef(() => UserModule),
-    NotificationModule,
+    forwardRef(() => NotificationModule),
   ],
   providers: [CommitService, FileService],
   controllers: [CommitController],

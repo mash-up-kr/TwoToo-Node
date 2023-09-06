@@ -15,11 +15,12 @@ import { CommitService } from '../commit/commit.service';
 import { Challenge, ChallengeDocument } from './schema/challenge.schema';
 import { ChallengeCounter, ChallengeCounterDocument } from './schema/challenge-counter.schema';
 import {
+  ChallengeHistoryResDto,
   ChallengeResDto,
   CreateChallenge,
-  ChallengeHistoryResDto,
   UpdateChallengePayload,
 } from './dto/challenge.dto';
+import { HomeViewService } from 'src/view/homeView.service';
 
 @Injectable()
 export class ChallengeService {
@@ -132,48 +133,6 @@ export class ChallengeService {
     });
   }
 
-  async getInProgressChallenge(userNo: number): Promise<ChallengeHistoryResDto | null> {
-    const today = new Date();
-    let modifiedRet = null;
-    let ret = await this.challengeModel
-      .findOne(
-        {
-          $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
-          startDate: { $lte: today },
-          endDate: { $gte: today },
-          isApproved: true,
-          isFinished: false,
-          isDeleted: false,
-        },
-        {
-          _id: 0,
-          challengeNo: 1,
-          name: 1,
-          'user1.userNo': 1,
-          'user2.userNo': 1,
-          description: 1,
-          user1Flower: 1,
-          user2Flower: 1,
-          user1CommitCnt: 1,
-          user2CommitCnt: 1,
-          startDate: 1,
-          endDate: 1,
-        },
-      )
-      .lean()
-      .exec();
-
-    if (ret !== null) {
-      const { user1, user2, ...rest } = ret;
-      modifiedRet = {
-        ...rest,
-        user1No: user1.userNo,
-        user2No: user2.userNo,
-      };
-    }
-    return modifiedRet;
-  }
-
   async acceptChallenge(challengeNo: number, user1Flower: string): Promise<ChallengeDocument> {
     const challenge = await this.challengeModel.findOneAndUpdate(
       { challengeNo, isDeleted: false },
@@ -226,44 +185,71 @@ export class ChallengeService {
     return result!.count;
   }
 
-  async getFinishedChalleges({ userNo }: { userNo: number }): Promise<ChallengeHistoryResDto[]> {
+  async getChallengeHistory({
+    userNo,
+  }: {
+    userNo: number;
+  }): Promise<ChallengeHistoryResDto[] | []> {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // 시간을 0으로 설정
 
-    const challenges = await this.challengeModel
+    const finishedChallenges = await this.challengeModel
       .find(
         {
           $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
-          endDate: { $lt: today },
           isFinished: true,
           isDeleted: false,
         },
-        {
-          _id: 0,
-          challengeNo: 1,
-          name: 1,
-          'user1.userNo': 1,
-          'user2.userNo': 1,
-          description: 1,
-          user1Flower: 1,
-          user2Flower: 1,
-          user1CommitCnt: 1,
-          user2CommitCnt: 1,
-          startDate: 1,
-          endDate: 1,
-        },
+        { _id: 0 },
       )
       .lean()
       .exec();
+    const finishedChallengesAddedState = finishedChallenges.map((challenge) => {
+      return {
+        challengeNo: challenge.challengeNo,
+        name: challenge.name,
+        description: challenge.description,
+        startDate: challenge.startDate,
+        endDate: challenge.endDate,
+        user1CommitCnt: challenge.user1CommitCnt,
+        user2CommitCnt: challenge.user2CommitCnt,
+        user1Flower: challenge.user1Flower,
+        user2Flower: challenge.user2Flower,
+        user1No: challenge.user1.userNo,
+        user2No: challenge.user2.userNo,
+        viewState: 'Finished',
+      };
+    });
 
-    const modifiedChallenges = challenges.map((challenge) => ({
-      ...challenge,
-      user1No: challenge.user1.userNo,
-      user2No: challenge.user2.userNo,
-      user1: undefined, // user1 객체는 더 이상 필요 없으므로 제거합니다.
-      user2: undefined, // user2 객체는 더 이상 필요 없으므로 제거합니다.
-    }));
+    const inProgressChallege = await this.challengeModel
+      .find({
+        $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+        startDate: { $lte: today },
+        endDate: { $gte: today },
+        isApproved: true,
+        isFinished: false,
+        isDeleted: false,
+      })
+      .lean()
+      .exec();
+    const inProgressChallegeAddedState = inProgressChallege.map((challenge) => {
+      return {
+        challengeNo: challenge.challengeNo,
+        name: challenge.name,
+        description: challenge.description,
+        startDate: challenge.startDate,
+        endDate: challenge.endDate,
+        user1CommitCnt: challenge.user1CommitCnt,
+        user2CommitCnt: challenge.user2CommitCnt,
+        user1Flower: challenge.user1Flower,
+        user2Flower: challenge.user2Flower,
+        user1No: challenge.user1.userNo,
+        user2No: challenge.user2.userNo,
+        viewState: 'InProgress',
+      };
+    });
 
-    return modifiedChallenges;
+    const histories = [...finishedChallengesAddedState, ...inProgressChallegeAddedState];
+
+    return histories || [];
   }
 }

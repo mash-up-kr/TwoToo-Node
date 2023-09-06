@@ -25,11 +25,18 @@ import { JwtParam } from '../auth/auth.user.decorator';
 import { CommitCommentPayload, CommitPayload, CommitResDto } from './dto/commit.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './s3.service';
+import { UserService } from 'src/user/user.service';
+import { NotificationService } from 'src/notification/notification.service';
 
 @ApiTags('commit')
 @Controller('commit')
 export class CommitController {
-  constructor(private readonly commitSvc: CommitService, private readonly fileSvc: FileService) {}
+  constructor(
+    private readonly commitSvc: CommitService,
+    private readonly fileSvc: FileService,
+    private readonly userSvc: UserService,
+    private readonly notificationSvc: NotificationService,
+  ) {}
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
@@ -60,6 +67,19 @@ export class CommitController {
 
     data.photoUrl = file.location;
     const commit = await this.commitSvc.createCommit({ userNo: jwtparam.userNo, data });
+
+    const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtparam.userNo);
+    const user = await this.userSvc.getUser(jwtparam.userNo);
+    const message = '짝궁이 인증을 완료했습니다! 확인해보세요!';
+    const title = 'twotoo';
+
+    const pushRet = await this.notificationSvc.sendPush({
+      nickname: user.nickname,
+      message,
+      deviceToken: partnerDeviceToken,
+      title,
+    });
+
     return commit;
   }
 

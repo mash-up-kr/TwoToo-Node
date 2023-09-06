@@ -178,13 +178,12 @@ export class GetPartnerResDto {
   partnerNo?: number;
 }
 
-export class DelUserPayload {
+export class ChangeNicknamePayload {
   @IsString()
-  @IsNotEmpty()
   @ApiProperty({
-    example: 'example@kakao.com',
-    description: '소셜 아이디',
+    example: '왕자',
+    description: '바꿀 닉네임',
     required: true,
   })
-  socialId!: string;
+  nickname!: string;
 }

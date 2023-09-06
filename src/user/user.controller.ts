@@ -17,7 +17,7 @@ import {
   AuhtorizationPayload,
   AuthorizationResDto,
   GetMyInfoResDto,
-	DelUserPayload,
+  ChangeNicknamePayload,
 } from './dto/user.dto';
 import { LOGIN_STATE, UserService } from './user.service';
 import { JwtPayload } from 'src/auth/auth.types';
@@ -148,19 +148,6 @@ export class UserController {
     };
   }
 
-  @Post('/del')
-  @ApiOperation({ description: '임시 유저 삭제 api', summary: '유저 삭제' })
-  @ApiResponse({ status: 200, type: Boolean })
-  async delUser(@Body() data: DelUserPayload): Promise<Boolean> {
-    const { socialId } = data;
-    try {
-      await this.userSvc.delUser(socialId);
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
-    return true;
-}
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
@@ -197,5 +184,24 @@ export class UserController {
     const ret = await this.userSvc.delUser(userNo);
 
     return ret && partnerRet;
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Patch('/changeNickname')
+  @ApiOperation({
+    description: '유저의 닉네임을 변경합니다.',
+    summary: '유저 닉네임 변경',
+  })
+  @ApiResponse({ status: 200, type: UserInfoResDto })
+  async changeNickname(
+    @JwtParam() jwtParam: JwtPayload,
+    @Body() data: ChangeNicknamePayload,
+  ): Promise<UserInfoResDto> {
+    const { userNo } = jwtParam;
+    const { nickname } = data;
+    const userInfo = this.userSvc.changeUserNickname(userNo, nickname);
+
+    return userInfo;
   }
 }

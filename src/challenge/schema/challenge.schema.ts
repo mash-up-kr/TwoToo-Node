@@ -32,10 +32,10 @@ export class Challenge {
   @Prop({ default: 0 })
   user2CommitCnt: number;
 
-  @Prop({ default: '' })
+  @Prop({ type: String, default: '' })
   user1Flower: FlowerType;
 
-  @Prop()
+  @Prop({ type: String })
   user2Flower: FlowerType;
 
   @Prop({ default: false })

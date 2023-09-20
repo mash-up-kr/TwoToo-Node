@@ -1,0 +1,24 @@
+service: twotoo-node-serverless
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  region: ap-northeast-2
+  runtime: nodejs14.x
+
+functions:
+  main:
+    handler: dist/main.handler
+    package:
+      include:
+        - dist/**
+    maximumRetryAttempts: 2
+    timeout: 300
+    events:
+      - httpApi: '*'
+
+custom:
+  serverless-offline:
+    noPrependStageInUrl: true

@@ -86,7 +86,7 @@ export class UserService {
         },
         { new: true },
       );
-      this.logger.log(`Update user 닉네임 설정 완료`);
+      this.logger.debug(`Update user 닉네임 설정 완료`);
     } else {
       if (data.partnerNo === userNo) {
         throw new ConflictException('자기 자신과 파트너 매칭할 수 없습니다.');
@@ -129,7 +129,7 @@ export class UserService {
         ]);
 
         updatedUser = await this.getUser(userNo);
-        this.logger.log(`Update user 닉네임 설정 및 파트너 매칭 완료`);
+        this.logger.debug(`Update user 닉네임 설정 및 파트너 매칭 완료`);
       } catch (err) {
         throw new NotFoundException('파트너 매칭에 실패했습니다.');
       }
@@ -248,7 +248,7 @@ export class UserService {
         { $set: { nickname: null, partnerNo: null } },
       );
 
-      this.logger.log(`Delete Partner - userNo(${user.userNo}) partnerNo(${user.partnerNo})`);
+      this.logger.debug(`Delete Partner - userNo(${user.userNo}) partnerNo(${user.partnerNo})`);
 
       await this.challengeSvc.deleteAllChallenges(user.userNo);
       this.logger.log(`Delete all challenges - userNo(${user.userNo})`);

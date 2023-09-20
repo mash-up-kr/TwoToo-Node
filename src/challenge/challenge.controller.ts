@@ -65,7 +65,7 @@ export class ChallengeController {
     const challenge = await this.challengeSvc.createChallenge(challengeInfo);
 
     const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtParam.userNo);
-    const message = '짝궁이 챌린지를 만들었어요! 확인해볼까요?';
+    const message = '짝꿍이 챌린지를 만들었어요! 확인해볼까요?';
     const title = 'twotoo';
 
     this.notificationSvc.sendPush({
@@ -125,7 +125,7 @@ export class ChallengeController {
     const challenge = await this.challengeSvc.acceptChallenge(challengeNo, data.user1Flower);
 
     const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtParam.userNo);
-    const message = '짝궁이 챌린지를 수락했어요! 인증해볼까요?';
+    const message = '짝꿍이 챌린지를 수락했어요! 이제 인증해볼까요?';
     const title = 'twotoo';
 
     this.notificationSvc.sendPush({

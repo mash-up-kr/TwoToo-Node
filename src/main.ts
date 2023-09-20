@@ -6,9 +6,11 @@ import { AppModule } from './app.module';
 import { setupSwagger } from './swagger';
 import { HttpExceptionFilter } from './httpException.filter';
 import { ValidationPipe } from '@nestjs/common';
+import { LoggerService } from './logger/logger.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.useLogger(app.get(LoggerService));
 
   const configService: ConfigService = app.get(ConfigService);
 
@@ -23,7 +25,7 @@ async function bootstrap() {
   });
 
   setupSwagger(app);
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter(app.get(LoggerService)));
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
 }

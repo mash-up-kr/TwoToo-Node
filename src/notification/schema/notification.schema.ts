@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { NotificaitonType } from '../dto/notification.dto';
 
 @Schema({ collection: 'notification', timestamps: true, versionKey: false })
 export class Notification {
@@ -10,6 +11,9 @@ export class Notification {
 
   @Prop()
   challengeNo!: number;
+
+  @Prop()
+  notificationType!: NotificaitonType;
 
   @Prop()
   createdAt: Date;

@@ -18,6 +18,7 @@ import {
 import { ChallengeValidator } from './challenge.validator';
 import { CommitService } from 'src/commit/commit.service';
 import { NotificationService } from 'src/notification/notification.service';
+import { NotificaitonType } from 'src/notification/dto/notification.dto';
 
 @ApiTags('challenge')
 @Controller('challenge')
@@ -66,14 +67,22 @@ export class ChallengeController {
 
     const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtParam.userNo);
     const message = '짝꿍이 챌린지를 만들었어요! 확인해볼까요?';
-    const title = 'twotoo';
 
-    this.notificationSvc.sendPush({
+    const pushRet = await this.notificationSvc.sendPush({
       nickname: user.nickname,
       message,
       deviceToken: partnerDeviceToken,
-      title,
+      notificationType: NotificaitonType.CHALLENG_CREATE,
     });
+
+    if (pushRet) {
+      await this.notificationSvc.createSting({
+        message,
+        userNo: jwtParam.userNo,
+        notificationType: NotificaitonType.CHALLENG_CREATE,
+      });
+    }
+
     return challenge;
   }
 
@@ -126,14 +135,21 @@ export class ChallengeController {
 
     const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtParam.userNo);
     const message = '짝꿍이 챌린지를 수락했어요! 이제 인증해볼까요?';
-    const title = 'twotoo';
 
-    this.notificationSvc.sendPush({
+    const pushRet = await this.notificationSvc.sendPush({
       nickname: challenge.user2.nickname,
       message,
       deviceToken: partnerDeviceToken,
-      title,
+      notificationType: NotificaitonType.CHALLENGE_APPROVE,
     });
+
+    if (pushRet) {
+      await this.notificationSvc.createSting({
+        message,
+        userNo: jwtParam.userNo,
+        notificationType: NotificaitonType.CHALLENGE_APPROVE,
+      });
+    }
     return challenge;
   }
 

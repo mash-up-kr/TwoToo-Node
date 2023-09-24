@@ -27,6 +27,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './s3.service';
 import { UserService } from 'src/user/user.service';
 import { NotificationService } from 'src/notification/notification.service';
+import { NotificaitonType } from 'src/notification/dto/notification.dto';
 
 @ApiTags('commit')
 @Controller('commit')
@@ -61,24 +62,31 @@ export class CommitController {
   async createCommit(
     @Body() data: CommitPayload,
     @UploadedFile() file: Express.MulterS3.File,
-    @JwtParam() jwtparam: JwtPayload,
+    @JwtParam() JwtParam: JwtPayload,
   ) {
     this.fileSvc.validateFile(file);
 
     data.photoUrl = file.location;
-    const commit = await this.commitSvc.createCommit({ userNo: jwtparam.userNo, data });
+    const commit = await this.commitSvc.createCommit({ userNo: JwtParam.userNo, data });
 
-    const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtparam.userNo);
-    const user = await this.userSvc.getUser(jwtparam.userNo);
+    const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(JwtParam.userNo);
+    const user = await this.userSvc.getUser(JwtParam.userNo);
     const message = '짝궁이 인증을 완료했습니다! 확인해보세요!';
-    const title = 'twotoo';
 
     const pushRet = await this.notificationSvc.sendPush({
       nickname: user.nickname,
       message,
       deviceToken: partnerDeviceToken,
-      title,
+      notificationType: NotificaitonType.COMMIT,
     });
+
+    if (pushRet) {
+      await this.notificationSvc.createSting({
+        message,
+        userNo: JwtParam.userNo,
+        notificationType: NotificaitonType.COMMIT,
+      });
+    }
 
     return commit;
   }

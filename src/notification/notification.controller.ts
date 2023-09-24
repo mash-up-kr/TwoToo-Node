@@ -12,7 +12,12 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { JwtParam } from 'src/auth/auth.user.decorator';
 import { JwtPayload } from 'src/auth/auth.types';
 import { UserService } from 'src/user/user.service';
-import { NotificationResDto, PushPayload, StingPayload } from './dto/notification.dto';
+import {
+  NotificaitonType,
+  NotificationResDto,
+  PushPayload,
+  StingPayload,
+} from './dto/notification.dto';
 
 @ApiTags('notification')
 @Controller('notification')
@@ -21,25 +26,6 @@ export class NotificationController {
     private readonly userService: UserService,
     private readonly notificationService: NotificationService,
   ) {}
-
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
-  @Post('/push')
-  @ApiOperation({
-    description: 'push알림을 전송합니다. 데이터베이스에 따로 저장하지 않습니다.',
-    summary: '푸쉬 알림 전송',
-  })
-  @ApiResponse({ status: 200, type: String })
-  async push(@Body() data: PushPayload): Promise<string> {
-    const { deviceToken, message } = data;
-    const title = 'TwoToo';
-    return await this.notificationService.sendPush({
-      nickname: 'Twotoo',
-      deviceToken,
-      title,
-      message,
-    });
-  }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
@@ -55,7 +41,6 @@ export class NotificationController {
   ): Promise<NotificationResDto> {
     const { userNo } = jwtParam;
     const { message } = data;
-    const title = 'twotoo';
 
     const stingCount = await this.notificationService.getStingCount(userNo);
     if (stingCount >= 5) {
@@ -68,11 +53,15 @@ export class NotificationController {
       nickname: user.nickname,
       message,
       deviceToken: partnerDeviceToken,
-      title,
+      notificationType: NotificaitonType.STING,
     });
 
     if (pushRet) {
-      return await this.notificationService.createSting({ message, userNo });
+      return await this.notificationService.createSting({
+        message,
+        userNo,
+        notificationType: NotificaitonType.STING,
+      });
     }
 
     throw new BadRequestException('찌르기 실패했습니다.');
@@ -93,7 +82,6 @@ export class NotificationController {
   ): Promise<NotificationResDto> {
     const { userNo } = jwtParam;
     const { message } = data;
-    const title = 'twotoo';
 
     const stingCount = await this.notificationService.getStingCount(userNo);
     if (stingCount >= 5) {
@@ -106,11 +94,15 @@ export class NotificationController {
       nickname: user.nickname,
       message,
       deviceToken: partnerDeviceToken,
-      title,
+      notificationType: NotificaitonType.STING,
     });
 
     if (pushRet) {
-      return await this.notificationService.createSting({ message, userNo });
+      return await this.notificationService.createSting({
+        message,
+        userNo,
+        notificationType: NotificaitonType.STING,
+      });
     }
 
     throw new BadRequestException('찌르기 실패했습니다.');

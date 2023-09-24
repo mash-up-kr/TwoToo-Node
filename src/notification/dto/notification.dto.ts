@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
+export enum NotificaitonType {
+  CHALLENG_CREATE = 'challengeCreate',
+  CHALLENGE_APPROVE = 'challengeApprove',
+  COMMIT = 'commit',
+  STING = 'sting',
+}
+
 export class PushPayload {
   @IsString()
   @IsNotEmpty()
@@ -31,6 +38,7 @@ export class StingPayload {
   })
   message!: string;
 }
+
 export class PushResDto {
   @IsString()
   @IsNotEmpty()
@@ -53,20 +61,21 @@ export class PushResDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: 'TwoToo',
-    description: 'Push 알림 전송 주체',
-    required: true,
-  })
-  title!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
     example: '공주',
     description: '사용할 닉네임',
     required: true,
   })
   nickname!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'challengeCreate',
+    enum: NotificaitonType,
+    description: 'Notification Type',
+    required: true,
+  })
+  notificationType: NotificaitonType;
 }
 
 export class NotificationResDto {

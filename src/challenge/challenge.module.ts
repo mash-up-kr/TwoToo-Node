@@ -12,6 +12,7 @@ import { CommitCounter, CommitCounterSchema } from '../commit/schema/commit-coun
 import { User, UserSchema } from 'src/user/schema/user.schema';
 import { CommitModule } from 'src/commit/commit.module';
 import { ViewModule } from 'src/view/view.module';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ViewModule } from 'src/view/view.module';
     forwardRef(() => UserModule),
     forwardRef(() => CommitModule),
     forwardRef(() => ViewModule),
+    forwardRef(() => NotificationModule),
   ],
   providers: [ChallengeService, ChallengeValidator],
   controllers: [ChallengeController],

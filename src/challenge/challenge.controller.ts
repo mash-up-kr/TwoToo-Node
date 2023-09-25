@@ -17,6 +17,7 @@ import {
 } from './dto/challenge.dto';
 import { ChallengeValidator } from './challenge.validator';
 import { CommitService } from 'src/commit/commit.service';
+import { NotificationService } from 'src/notification/notification.service';
 
 @ApiTags('challenge')
 @Controller('challenge')
@@ -26,6 +27,7 @@ export class ChallengeController {
     private readonly challengeValidator: ChallengeValidator,
     private readonly challengeSvc: ChallengeService,
     private readonly commitSvc: CommitService,
+    private readonly notificationSvc: NotificationService,
   ) {}
 
   @ApiBearerAuth()
@@ -52,6 +54,7 @@ export class ChallengeController {
     @JwtParam() jwtParam: JwtPayload,
   ): Promise<ChallengeResDto> {
     const user = await this.userSvc.getUser(jwtParam.userNo);
+
     const challengeInfo: CreateChallenge = {
       name: data.name,
       description: data.description,
@@ -60,6 +63,17 @@ export class ChallengeController {
       startDate: new Date(data.startDate),
     };
     const challenge = await this.challengeSvc.createChallenge(challengeInfo);
+
+    const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtParam.userNo);
+    const message = '짝꿍이 챌린지를 만들었어요! 확인해볼까요?';
+    const title = 'twotoo';
+
+    this.notificationSvc.sendPush({
+      nickname: user.nickname,
+      message,
+      deviceToken: partnerDeviceToken,
+      title,
+    });
     return challenge;
   }
 
@@ -109,6 +123,17 @@ export class ChallengeController {
     await this.challengeValidator.validateChallengeYetApproved(challengeNo);
 
     const challenge = await this.challengeSvc.acceptChallenge(challengeNo, data.user1Flower);
+
+    const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtParam.userNo);
+    const message = '짝꿍이 챌린지를 수락했어요! 이제 인증해볼까요?';
+    const title = 'twotoo';
+
+    this.notificationSvc.sendPush({
+      nickname: challenge.user2.nickname,
+      message,
+      deviceToken: partnerDeviceToken,
+      title,
+    });
     return challenge;
   }
 

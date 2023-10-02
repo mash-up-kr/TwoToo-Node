@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export enum NotificaitonType {
-  CHALLENG_CREATE = 'challengeCreate',
+  CHALLENGE_CREATE = 'challengeCreate',
   CHALLENGE_APPROVE = 'challengeApprove',
   COMMIT = 'commit',
   STING = 'sting',

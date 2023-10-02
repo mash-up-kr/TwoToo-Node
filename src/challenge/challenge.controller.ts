@@ -72,14 +72,14 @@ export class ChallengeController {
       nickname: user.nickname,
       message,
       deviceToken: partnerDeviceToken,
-      notificationType: NotificaitonType.CHALLENG_CREATE,
+      notificationType: NotificaitonType.CHALLENGE_CREATE,
     });
 
     if (pushRet) {
       await this.notificationSvc.createSting({
         message,
         userNo: jwtParam.userNo,
-        notificationType: NotificaitonType.CHALLENG_CREATE,
+        notificationType: NotificaitonType.CHALLENGE_CREATE,
       });
     }
 

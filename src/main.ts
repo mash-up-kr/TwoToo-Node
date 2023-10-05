@@ -7,7 +7,10 @@ import { setupSwagger } from './swagger';
 import { HttpExceptionFilter } from './httpException.filter';
 import { ValidationPipe } from '@nestjs/common';
 
-async function bootstrap() {
+import { Callback, Context, Handler } from 'aws-lambda';
+import serverlessExpress from '@vendia/serverless-express';
+
+async function bootstrap(): Promise<Handler> {
   const app = await NestFactory.create(AppModule);
 
   const configService: ConfigService = app.get(ConfigService);
@@ -26,6 +29,18 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
+
+  const expressApp = app.getHttpAdapter().getInstance();
+  return serverlessExpress({ app: expressApp });
 }
 
-bootstrap();
+// bootstrap();
+
+let server: Handler;
+
+const handler = async (event: any, context: Context, callback: Callback) => {
+  server = server ?? (await bootstrap());
+  return server(event, context, callback);
+};
+
+exports.handler = handler;

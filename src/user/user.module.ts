@@ -12,6 +12,7 @@ import {
   ChallengeCounterSchema,
 } from 'src/challenge/schema/challenge-counter.schema';
 import { ChallengeModule } from 'src/challenge/challenge.module';
+import { LoggerModule } from 'src/logger/logger.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ChallengeModule } from 'src/challenge/challenge.module';
       { name: ChallengeCounter.name, schema: ChallengeCounterSchema },
     ]),
     forwardRef(() => ChallengeModule),
+    LoggerModule
   ],
   providers: [UserService, AuthGuard, JwtService],
   controllers: [UserController],

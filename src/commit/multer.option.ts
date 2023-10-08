@@ -14,7 +14,7 @@ export const multerOptionsFactory = (configService: ConfigService): MulterOption
   });
 
   return {
-    storage: multerS3({
+    storage: multerS3.default({
       s3,
       bucket: configService.get('AWS_BUCKET_NAME')!,
       key(_req, file, done) {

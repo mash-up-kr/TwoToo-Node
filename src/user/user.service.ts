@@ -37,8 +37,8 @@ export class UserService {
     private configService: ConfigService,
     @Inject(forwardRef(() => ChallengeService))
     private challengeSvc: ChallengeService,
-    private logger: LoggerService
-  ) { }
+    private logger: LoggerService,
+  ) {}
 
   async signUp({
     socialId,
@@ -286,7 +286,9 @@ export class UserService {
       throw new NotFoundException(`${userNo}닉네임 변경에 실패했습니다.`);
     }
 
-    this.logger.log(`Changer User nickname - user(${JSON.stringify(this.getPartialUserInfo(user))}})`);
+    this.logger.log(
+      `Changer User nickname - user(${JSON.stringify(this.getPartialUserInfo(user))}})`,
+    );
     return {
       userNo: user.userNo,
       nickname: user.nickname,

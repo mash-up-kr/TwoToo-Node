@@ -10,7 +10,7 @@ provider:
 
 functions:
   main:
-    handler: dist/main.handler
+    handler: dist/lambda.handler
     package:
       include:
         - dist/**

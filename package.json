@@ -5,8 +5,8 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "build": "nest build --webpack && sed -i 's/exports.handler = handler;/module.exports.handler = handler;/g' dist/main.js",
-    "build:mac": "nest build --webpack && sed -i '' 's~exports.handler = handler;~module.exports.handler = handler;~g' dist/main.js",
+    "build": "nest build --webpack && sed -i 's/exports.handler = handler;/module.exports.handler = handler;/g' dist/lambda.js",
+    "build:mac": "nest build --webpack && sed -i '' 's~exports.handler = handler;~module.exports.handler = handler;~g' dist/lambda.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

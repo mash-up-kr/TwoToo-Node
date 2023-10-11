@@ -38,7 +38,7 @@ export class UserService {
     @Inject(forwardRef(() => ChallengeService))
     private challengeSvc: ChallengeService,
     private logger: LoggerService,
-  ) {}
+  ) { }
 
   async signUp({
     socialId,
@@ -139,10 +139,11 @@ export class UserService {
     return updatedUser as User;
   }
 
-  async checkPartner(userNo: number): Promise<number> {
+  async checkPartner(userNo: number): Promise<number | undefined> {
     const user = await this.getUser(userNo);
     this.logger.log(`Check partnerNo - userNo(${userNo}), parterNo(${user.partnerNo || 0})`);
-    return user.partnerNo || 0;
+
+    return user.partnerNo;
   }
 
   async getUser(userNo: number): Promise<UserDocument> {

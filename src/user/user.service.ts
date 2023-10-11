@@ -228,16 +228,6 @@ export class UserService {
   }
 
 
-  async delUser(socialId: string) {
-    if (_.isNil(socialId)) {
-      throw new Error('No socialId');
-    }
-
-    await this.userModel.deleteOne({
-      socialId: socialId,
-    });
-  }
-
   getPartialUserInfo(user: User): Pick<User, 'nickname' | 'userNo' | 'partnerNo'> {
     // 민감하지않은 정보들만 추출
     const { userNo, nickname, partnerNo } = user;

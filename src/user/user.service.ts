@@ -37,8 +37,8 @@ export class UserService {
     private configService: ConfigService,
     @Inject(forwardRef(() => ChallengeService))
     private challengeSvc: ChallengeService,
-    private logger: LoggerService
-  ) { }
+    private logger: LoggerService,
+  ) {}
 
   async signUp({
     socialId,
@@ -139,10 +139,11 @@ export class UserService {
     return updatedUser as User;
   }
 
-  async checkPartner(userNo: number): Promise<number> {
+  async checkPartner(userNo: number): Promise<number | undefined> {
     const user = await this.getUser(userNo);
     this.logger.log(`Check partnerNo - userNo(${userNo}), parterNo(${user.partnerNo || 0})`);
-    return user.partnerNo || 0;
+
+    return user.partnerNo;
   }
 
   async getUser(userNo: number): Promise<UserDocument> {
@@ -286,7 +287,9 @@ export class UserService {
       throw new NotFoundException(`${userNo}닉네임 변경에 실패했습니다.`);
     }
 
-    this.logger.log(`Changer User nickname - user(${JSON.stringify(this.getPartialUserInfo(user))}})`);
+    this.logger.log(
+      `Changer User nickname - user(${JSON.stringify(this.getPartialUserInfo(user))}})`,
+    );
     return {
       userNo: user.userNo,
       nickname: user.nickname,

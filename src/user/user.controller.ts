@@ -24,6 +24,7 @@ import { JwtPayload } from 'src/auth/auth.types';
 import { JwtParam } from 'src/auth/auth.user.decorator';
 import { AuthGuard } from '../auth/auth.guard';
 import { ChallengeService } from 'src/challenge/challenge.service';
+import { LoggerService } from 'src/logger/logger.service';
 
 @ApiTags('user')
 @Controller('user')
@@ -31,6 +32,7 @@ export class UserController {
   constructor(
     private readonly userSvc: UserService,
     private readonly challengeSvc: ChallengeService,
+    private readonly loggerSvc: LoggerService,
   ) {}
 
   @Post('/authorize')
@@ -50,6 +52,7 @@ export class UserController {
         userNo: user.userNo,
         deviceToken: deviceToken,
       });
+
       return {
         state: curState,
         accessToken: user.accessToken,

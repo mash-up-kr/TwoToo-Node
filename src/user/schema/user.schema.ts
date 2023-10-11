@@ -16,7 +16,7 @@ export class User {
   @Prop()
   socialId!: string;
 
-  @Prop()
+  @Prop({ type: String })
   loginType!: LoginType;
 
   @Prop()

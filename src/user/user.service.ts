@@ -18,6 +18,7 @@ import { JwtPayload } from '../auth/auth.types';
 import { LoginType } from './user.types';
 import { ChallengeService } from '../challenge/challenge.service';
 import { UserInfoResDto } from './dto/user.dto';
+import { LoggerService } from '../logger/logger.service';
 
 export enum LOGIN_STATE {
   NEED_NICKNAME = 'NEED_NICKNAME',
@@ -36,7 +37,8 @@ export class UserService {
     private configService: ConfigService,
     @Inject(forwardRef(() => ChallengeService))
     private challengeSvc: ChallengeService,
-  ) {}
+    private logger: LoggerService,
+  ) { }
 
   async signUp({
     socialId,
@@ -61,8 +63,9 @@ export class UserService {
       accessToken: accessToken,
       deviceToken: deviceToken,
     });
-
     await user.save();
+
+    this.logger.log(`Created user - user(${JSON.stringify(this.getPartialUserInfo(user))}})`);
     return user;
   }
 
@@ -83,6 +86,7 @@ export class UserService {
         },
         { new: true },
       );
+      this.logger.debug(`Update user 닉네임 설정 완료`);
     } else {
       if (data.partnerNo === userNo) {
         throw new ConflictException('자기 자신과 파트너 매칭할 수 없습니다.');
@@ -125,18 +129,21 @@ export class UserService {
         ]);
 
         updatedUser = await this.getUser(userNo);
+        this.logger.debug(`Update user 닉네임 설정 및 파트너 매칭 완료`);
       } catch (err) {
         throw new NotFoundException('파트너 매칭에 실패했습니다.');
       }
     }
 
+    this.logger.log(`Updated user - user(${JSON.stringify(this.getPartialUserInfo(user))}})`);
     return updatedUser as User;
   }
 
-  async checkPartner(userNo: number): Promise<number> {
+  async checkPartner(userNo: number): Promise<number | undefined> {
     const user = await this.getUser(userNo);
+    this.logger.log(`Check partnerNo - userNo(${userNo}), parterNo(${user.partnerNo || 0})`);
 
-    return user.partnerNo || 0;
+    return user.partnerNo;
   }
 
   async getUser(userNo: number): Promise<UserDocument> {
@@ -146,6 +153,7 @@ export class UserService {
       throw new NotFoundException('해당 유저가 존재하지 않습니다.');
     }
 
+    this.logger.log(`Get User - user(${JSON.stringify(this.getPartialUserInfo(user))}})`);
     return user;
   }
 
@@ -243,6 +251,7 @@ export class UserService {
     if (partnerNo === null) {
       throw new NotFoundException('파트너가 존재하지 않습니다.');
     }
+
     try {
       await this.userModel.updateMany(
         {
@@ -251,10 +260,13 @@ export class UserService {
         { $set: { nickname: null, partnerNo: null } },
       );
 
+      this.logger.debug(`Delete Partner - userNo(${user.userNo}) partnerNo(${user.partnerNo})`);
+
       await this.challengeSvc.deleteAllChallenges(user.userNo);
+      this.logger.log(`Delete all challenges - userNo(${user.userNo})`);
       return true;
     } catch (e) {
-      console.log(e);
+      this.logger.error(e);
       return false;
     }
   }
@@ -268,6 +280,7 @@ export class UserService {
       throw new NotFoundException(`${userNo}의 삭제에 실패했습니다.`);
     }
 
+    this.logger.log(`Delete User - userNo(${user.userNo})`);
     return true;
   }
 
@@ -285,6 +298,9 @@ export class UserService {
       throw new NotFoundException(`${userNo}닉네임 변경에 실패했습니다.`);
     }
 
+    this.logger.log(
+      `Changer User nickname - user(${JSON.stringify(this.getPartialUserInfo(user))}})`,
+    );
     return {
       userNo: user.userNo,
       nickname: user.nickname,

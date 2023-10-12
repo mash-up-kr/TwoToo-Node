@@ -23,7 +23,7 @@ import { LoggerModule } from 'src/logger/logger.module';
       { name: ChallengeCounter.name, schema: ChallengeCounterSchema },
     ]),
     forwardRef(() => ChallengeModule),
-    LoggerModule
+    LoggerModule,
   ],
   providers: [UserService, AuthGuard, JwtService],
   controllers: [UserController],

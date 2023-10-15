@@ -78,6 +78,63 @@ export class PushResDto {
   notificationType: NotificaitonType;
 }
 
+export class CommitPushResDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'FCMTOKEN',
+    description: 'FCM Device Token',
+    required: true,
+  })
+  deviceToken!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '왜 인증 안해!?!',
+    description: 'Push 메세지',
+    required: true,
+  })
+  message!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '공주',
+    description: '사용할 닉네임',
+    required: true,
+  })
+  nickname!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'challengeCreate',
+    enum: NotificaitonType,
+    description: 'Notification Type',
+    required: true,
+  })
+  notificationType: NotificaitonType;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 1,
+    description: '인증 번호',
+    required: true,
+  })
+  commitNo!: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 1,
+    description: '인증 번호',
+    required: true,
+  })
+  challengeNo!: number;
+}
+
 export class NotificationResDto {
   @IsNumber()
   @IsNotEmpty()

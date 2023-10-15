@@ -13,6 +13,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { FileService } from './s3.service';
 import { User, UserSchema } from '../user/schema/user.schema';
 import { NotificationModule } from 'src/notification/notification.module';
+import { LoggerModule } from 'src/logger/logger.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { NotificationModule } from 'src/notification/notification.module';
     }),
     forwardRef(() => UserModule),
     forwardRef(() => NotificationModule),
+    LoggerModule,
   ],
   providers: [CommitService, FileService],
   controllers: [CommitController],

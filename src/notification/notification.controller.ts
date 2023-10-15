@@ -18,6 +18,7 @@ import {
   PushPayload,
   StingPayload,
 } from './dto/notification.dto';
+import { LoggerService } from 'src/logger/logger.service';
 
 @ApiTags('notification')
 @Controller('notification')
@@ -25,6 +26,7 @@ export class NotificationController {
   constructor(
     private readonly userService: UserService,
     private readonly notificationService: NotificationService,
+    private readonly loggerSvc: LoggerService,
   ) {}
 
   @ApiBearerAuth()
@@ -62,47 +64,8 @@ export class NotificationController {
         userNo,
         notificationType: NotificaitonType.STING,
       });
-    }
-
-    throw new BadRequestException('찌르기 실패했습니다.');
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
-  @Post('/androidSting')
-  @ApiOperation({
-    description:
-      '안드로이드를 위한 찌르기를 했을때 데이터베이스에 저장하고, push알림을 파트너에게 전송합니다.',
-    summary: '찌르기 기능',
-  })
-  @ApiResponse({ status: 200, type: NotificationResDto })
-  async androidSting(
-    @Body() data: StingPayload,
-    @JwtParam() jwtParam: JwtPayload,
-  ): Promise<NotificationResDto> {
-    const { userNo } = jwtParam;
-    const { message } = data;
-
-    const stingCount = await this.notificationService.getStingCount(userNo);
-    if (stingCount >= 5) {
-      throw new ConflictException('이미 찌르기 5회를 진행했습니다.');
-    }
-
-    const partnerDeviceToken = await this.userService.getPartnerDeviceToken(userNo);
-    const user = await this.userService.getUser(userNo);
-    const pushRet = await this.notificationService.sendPush({
-      nickname: user.nickname,
-      message,
-      deviceToken: partnerDeviceToken,
-      notificationType: NotificaitonType.STING,
-    });
-
-    if (pushRet) {
-      return await this.notificationService.createSting({
-        message,
-        userNo,
-        notificationType: NotificaitonType.STING,
-      });
+    } else {
+      this.loggerSvc.error('NO Push Return');
     }
 
     throw new BadRequestException('찌르기 실패했습니다.');

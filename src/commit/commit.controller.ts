@@ -28,6 +28,7 @@ import { FileService } from './s3.service';
 import { UserService } from 'src/user/user.service';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificaitonType } from 'src/notification/dto/notification.dto';
+import { LoggerService } from 'src/logger/logger.service';
 
 @ApiTags('commit')
 @Controller('commit')
@@ -37,6 +38,7 @@ export class CommitController {
     private readonly fileSvc: FileService,
     private readonly userSvc: UserService,
     private readonly notificationSvc: NotificationService,
+    private readonly logerSvc: LoggerService,
   ) {}
 
   @ApiBearerAuth()
@@ -86,6 +88,8 @@ export class CommitController {
         userNo: JwtParam.userNo,
         notificationType: NotificaitonType.COMMIT,
       });
+    } else {
+      this.loggerSvc.error('NO Push Return');
     }
 
     return commit;

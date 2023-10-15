@@ -19,6 +19,7 @@ import { ChallengeValidator } from './challenge.validator';
 import { CommitService } from 'src/commit/commit.service';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificaitonType } from 'src/notification/dto/notification.dto';
+import { LoggerService } from 'src/logger/logger.service';
 
 @ApiTags('challenge')
 @Controller('challenge')
@@ -29,6 +30,7 @@ export class ChallengeController {
     private readonly challengeSvc: ChallengeService,
     private readonly commitSvc: CommitService,
     private readonly notificationSvc: NotificationService,
+    private readonly loggerSvc: LoggerService,
   ) {}
 
   @ApiBearerAuth()
@@ -81,6 +83,8 @@ export class ChallengeController {
         userNo: jwtParam.userNo,
         notificationType: NotificaitonType.CHALLENGE_CREATE,
       });
+    } else {
+      this.loggerSvc.error('NO Push Return');
     }
 
     return challenge;
@@ -149,6 +153,7 @@ export class ChallengeController {
         userNo: jwtParam.userNo,
         notificationType: NotificaitonType.CHALLENGE_APPROVE,
       });
+    } else {
     }
     return challenge;
   }

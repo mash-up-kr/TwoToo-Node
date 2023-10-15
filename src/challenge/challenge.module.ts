@@ -13,6 +13,7 @@ import { User, UserSchema } from 'src/user/schema/user.schema';
 import { CommitModule } from 'src/commit/commit.module';
 import { ViewModule } from 'src/view/view.module';
 import { NotificationModule } from 'src/notification/notification.module';
+import { LoggerModule } from 'src/logger/logger.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { NotificationModule } from 'src/notification/notification.module';
     forwardRef(() => CommitModule),
     forwardRef(() => ViewModule),
     forwardRef(() => NotificationModule),
+    LoggerModule,
   ],
   providers: [ChallengeService, ChallengeValidator],
   controllers: [ChallengeController],

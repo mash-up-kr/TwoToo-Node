@@ -75,11 +75,13 @@ export class CommitController {
     const user = await this.userSvc.getUser(JwtParam.userNo);
     const message = '짝궁이 인증을 완료했습니다! 확인해보세요!';
 
-    const pushRet = await this.notificationSvc.sendPush({
+    const pushRet = await this.notificationSvc.sendCommitPush({
       nickname: user.nickname,
       message,
       deviceToken: partnerDeviceToken,
       notificationType: NotificaitonType.COMMIT,
+      challengeNo: commit.challengeNo,
+      commitNo: commit.commitNo,
     });
 
     if (pushRet) {

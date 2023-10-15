@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as FirebaseAdmin from 'firebase-admin';
 
-import { NotificaitonType, PushResDto } from './dto/notification.dto';
+import { CommitPushResDto, NotificaitonType, PushResDto } from './dto/notification.dto';
 import { Notification, NotificationDocument } from './schema/notification.schema';
 import { endOfToday, startOfToday } from 'date-fns';
 import { ChallengeService } from '../challenge/challenge.service';
@@ -24,6 +24,7 @@ export class NotificationService {
   ) {}
   async getStingCount(userNo: number): Promise<number> {
     const recentChallenge = await this.challengeService.findRecentChallenge(userNo);
+    console.debug('===============');
     if (recentChallenge == null || recentChallenge.isDeleted)
       throw new NotFoundException('챌린지가 존재하지 않습니다.');
 
@@ -50,6 +51,39 @@ export class NotificationService {
         title: nickname,
         body: message,
         type: notificationType,
+      },
+      notification: {
+        title: nickname,
+        body: message,
+      },
+      apns: {
+        payload: {
+          aps: {
+            contentAvailable: true,
+          },
+        },
+      },
+    };
+    const ret = await FirebaseAdmin.messaging().send(sendMessage);
+    return ret;
+  }
+
+  async sendCommitPush({
+    deviceToken,
+    message,
+    nickname,
+    notificationType,
+    challengeNo,
+    commitNo,
+  }: CommitPushResDto): Promise<string> {
+    const sendMessage = {
+      token: deviceToken,
+      data: {
+        title: nickname,
+        body: message,
+        type: notificationType,
+        commitNo: commitNo.toString(),
+        challengeNo: challengeNo.toString(),
       },
       notification: {
         title: nickname,

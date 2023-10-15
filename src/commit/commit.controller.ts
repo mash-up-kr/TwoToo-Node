@@ -38,7 +38,7 @@ export class CommitController {
     private readonly fileSvc: FileService,
     private readonly userSvc: UserService,
     private readonly notificationSvc: NotificationService,
-    private readonly logerSvc: LoggerService,
+    private readonly loggerSvc: LoggerService,
   ) {}
 
   @ApiBearerAuth()

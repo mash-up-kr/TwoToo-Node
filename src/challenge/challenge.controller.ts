@@ -154,7 +154,9 @@ export class ChallengeController {
         notificationType: NotificaitonType.CHALLENGE_APPROVE,
       });
     } else {
+      this.loggerSvc.error('NO Push Return');
     }
+
     return challenge;
   }
 

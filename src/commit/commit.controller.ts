@@ -64,30 +64,36 @@ export class CommitController {
   async createCommit(
     @Body() data: CommitPayload,
     @UploadedFile() file: Express.MulterS3.File,
-    @JwtParam() JwtParam: JwtPayload,
+    @JwtParam() jwtParam: JwtPayload,
   ) {
     this.fileSvc.validateFile(file);
 
     data.photoUrl = file.location;
-    const commit = await this.commitSvc.createCommit({ userNo: JwtParam.userNo, data });
+    const commit = await this.commitSvc.createCommit({ userNo: jwtParam.userNo, data });
 
-    const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(JwtParam.userNo);
-    const user = await this.userSvc.getUser(JwtParam.userNo);
+    const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtParam.userNo);
+    const user = await this.userSvc.getUser(jwtParam.userNo);
     const message = '짝궁이 인증을 완료했습니다! 확인해보세요!';
+    let pushRet;
 
-    const pushRet = await this.notificationSvc.sendCommitPush({
-      nickname: user.nickname,
-      message,
-      deviceToken: partnerDeviceToken,
-      notificationType: NotificaitonType.COMMIT,
-      challengeNo: commit.challengeNo,
-      commitNo: commit.commitNo,
-    });
+    try {
+      pushRet = await this.notificationSvc.sendCommitPush({
+        nickname: user.nickname,
+        message,
+        deviceToken: partnerDeviceToken,
+        notificationType: NotificaitonType.COMMIT,
+        challengeNo: commit.challengeNo,
+        commitNo: commit.commitNo,
+      });
+    } catch (e) {
+      this.loggerSvc.error(`${jwtParam.userNo} PushError` + e);
+      return commit;
+    }
 
     if (pushRet) {
       await this.notificationSvc.createSting({
         message,
-        userNo: JwtParam.userNo,
+        userNo: jwtParam.userNo,
         notificationType: NotificaitonType.COMMIT,
       });
     } else {

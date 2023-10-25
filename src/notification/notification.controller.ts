@@ -40,7 +40,7 @@ export class NotificationController {
   async sting(
     @Body() data: StingPayload,
     @JwtParam() jwtParam: JwtPayload,
-  ): Promise<NotificationResDto> {
+  ): Promise<NotificationResDto | boolean> {
     const { userNo } = jwtParam;
     const { message } = data;
 
@@ -51,12 +51,21 @@ export class NotificationController {
 
     const partnerDeviceToken = await this.userService.getPartnerDeviceToken(userNo);
     const user = await this.userService.getUser(userNo);
-    const pushRet = await this.notificationService.sendPush({
-      nickname: user.nickname,
-      message,
-      deviceToken: partnerDeviceToken,
-      notificationType: NotificaitonType.STING,
-    });
+    let pushRet;
+    try {
+      pushRet = await this.notificationService.sendPush({
+        nickname: user.nickname,
+        message,
+        deviceToken: partnerDeviceToken,
+        notificationType: NotificaitonType.STING,
+      });
+    } catch (e) {
+      this.loggerSvc.error(`${userNo} PushError` + e);
+      return {
+        userNo: userNo,
+        message: 'Fail To Send Push',
+      };
+    }
 
     if (pushRet) {
       return await this.notificationService.createSting({

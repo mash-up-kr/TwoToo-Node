@@ -70,12 +70,18 @@ export class ChallengeController {
     const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtParam.userNo);
     const message = '짝꿍이 챌린지를 만들었어요! 확인해볼까요?';
 
-    const pushRet = await this.notificationSvc.sendPush({
-      nickname: user.nickname,
-      message,
-      deviceToken: partnerDeviceToken,
-      notificationType: NotificaitonType.CHALLENGE_CREATE,
-    });
+    let pushRet;
+    try {
+      pushRet = await this.notificationSvc.sendPush({
+        nickname: user.nickname,
+        message,
+        deviceToken: partnerDeviceToken,
+        notificationType: NotificaitonType.CHALLENGE_CREATE,
+      });
+    } catch (e) {
+      this.loggerSvc.error(`${jwtParam.userNo} PushError` + e);
+      return challenge;
+    }
 
     if (pushRet) {
       await this.notificationSvc.createSting({
@@ -140,12 +146,18 @@ export class ChallengeController {
     const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtParam.userNo);
     const message = '짝꿍이 챌린지를 수락했어요! 이제 인증해볼까요?';
 
-    const pushRet = await this.notificationSvc.sendPush({
-      nickname: challenge.user2.nickname,
-      message,
-      deviceToken: partnerDeviceToken,
-      notificationType: NotificaitonType.CHALLENGE_APPROVE,
-    });
+    let pushRet;
+    try {
+      pushRet = await this.notificationSvc.sendPush({
+        nickname: challenge.user2.nickname,
+        message,
+        deviceToken: partnerDeviceToken,
+        notificationType: NotificaitonType.CHALLENGE_APPROVE,
+      });
+    } catch (e) {
+      this.loggerSvc.error(`${jwtParam.userNo} PushError` + e);
+      return challenge;
+    }
 
     if (pushRet) {
       await this.notificationSvc.createSting({

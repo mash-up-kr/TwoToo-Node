@@ -24,7 +24,6 @@ export class NotificationService {
   ) {}
   async getStingCount(userNo: number): Promise<number> {
     const recentChallenge = await this.challengeService.findRecentChallenge(userNo);
-    console.debug('===============');
     if (recentChallenge == null || recentChallenge.isDeleted)
       throw new NotFoundException('챌린지가 존재하지 않습니다.');
 

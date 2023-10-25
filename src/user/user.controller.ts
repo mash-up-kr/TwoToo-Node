@@ -118,7 +118,10 @@ export class UserController {
   @ApiResponse({ status: 200, type: GetPartnerResDto })
   async getPartner(@JwtParam() jwtParam: JwtPayload): Promise<GetPartnerResDto> {
     const { userNo } = jwtParam;
-    const partnerNo = await this.userSvc.checkPartner(userNo);
+    let partnerNo = await this.userSvc.checkPartner(userNo);
+    if (partnerNo === null) {
+      partnerNo = 0;
+    }
 
     return {
       partnerNo: partnerNo,

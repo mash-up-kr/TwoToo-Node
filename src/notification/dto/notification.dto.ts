@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export enum NotificaitonType {
   CHALLENGE_CREATE = 'challengeCreate',
   CHALLENGE_APPROVE = 'challengeApprove',
   COMMIT = 'commit',
   STING = 'sting',
+  ADMIN = 'admin',
 }
 
 export class PushPayload {
@@ -39,6 +40,26 @@ export class StingPayload {
   message!: string;
 }
 
+export class AdminStingPayload {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '왜 인증 안해!?!',
+    description: 'Push 메세지',
+    required: true,
+  })
+  message!: string;
+
+  @IsArray()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: ['1231313', '123131321'],
+    description: 'fcm 토큰 배열',
+    required: true,
+  })
+  fcmArray!: [];
+}
+
 export class PushResDto {
   @IsString()
   @IsNotEmpty()
@@ -66,6 +87,36 @@ export class PushResDto {
     required: true,
   })
   nickname!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'challengeCreate',
+    enum: NotificaitonType,
+    description: 'Notification Type',
+    required: true,
+  })
+  notificationType: NotificaitonType;
+}
+
+export class PushResDtoAdmin {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'FCMTOKEN',
+    description: 'FCM Device Token',
+    required: true,
+  })
+  deviceToken!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '왜 인증 안해!?!',
+    description: 'Push 메세지',
+    required: true,
+  })
+  message!: string;
 
   @IsString()
   @IsNotEmpty()

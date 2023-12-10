@@ -9,7 +9,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as FirebaseAdmin from 'firebase-admin';
 
-import { CommitPushResDto, NotificaitonType, PushResDto } from './dto/notification.dto';
+import {
+  CommitPushResDto,
+  NotificaitonType,
+  PushResDto,
+  PushResDtoAdmin,
+} from './dto/notification.dto';
 import { Notification, NotificationDocument } from './schema/notification.schema';
 import { endOfToday, startOfToday } from 'date-fns';
 import { ChallengeService } from '../challenge/challenge.service';
@@ -53,6 +58,34 @@ export class NotificationService {
       },
       notification: {
         title: nickname,
+        body: message,
+      },
+      apns: {
+        payload: {
+          aps: {
+            contentAvailable: true,
+          },
+        },
+      },
+    };
+    const ret = await FirebaseAdmin.messaging().send(sendMessage);
+    return ret;
+  }
+
+  async sendPushAdmin({
+    deviceToken,
+    message,
+    notificationType,
+  }: PushResDtoAdmin): Promise<string> {
+    const sendMessage = {
+      token: deviceToken,
+      data: {
+        title: 'twotoo',
+        body: message,
+        type: notificationType,
+      },
+      notification: {
+        title: 'twotoo',
         body: message,
       },
       apns: {

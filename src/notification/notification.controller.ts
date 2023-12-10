@@ -13,6 +13,7 @@ import { JwtParam } from 'src/auth/auth.user.decorator';
 import { JwtPayload } from 'src/auth/auth.types';
 import { UserService } from 'src/user/user.service';
 import {
+  AdminStingPayload,
   NotificaitonType,
   NotificationResDto,
   PushPayload,
@@ -78,5 +79,25 @@ export class NotificationController {
     }
 
     throw new BadRequestException('찌르기 실패했습니다.');
+  }
+
+  @Post('/stingByAdmin')
+  @ApiResponse({ status: 200, type: Boolean })
+  async stingAdmin(@Body() data: AdminStingPayload): Promise<boolean> {
+    const { message, fcmArray } = data;
+
+    let pushRet;
+    fcmArray.forEach(async (deviceToken) => {
+      try {
+        pushRet = await this.notificationService.sendPushAdmin({
+          message,
+          deviceToken: deviceToken,
+          notificationType: NotificaitonType.ADMIN,
+        });
+      } catch (e) {
+        this.loggerSvc.error(`${deviceToken} PushError` + e);
+      }
+    });
+    return true;
   }
 }

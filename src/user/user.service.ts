@@ -38,7 +38,7 @@ export class UserService {
     @Inject(forwardRef(() => ChallengeService))
     private challengeSvc: ChallengeService,
     private logger: LoggerService,
-  ) {}
+  ) { }
 
   async signUp({
     socialId,
@@ -226,6 +226,7 @@ export class UserService {
 
     return updatedUser as User;
   }
+
 
   getPartialUserInfo(user: User): Pick<User, 'nickname' | 'userNo' | 'partnerNo'> {
     // 민감하지않은 정보들만 추출

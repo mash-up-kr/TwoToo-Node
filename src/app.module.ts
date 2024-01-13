@@ -38,15 +38,14 @@ import { LoggerMiddleware } from './logger/logger.middleware';
     UserModule,
     NotificationModule,
     ViewModule,
-    LoggerModule
+    LoggerModule,
   ],
 
   controllers: [AppController],
   providers: [AppService, JwtService],
 })
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*')
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }

@@ -32,8 +32,8 @@ export class UserController {
   constructor(
     private readonly userSvc: UserService,
     private readonly challengeSvc: ChallengeService,
-    private readonly loggerSvc: LoggerService
-  ) { }
+    private readonly loggerSvc: LoggerService,
+  ) {}
 
   @Post('/authorize')
   @ApiOperation({
@@ -153,6 +153,7 @@ export class UserController {
       totalChallengeCount,
     };
   }
+
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)

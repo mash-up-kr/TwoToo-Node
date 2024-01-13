@@ -18,6 +18,8 @@ import {
 import { ChallengeValidator } from './challenge.validator';
 import { CommitService } from 'src/commit/commit.service';
 import { NotificationService } from 'src/notification/notification.service';
+import { NotificaitonType } from 'src/notification/dto/notification.dto';
+import { LoggerService } from 'src/logger/logger.service';
 
 @ApiTags('challenge')
 @Controller('challenge')
@@ -28,6 +30,7 @@ export class ChallengeController {
     private readonly challengeSvc: ChallengeService,
     private readonly commitSvc: CommitService,
     private readonly notificationSvc: NotificationService,
+    private readonly loggerSvc: LoggerService,
   ) {}
 
   @ApiBearerAuth()
@@ -66,14 +69,30 @@ export class ChallengeController {
 
     const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtParam.userNo);
     const message = '짝꿍이 챌린지를 만들었어요! 확인해볼까요?';
-    const title = 'twotoo';
 
-    this.notificationSvc.sendPush({
-      nickname: user.nickname,
-      message,
-      deviceToken: partnerDeviceToken,
-      title,
-    });
+    let pushRet;
+    try {
+      pushRet = await this.notificationSvc.sendPush({
+        nickname: user.nickname,
+        message,
+        deviceToken: partnerDeviceToken,
+        notificationType: NotificaitonType.CHALLENGE_CREATE,
+      });
+    } catch (e) {
+      this.loggerSvc.error(`${jwtParam.userNo} PushError` + e);
+      return challenge;
+    }
+
+    if (pushRet) {
+      await this.notificationSvc.createSting({
+        message,
+        userNo: jwtParam.userNo,
+        notificationType: NotificaitonType.CHALLENGE_CREATE,
+      });
+    } else {
+      this.loggerSvc.error('NO Push Return');
+    }
+
     return challenge;
   }
 
@@ -126,14 +145,30 @@ export class ChallengeController {
 
     const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtParam.userNo);
     const message = '짝꿍이 챌린지를 수락했어요! 이제 인증해볼까요?';
-    const title = 'twotoo';
 
-    this.notificationSvc.sendPush({
-      nickname: challenge.user2.nickname,
-      message,
-      deviceToken: partnerDeviceToken,
-      title,
-    });
+    let pushRet;
+    try {
+      pushRet = await this.notificationSvc.sendPush({
+        nickname: challenge.user2.nickname,
+        message,
+        deviceToken: partnerDeviceToken,
+        notificationType: NotificaitonType.CHALLENGE_APPROVE,
+      });
+    } catch (e) {
+      this.loggerSvc.error(`${jwtParam.userNo} PushError` + e);
+      return challenge;
+    }
+
+    if (pushRet) {
+      await this.notificationSvc.createSting({
+        message,
+        userNo: jwtParam.userNo,
+        notificationType: NotificaitonType.CHALLENGE_APPROVE,
+      });
+    } else {
+      this.loggerSvc.error('NO Push Return');
+    }
+
     return challenge;
   }
 

@@ -9,6 +9,7 @@ import { User, UserSchema } from 'src/user/schema/user.schema';
 import { UserCounter, UserCounterSchema } from 'src/user/schema/user-counter.schema';
 import { UserModule } from '../user/user.module';
 import { ChallengeModule } from '../challenge/challenge.module';
+import { LoggerModule } from 'src/logger/logger.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ChallengeModule } from '../challenge/challenge.module';
     ]),
     forwardRef(() => UserModule),
     forwardRef(() => ChallengeModule),
+    LoggerModule,
   ],
   controllers: [NotificationController],
   providers: [NotificationService, AuthGuard, JwtService],

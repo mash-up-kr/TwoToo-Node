@@ -27,6 +27,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './s3.service';
 import { UserService } from 'src/user/user.service';
 import { NotificationService } from 'src/notification/notification.service';
+import { NotificaitonType } from 'src/notification/dto/notification.dto';
+import { LoggerService } from 'src/logger/logger.service';
 
 @ApiTags('commit')
 @Controller('commit')
@@ -36,6 +38,7 @@ export class CommitController {
     private readonly fileSvc: FileService,
     private readonly userSvc: UserService,
     private readonly notificationSvc: NotificationService,
+    private readonly loggerSvc: LoggerService,
   ) {}
 
   @ApiBearerAuth()
@@ -61,24 +64,41 @@ export class CommitController {
   async createCommit(
     @Body() data: CommitPayload,
     @UploadedFile() file: Express.MulterS3.File,
-    @JwtParam() jwtparam: JwtPayload,
+    @JwtParam() jwtParam: JwtPayload,
   ) {
     this.fileSvc.validateFile(file);
 
     data.photoUrl = file.location;
-    const commit = await this.commitSvc.createCommit({ userNo: jwtparam.userNo, data });
+    const commit = await this.commitSvc.createCommit({ userNo: jwtParam.userNo, data });
 
-    const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtparam.userNo);
-    const user = await this.userSvc.getUser(jwtparam.userNo);
+    const partnerDeviceToken = await this.userSvc.getPartnerDeviceToken(jwtParam.userNo);
+    const user = await this.userSvc.getUser(jwtParam.userNo);
     const message = '짝궁이 인증을 완료했습니다! 확인해보세요!';
-    const title = 'twotoo';
+    let pushRet;
 
-    const pushRet = await this.notificationSvc.sendPush({
-      nickname: user.nickname,
-      message,
-      deviceToken: partnerDeviceToken,
-      title,
-    });
+    try {
+      pushRet = await this.notificationSvc.sendCommitPush({
+        nickname: user.nickname,
+        message,
+        deviceToken: partnerDeviceToken,
+        notificationType: NotificaitonType.COMMIT,
+        challengeNo: commit.challengeNo,
+        commitNo: commit.commitNo,
+      });
+    } catch (e) {
+      this.loggerSvc.error(`${jwtParam.userNo} PushError` + e);
+      return commit;
+    }
+
+    if (pushRet) {
+      await this.notificationSvc.createSting({
+        message,
+        userNo: jwtParam.userNo,
+        notificationType: NotificaitonType.COMMIT,
+      });
+    } else {
+      this.loggerSvc.error('NO Push Return');
+    }
 
     return commit;
   }

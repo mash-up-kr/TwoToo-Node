@@ -114,11 +114,12 @@ export class ChallengeService {
     return challenge;
   }
 
-  // 그만둔(삭제된) 챌린지도 함께 조회한다.
+  //  삭제된 챌린지를 제외 하고 챌린지도 함께 조회한다.
   async findRecentChallenge(userNo: number): Promise<ChallengeDocument | null> {
     const challenge = await this.challengeModel
       .findOne({
         $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
+        isDeleted: false,
       })
       .sort({ challengeNo: -1 });
     return challenge;
@@ -190,7 +191,6 @@ export class ChallengeService {
   }: {
     userNo: number;
   }): Promise<ChallengeHistoryResDto[] | []> {
-    const today = new Date();
 
     const finishedChallenges = await this.challengeModel
       .find(
@@ -223,8 +223,6 @@ export class ChallengeService {
     const inProgressChallege = await this.challengeModel
       .find({
         $or: [{ 'user1.userNo': userNo }, { 'user2.userNo': userNo }],
-        startDate: { $lte: today },
-        endDate: { $gte: today },
         isApproved: true,
         isFinished: false,
         isDeleted: false,

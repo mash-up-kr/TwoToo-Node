@@ -13,6 +13,8 @@ import {
 } from 'src/challenge/schema/challenge-counter.schema';
 import { ChallengeModule } from 'src/challenge/challenge.module';
 import { LoggerModule } from 'src/logger/logger.module';
+import { Commit, CommitSchema } from 'src/commit/schema/commit.schema';
+import { CommitModule } from 'src/commit/commit.module';
 
 @Module({
   imports: [
@@ -21,7 +23,9 @@ import { LoggerModule } from 'src/logger/logger.module';
       { name: UserCounter.name, schema: UserCounterSchema },
       { name: Challenge.name, schema: ChallengeSchema },
       { name: ChallengeCounter.name, schema: ChallengeCounterSchema },
+      { name: Commit.name, schema: CommitSchema },
     ]),
+    forwardRef(() => CommitModule),
     forwardRef(() => ChallengeModule),
     LoggerModule,
   ],

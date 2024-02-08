@@ -19,6 +19,8 @@ import { LoginType } from './user.types';
 import { ChallengeService } from '../challenge/challenge.service';
 import { UserInfoResDto } from './dto/user.dto';
 import { LoggerService } from '../logger/logger.service';
+import { Challenge, ChallengeDocument } from 'src/challenge/schema/challenge.schema';
+import { Commit, CommitDocument } from 'src/commit/schema/commit.schema';
 
 export enum LOGIN_STATE {
   NEED_NICKNAME = 'NEED_NICKNAME',
@@ -33,12 +35,16 @@ export class UserService {
     private readonly userModel: Model<UserDocument>,
     @InjectModel(UserCounter.name)
     private readonly userCounterModel: Model<UserCounterDocument>,
+    @InjectModel(Challenge.name)
+    private readonly challengeModel: Model<ChallengeDocument>,
+    @InjectModel(Commit.name)
+    private readonly commitModel: Model<CommitDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
     @Inject(forwardRef(() => ChallengeService))
     private challengeSvc: ChallengeService,
     private logger: LoggerService,
-  ) { }
+  ) {}
 
   async signUp({
     socialId,
@@ -227,7 +233,6 @@ export class UserService {
     return updatedUser as User;
   }
 
-
   getPartialUserInfo(user: User): Pick<User, 'nickname' | 'userNo' | 'partnerNo'> {
     // 민감하지않은 정보들만 추출
     const { userNo, nickname, partnerNo } = user;
@@ -284,6 +289,29 @@ export class UserService {
       },
       { new: true },
     );
+
+    try {
+      await this.challengeModel.updateMany(
+        { 'user1.userNo': userNo },
+        {
+          $set: {
+            'user1.nickname': nickname,
+          },
+        },
+      );
+
+      await this.challengeModel.updateMany(
+        { 'user2.userNo': userNo },
+        {
+          $set: {
+            'user2.nickname': nickname,
+          },
+        },
+      );
+    } catch (e) {
+      throw new NotFoundException(`${userNo}닉네임 변경에 실패했습니다.`);
+    }
+
     if (_.isNull(user)) {
       throw new NotFoundException(`${userNo}닉네임 변경에 실패했습니다.`);
     }

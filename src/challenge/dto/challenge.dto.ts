@@ -502,10 +502,10 @@ class GrowthDiaryData {
   @IsNotEmpty()
   @ApiProperty({
     example: 10,
-    description: '진행중인 인증 개수 (성공 실패 포함)',
+    description: '진행중인 인증 개수',
     required: true,
   })
-  inProgressCount: number;
+  successCount: number;
 }
 
 export class GrowthDiaryResDto {

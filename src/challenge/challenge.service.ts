@@ -314,13 +314,14 @@ export class ChallengeService {
 
     const { growthList, isSuccess } = this.checkItemsByDate(startDate, commitList);
     let tipMessage = TipMessage[`COMMIT0`];
+    const successCount = growthList.filter((item) => item === GrowthDiaryState.SUCCESS).length;
 
     if (isSuccess) {
-      const successCount: number =
-        growthList.filter((item) => item === GrowthDiaryState.SUCCESS).length > 16
+      const tipCount =
+        successCount > 16
           ? 16
           : growthList.filter((item) => item === GrowthDiaryState.SUCCESS).length;
-      tipMessage = TipMessage[`COMMIT${successCount}`];
+      tipMessage = TipMessage[`COMMIT${tipCount}`];
     } else {
       const failCount =
         growthList.filter((item) => item === GrowthDiaryState.FAIL).length > 5
@@ -328,8 +329,6 @@ export class ChallengeService {
           : growthList.filter((item) => item === GrowthDiaryState.FAIL).length;
       tipMessage = TipMessage[`FAIL${Math.floor((failCount + 1) / 2)}`];
     }
-    const inProgressCount =
-      22 - growthList.filter((item) => item === GrowthDiaryState.NOT_COMMIT).length;
-    return { tipMessage, growthList, inProgressCount };
+    return { tipMessage, growthList, successCount };
   }
 }

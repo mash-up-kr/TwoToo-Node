@@ -199,6 +199,17 @@ export class CommitService {
 
     return result;
   }
+  async getCommitListRecently(challengeNo: number, userNo: number): Promise<CommitDocument[]> {
+    const result = await this.commitModel
+      .find({
+        challengeNo: challengeNo,
+        userNo: userNo,
+        isDeleted: false,
+      })
+      .sort({ _id: -1 });
+
+    return result;
+  }
 
   async deleteCommit(commitNo: number): Promise<CommitDocument> {
     const deletedCommit = (await this.commitModel.findOneAndUpdate(

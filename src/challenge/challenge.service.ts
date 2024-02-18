@@ -313,7 +313,7 @@ export class ChallengeService {
     const commitList = await this.commitSvc.getCommitListRecently(challengeNo, userNo);
 
     const { growthList, isSuccess } = this.checkItemsByDate(startDate, commitList);
-    let tipMessage = TipMessage[`COMMIT0`];
+    let tipMessage = TipMessage[`FAIL0`];
     const successCount = growthList.filter((item) => item === GrowthDiaryState.SUCCESS).length;
 
     if (isSuccess) {

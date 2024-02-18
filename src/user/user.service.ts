@@ -20,7 +20,6 @@ import { ChallengeService } from '../challenge/challenge.service';
 import { UserInfoResDto } from './dto/user.dto';
 import { LoggerService } from '../logger/logger.service';
 import { Challenge, ChallengeDocument } from 'src/challenge/schema/challenge.schema';
-import { Commit, CommitDocument } from 'src/commit/schema/commit.schema';
 
 export enum LOGIN_STATE {
   NEED_NICKNAME = 'NEED_NICKNAME',
@@ -37,8 +36,6 @@ export class UserService {
     private readonly userCounterModel: Model<UserCounterDocument>,
     @InjectModel(Challenge.name)
     private readonly challengeModel: Model<ChallengeDocument>,
-    @InjectModel(Commit.name)
-    private readonly commitModel: Model<CommitDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
     @Inject(forwardRef(() => ChallengeService))

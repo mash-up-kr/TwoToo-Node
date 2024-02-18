@@ -14,6 +14,7 @@ import {
   ChallengeAndCommitListResDto,
   UpdateChallengePayload,
   ChallengeHistoryResDto,
+  GrowthDiaryResDto,
 } from './dto/challenge.dto';
 import { ChallengeValidator } from './challenge.validator';
 import { CommitService } from 'src/commit/commit.service';
@@ -218,5 +219,51 @@ export class ChallengeController {
     //TODO: 챌린지 종료일이 지났을 때 종료 가능 validate
 
     return this.challengeSvc.finishChallenge(challengeNo);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Get(':challengeNo/growthDiary')
+  @ApiOperation({ description: '성장일지 정보를 얻습니다.', summary: '성장일지 정보 얻기' })
+  @ApiResponse({ status: 200, type: GrowthDiaryResDto })
+  async getGrowthDiary(
+    @Param('challengeNo') challengeNo: number,
+    @JwtParam() jwtParam: JwtPayload,
+  ): Promise<GrowthDiaryResDto> {
+    await this.challengeValidator.validateChallengeAccessible(jwtParam.userNo, challengeNo);
+    await this.challengeValidator.validateChallengeYetFinished(challengeNo);
+    const user = await this.userSvc.getUser(jwtParam.userNo);
+    const challenge = await this.challengeSvc.findChallenge(challengeNo);
+
+    challenge.startDate.setHours(challenge.startDate.getHours() + 9);
+    if (!user.partnerNo) {
+      throw Error('매칭이 되지 않았습니다.');
+    }
+    const partner = await this.userSvc.getUser(user.partnerNo);
+    const myGrowthDiaryData = await this.challengeSvc.getUserGrowthDiaryData({
+      userNo: jwtParam.userNo,
+      challengeNo,
+      startDate: challenge.startDate,
+    });
+
+    const partnerGrowthDiaryData = await this.challengeSvc.getUserGrowthDiaryData({
+      userNo: user.partnerNo,
+      challengeNo,
+      startDate: challenge.startDate,
+    });
+
+    return {
+      challengeStartDate: challenge.startDate,
+      challengeEndDate: challenge.endDate,
+      challengeName: challenge.name,
+      my: {
+        nickname: user.nickname,
+        ...myGrowthDiaryData,
+      },
+      partner: {
+        nickname: partner.nickname,
+        ...partnerGrowthDiaryData,
+      },
+    };
   }
 }

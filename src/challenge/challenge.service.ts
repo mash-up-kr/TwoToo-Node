@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { add, endOfDay } from 'date-fns';
 import * as _ from 'lodash';
+import moment from 'moment';
 
 import { UserService } from '../user/user.service';
 import { CommitService } from '../commit/commit.service';
@@ -18,9 +19,11 @@ import {
   ChallengeHistoryResDto,
   ChallengeResDto,
   CreateChallenge,
+  GrowthDiaryState,
+  TipMessage,
   UpdateChallengePayload,
 } from './dto/challenge.dto';
-import { HomeViewService } from 'src/view/homeView.service';
+import { Commit } from 'src/commit/schema/commit.schema';
 
 @Injectable()
 export class ChallengeService {
@@ -191,7 +194,6 @@ export class ChallengeService {
   }: {
     userNo: number;
   }): Promise<ChallengeHistoryResDto[] | []> {
-
     const finishedChallenges = await this.challengeModel
       .find(
         {
@@ -249,5 +251,84 @@ export class ChallengeService {
     const histories = [...finishedChallengesAddedState, ...inProgressChallegeAddedState];
 
     return histories || [];
+  }
+
+  private checkItemsByDate(startDate: Date, itemList: Commit[]) {
+    const today: Date = new Date();
+    const yesterday: Date = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const endDate: Date = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 21); // 22일 후의 날짜 계산
+
+    let isSuccess = false;
+
+    // 결과를 저장할 객체
+    const growthList: GrowthDiaryState[] = [];
+
+    // startDate부터 endDate까지의 날짜 배열 생성
+    const dateRange: Date[] = [];
+    for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+      dateRange.push(new Date(date));
+    }
+
+    // 각 날짜에 대해 itemList에 있는지 확인
+    dateRange.forEach((date, index) => {
+      const dateString: string = date.toISOString().split('T')[0];
+      const itemExists: boolean = itemList.some((item) => {
+        return moment(item.createdAt).format('YYYY-MM-DD') === dateString;
+      });
+
+      //어제나 오늘 인증이 있는지 확인
+      if (
+        (dateString === yesterday.toISOString().split('T')[0] ||
+          dateString === today.toISOString().split('T')[0]) &&
+        itemExists
+      ) {
+        isSuccess = isSuccess || true;
+      }
+
+      // 오늘 이전 날짜에 대한 성공 실패는 넣고 나머지는 아직 커밋 안함으로 넣음 + 오늘 날짜이고 인증이 성공했으면 넘겨줌, 오늘이 실패면 아직 인증 전으로 판단.
+      if (
+        dateString < today.toISOString().split('T')[0] ||
+        (dateString === today.toISOString().split('T')[0] && itemExists)
+      ) {
+        growthList[index] = itemExists ? GrowthDiaryState.SUCCESS : GrowthDiaryState.FAIL;
+      } else {
+        growthList[index] = GrowthDiaryState.NOT_COMMIT;
+      }
+    });
+
+    return { growthList, isSuccess };
+  }
+
+  async getUserGrowthDiaryData({
+    userNo,
+    challengeNo,
+    startDate,
+  }: {
+    userNo: number;
+    challengeNo: number;
+    startDate: Date;
+  }) {
+    const commitList = await this.commitSvc.getCommitListRecently(challengeNo, userNo);
+
+    const { growthList, isSuccess } = this.checkItemsByDate(startDate, commitList);
+    let tipMessage = TipMessage[`FAIL0`];
+    const successCount = growthList.filter((item) => item === GrowthDiaryState.SUCCESS).length;
+
+    if (isSuccess) {
+      const tipCount =
+        successCount > 16
+          ? 16
+          : growthList.filter((item) => item === GrowthDiaryState.SUCCESS).length;
+      tipMessage = TipMessage[`COMMIT${tipCount}`];
+    } else {
+      const failCount =
+        growthList.filter((item) => item === GrowthDiaryState.FAIL).length > 5
+          ? 6
+          : growthList.filter((item) => item === GrowthDiaryState.FAIL).length;
+      tipMessage = TipMessage[`FAIL${Math.floor((failCount + 1) / 2)}`];
+    }
+    return { tipMessage, growthList, successCount };
   }
 }

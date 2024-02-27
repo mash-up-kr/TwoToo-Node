@@ -24,6 +24,8 @@ import {
   UpdateChallengePayload,
 } from './dto/challenge.dto';
 import { Commit } from 'src/commit/schema/commit.schema';
+import { HomeViewService } from 'src/view/homeView.service';
+import { HomeViewState } from 'src/view/view.type';
 
 @Injectable()
 export class ChallengeService {
@@ -31,6 +33,7 @@ export class ChallengeService {
     @Inject(forwardRef(() => UserService))
     private readonly userSvc: UserService,
     private readonly commitSvc: CommitService,
+    private readonly homeViewSvc: HomeViewService,
     @InjectModel(Challenge.name)
     private readonly challengeModel: Model<ChallengeDocument>,
     @InjectModel(ChallengeCounter.name)
@@ -231,22 +234,28 @@ export class ChallengeService {
       })
       .lean()
       .exec();
-    const inProgressChallegeAddedState = inProgressChallege.map((challenge) => {
-      return {
-        challengeNo: challenge.challengeNo,
-        name: challenge.name,
-        description: challenge.description,
-        startDate: challenge.startDate,
-        endDate: challenge.endDate,
-        user1CommitCnt: challenge.user1CommitCnt,
-        user2CommitCnt: challenge.user2CommitCnt,
-        user1Flower: challenge.user1Flower,
-        user2Flower: challenge.user2Flower,
-        user1No: challenge.user1.userNo,
-        user2No: challenge.user2.userNo,
-        viewState: 'InProgress',
-      };
-    });
+    const inProgressChallegeAddedState = inProgressChallege
+      .map((challenge) => {
+        const challengeState = this.homeViewSvc.getHomeViewState(challenge, userNo);
+        if (challengeState === HomeViewState.IN_PROGRESS) {
+          return {
+            challengeNo: challenge.challengeNo,
+            name: challenge.name,
+            description: challenge.description,
+            startDate: challenge.startDate,
+            endDate: challenge.endDate,
+            user1CommitCnt: challenge.user1CommitCnt,
+            user2CommitCnt: challenge.user2CommitCnt,
+            user1Flower: challenge.user1Flower,
+            user2Flower: challenge.user2Flower,
+            user1No: challenge.user1.userNo,
+            user2No: challenge.user2.userNo,
+            viewState: 'InProgress',
+          };
+        }
+        return null;
+      })
+      .filter((item): item is ChallengeHistoryResDto => item !== null);
 
     const histories = [...finishedChallengesAddedState, ...inProgressChallegeAddedState];
 

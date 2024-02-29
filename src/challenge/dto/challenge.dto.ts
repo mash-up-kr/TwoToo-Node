@@ -52,6 +52,7 @@ export const TipMessage: { [key: string]: string } = {
   FAIL1: '잘 하고 있어요! 앞으로 더 열심히 꽃을 키워봐요!',
   FAIL2: '아직 포기하긴 일러요! 조금만 더 화이팅!',
   FAIL3: '두 번 더 실패하면 꽃을 못볼지도 몰라요..\\0ㅁ0//',
+  FAIL4: '우리.. 그래도... 행복했ㄷr,,,⭐️',
 };
 
 export class ChallengeResDto {

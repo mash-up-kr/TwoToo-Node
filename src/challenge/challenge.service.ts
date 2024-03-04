@@ -262,17 +262,16 @@ export class ChallengeService {
     return histories || [];
   }
 
-  private checkItemsByDate(startDate: Date, itemList: Commit[]) {
+  private getCommitResultOfChallenge(startDate: Date, commitList: Commit[]) {
     const today: Date = new Date();
     const yesterday: Date = new Date();
     yesterday.setDate(today.getDate() - 1);
     const endDate: Date = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 21); // 22일 후의 날짜 계산
+    endDate.setDate(startDate.getDate() + 21); // 챌린지 시작일로부터 22일 지남
 
-    let isSuccess = false;
+    let isCommittedTodayOrYesterday = false;
 
-    // 결과를 저장할 객체
-    const growthList: GrowthDiaryState[] = [];
+    const growthStateList: GrowthDiaryState[] = [];
 
     // startDate부터 endDate까지의 날짜 배열 생성
     const dateRange: Date[] = [];
@@ -280,34 +279,33 @@ export class ChallengeService {
       dateRange.push(new Date(date));
     }
 
-    // 각 날짜에 대해 itemList에 있는지 확인
-    dateRange.forEach((date, index) => {
-      const dateString: string = date.toISOString().split('T')[0];
-      const itemExists: boolean = itemList.some((item) => {
-        return moment(item.createdAt).format('YYYY-MM-DD') === dateString;
-      });
+    // date에 Commit이 있는지 확인
+    for (const date of dateRange) {
+      const dateString: string = date.toLocaleDateString();
+      const isCommitExist: boolean = commitList.some(
+        (commit: Commit) => moment(commit.createdAt).format('M/DD/YYYY') === dateString,
+      );
 
-      //어제나 오늘 인증이 있는지 확인
+      // 어제나 오늘 인증이 있는지 확인
       if (
-        (dateString === yesterday.toISOString().split('T')[0] ||
-          dateString === today.toISOString().split('T')[0]) &&
-        itemExists
+        (dateString === yesterday.toLocaleDateString() ||
+          dateString === today.toLocaleDateString()) &&
+        isCommitExist
       ) {
-        isSuccess = isSuccess || true;
+        isCommittedTodayOrYesterday = true;
       }
 
-      // 오늘 이전 날짜에 대한 성공 실패는 넣고 나머지는 아직 커밋 안함으로 넣음 + 오늘 날짜이고 인증이 성공했으면 넘겨줌, 오늘이 실패면 아직 인증 전으로 판단.
-      if (
-        dateString < today.toISOString().split('T')[0] ||
-        (dateString === today.toISOString().split('T')[0] && itemExists)
-      ) {
-        growthList[index] = itemExists ? GrowthDiaryState.SUCCESS : GrowthDiaryState.FAIL;
+      // today 이후: NOT_COMMIT
+      // today 이전: Commit 여부에 따라 SUCCESS, FAIL 기록
+      // today: Commit했을 경우 SUCCESS, 안했을 경우 NOT_COMMIT
+      if (date < today || (date.getTime() === today.getTime() && isCommitExist)) {
+        growthStateList.push(isCommitExist ? GrowthDiaryState.SUCCESS : GrowthDiaryState.FAIL);
       } else {
-        growthList[index] = GrowthDiaryState.NOT_COMMIT;
+        growthStateList.push(GrowthDiaryState.NOT_COMMIT);
       }
-    });
+    }
 
-    return { growthList, isSuccess };
+    return { growthStateList, isCommittedTodayOrYesterday };
   }
 
   async getUserGrowthDiaryData({
@@ -320,24 +318,38 @@ export class ChallengeService {
     startDate: Date;
   }) {
     const commitList = await this.commitSvc.getCommitListRecently(challengeNo, userNo);
+    const { growthStateList, isCommittedTodayOrYesterday } = this.getCommitResultOfChallenge(
+      startDate,
+      commitList,
+    );
 
-    const { growthList, isSuccess } = this.checkItemsByDate(startDate, commitList);
-    let tipMessage = TipMessage[`FAIL0`];
-    const successCount = growthList.filter((item) => item === GrowthDiaryState.SUCCESS).length;
+    let tipMessage = TipMessage.FAIL0; // 기본값
 
-    if (isSuccess) {
-      const tipCount =
-        successCount > 16
-          ? 16
-          : growthList.filter((item) => item === GrowthDiaryState.SUCCESS).length;
-      tipMessage = TipMessage[`COMMIT${tipCount}`];
+    // Commit 성공 횟수 계산
+    const successCount = growthStateList.reduce(
+      (count, item) => (item === GrowthDiaryState.SUCCESS ? count + 1 : count),
+      0,
+    );
+    const failCount = growthStateList.reduce(
+      (count, item) => (item === GrowthDiaryState.FAIL ? count + 1 : count),
+      0,
+    );
+
+    // 7번 이상 Commit 실패 시: 실패 메세지 (FAIL4) 표시
+    if (failCount > 6) {
+      tipMessage = TipMessage.FAIL4;
     } else {
-      const failCount =
-        growthList.filter((item) => item === GrowthDiaryState.FAIL).length > 5
-          ? 6
-          : growthList.filter((item) => item === GrowthDiaryState.FAIL).length;
-      tipMessage = TipMessage[`FAIL${Math.floor((failCount + 1) / 2)}`];
+      // 어제나 오늘 Commit 성공 시: 성공 메세지 (COMMIT 1~16) 표시
+      // 어제나 오늘 Commit 실패 시: 실패 메세지 (FAIL 0~3) 표시
+      if (isCommittedTodayOrYesterday) {
+        const tipCount = Math.min(16, successCount);
+        tipMessage = TipMessage[`COMMIT${tipCount}`];
+      } else {
+        const tipCount = Math.min(failCount, 6);
+        tipMessage = TipMessage[`FAIL${Math.floor((tipCount + 1) / 2)}`];
+      }
     }
-    return { tipMessage, growthList, successCount };
+
+    return { tipMessage, growthStateList, successCount };
   }
 }

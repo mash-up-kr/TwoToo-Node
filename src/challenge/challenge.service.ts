@@ -271,7 +271,7 @@ export class ChallengeService {
 
     let isCommittedTodayOrYesterday = false;
 
-    const growthStateList: GrowthDiaryState[] = [];
+    const growthList: GrowthDiaryState[] = [];
 
     // startDate부터 endDate까지의 날짜 배열 생성
     const dateRange: Date[] = [];
@@ -299,13 +299,13 @@ export class ChallengeService {
       // today 이전: Commit 여부에 따라 SUCCESS, FAIL 기록
       // today: Commit했을 경우 SUCCESS, 안했을 경우 NOT_COMMIT
       if (date < today || (date.getTime() === today.getTime() && isCommitExist)) {
-        growthStateList.push(isCommitExist ? GrowthDiaryState.SUCCESS : GrowthDiaryState.FAIL);
+        growthList.push(isCommitExist ? GrowthDiaryState.SUCCESS : GrowthDiaryState.FAIL);
       } else {
-        growthStateList.push(GrowthDiaryState.NOT_COMMIT);
+        growthList.push(GrowthDiaryState.NOT_COMMIT);
       }
     }
 
-    return { growthStateList, isCommittedTodayOrYesterday };
+    return { growthList, isCommittedTodayOrYesterday };
   }
 
   async getUserGrowthDiaryData({
@@ -318,7 +318,7 @@ export class ChallengeService {
     startDate: Date;
   }) {
     const commitList = await this.commitSvc.getCommitListRecently(challengeNo, userNo);
-    const { growthStateList, isCommittedTodayOrYesterday } = this.getCommitResultOfChallenge(
+    const { growthList, isCommittedTodayOrYesterday } = this.getCommitResultOfChallenge(
       startDate,
       commitList,
     );
@@ -326,11 +326,11 @@ export class ChallengeService {
     let tipMessage = TipMessage.FAIL0; // 기본값
 
     // Commit 성공 횟수 계산
-    const successCount = growthStateList.reduce(
+    const successCount = growthList.reduce(
       (count, item) => (item === GrowthDiaryState.SUCCESS ? count + 1 : count),
       0,
     );
-    const failCount = growthStateList.reduce(
+    const failCount = growthList.reduce(
       (count, item) => (item === GrowthDiaryState.FAIL ? count + 1 : count),
       0,
     );
@@ -350,6 +350,6 @@ export class ChallengeService {
       }
     }
 
-    return { tipMessage, growthStateList, successCount };
+    return { tipMessage, growthList, successCount };
   }
 }

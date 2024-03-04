@@ -497,7 +497,7 @@ class GrowthDiaryData {
       'NOT_COMMIT',
     ],
   })
-  growthStateList!: GrowthDiaryState[];
+  growthList!: GrowthDiaryState[];
 
   @IsNumber()
   @IsNotEmpty()

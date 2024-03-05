@@ -273,35 +273,33 @@ export class ChallengeService {
 
     const growthList: GrowthDiaryState[] = [];
 
-    // startDate부터 endDate까지의 날짜 배열 생성
     const dateRange: Date[] = [];
-    for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+    for (let date = new Date(startDate); date <= endDate; date.setUTCDate(date.getUTCDate() + 1)) {
       dateRange.push(new Date(date));
     }
 
-    // date에 Commit이 있는지 확인
     for (const date of dateRange) {
-      const dateString: string = date.toLocaleDateString();
+      const dateString: string = moment(date).utc().format('M/DD/YYYY');
       const isCommitExist: boolean = commitList.some(
-        (commit: Commit) => moment(commit.createdAt).format('M/DD/YYYY') === dateString,
+        (commit: Commit) => moment(commit.createdAt).utc().format('M/DD/YYYY') === dateString,
       );
 
       // 어제나 오늘 인증이 있는지 확인
       if (
-        (dateString === yesterday.toLocaleDateString() ||
-          dateString === today.toLocaleDateString()) &&
+        (dateString === moment(yesterday).utc().format('M/DD/YYYY') ||
+          dateString === moment(today).utc().format('M/DD/YYYY')) &&
         isCommitExist
       ) {
         isCommittedTodayOrYesterday = true;
       }
 
-      // today 이후: NOT_COMMIT
-      // today 이전: Commit 여부에 따라 SUCCESS, FAIL 기록
-      // today: Commit했을 경우 SUCCESS, 안했을 경우 NOT_COMMIT
-      if (date < today || (date.getTime() === today.getTime() && isCommitExist)) {
-        growthList.push(isCommitExist ? GrowthDiaryState.SUCCESS : GrowthDiaryState.FAIL);
+      // 날짜(date)에 해당하는 Commit 있음: SUCCESS
+      // 날짜(date)가 조회 시점(today)보다 미래인 경우: NOT_COMMIT
+      // 날짜(date)가 조회 시점(today)보다 과거인 경우: FAIL
+      if (isCommitExist) {
+        growthList.push(GrowthDiaryState.SUCCESS);
       } else {
-        growthList.push(GrowthDiaryState.NOT_COMMIT);
+        growthList.push(date > today ? GrowthDiaryState.NOT_COMMIT : GrowthDiaryState.FAIL);
       }
     }
 

@@ -199,6 +199,7 @@ export class CommitService {
 
     return result;
   }
+
   async getCommitListRecently(challengeNo: number, userNo: number): Promise<CommitDocument[]> {
     const result = await this.commitModel
       .find({
@@ -223,5 +224,22 @@ export class CommitService {
     await this.commitModel.updateMany({ challengeNo }, { $set: { isDeleted: true } });
 
     return;
+  }
+
+  // TEST API 용
+  async createDummyCommitForTest(challengeNo: number, commitInfo: any) {
+    const commitNo = await this.autoIncrement('commitNo');
+    const commit = await this.commitModel.create({
+      commitNo,
+      challengeNo,
+      userNo: commitInfo.userNo,
+      text: commitInfo.text,
+      photoUrl: commitInfo.photoUrl,
+      partnerComment: '',
+      createdAt: commitInfo.createdAt,
+    });
+
+    await commit.save();
+    return commit.toObject();
   }
 }

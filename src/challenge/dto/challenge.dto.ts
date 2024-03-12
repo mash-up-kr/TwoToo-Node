@@ -12,7 +12,6 @@ import {
 import { UserInfoResDto } from '../../user/dto/user.dto';
 import { CommitResDto } from 'src/commit/dto/commit.dto';
 import { User } from 'src/user/schema/user.schema';
-import { HomeViewState, HomeViewStateType } from 'src/view/view.type';
 
 export enum FlowerType {
   FIG = 'FIG',

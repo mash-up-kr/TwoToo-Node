@@ -154,7 +154,6 @@ export class UserController {
     };
   }
 
-
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Patch('/delPartner')

@@ -1,6 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { ChallengeService } from './challenge.service';
-import { ChallengeController } from './challenge.controller';
+import { ChallengeController, ChallengeTestController } from './challenge.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Challenge, ChallengeSchema } from './schema/challenge.schema';
 import { UserModule } from '../user/user.module';
@@ -31,7 +31,7 @@ import { LoggerModule } from 'src/logger/logger.module';
     LoggerModule,
   ],
   providers: [ChallengeService, ChallengeValidator],
-  controllers: [ChallengeController],
+  controllers: [ChallengeController, ChallengeTestController],
   exports: [ChallengeService],
 })
 export class ChallengeModule {}

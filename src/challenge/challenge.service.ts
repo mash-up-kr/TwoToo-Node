@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { add, endOfDay } from 'date-fns';
+import { add, endOfDay, startOfDay, subDays } from 'date-fns';
 import * as _ from 'lodash';
 import moment from 'moment';
 
@@ -26,6 +26,8 @@ import {
 import { Commit } from 'src/commit/schema/commit.schema';
 import { HomeViewService } from 'src/view/homeView.service';
 import { HomeViewState } from 'src/view/view.type';
+import { CreateChallengeTestPayload, UpdateChallengeTestPayload } from './dto/challenge-test.dto';
+import { User } from '../user/schema/user.schema';
 
 @Injectable()
 export class ChallengeService {
@@ -107,7 +109,10 @@ export class ChallengeService {
 
   async updateChallenge(
     challengeNo: number,
-    challengeInfo: UpdateChallengePayload,
+    challengeInfo:
+      | UpdateChallengePayload // normal
+      | UpdateChallengeTestPayload // Test-API PATCH 용
+      | { user1CommitCnt: number; user2CommitCnt: number }, // Test-API POST용
   ): Promise<ChallengeDocument> {
     const challenge: ChallengeDocument | null = await this.challengeModel.findOneAndUpdate(
       { challengeNo, isDeleted: false },
@@ -349,5 +354,116 @@ export class ChallengeService {
     }
 
     return { tipMessage, growthList, successCount };
+  }
+
+  // TEST API 용
+  createDummyCommits = async (
+    challengeNo: number,
+    startDate: Date,
+    userNo: number,
+    daysAfter: number,
+    isRequester: boolean,
+  ) => {
+    const commitData = {
+      userNo: userNo,
+      text: `자동 생성 커밋 - ${daysAfter + 1}일차 - ${
+        isRequester ? '챌린지 생성자' : '챌린지 수락자'
+      }`,
+      photoUrl: `https://twotoo-dev.s3.ap-northeast-2.amazonaws.com/nothinghill_1709129516396.jpg`,
+      partnerCommit: `자동 생성 파트너 칭찬 - ${daysAfter}일차`,
+      createdAt: startDate,
+    };
+
+    await this.commitSvc.createDummyCommitForTest(challengeNo, commitData);
+  };
+
+  async createChallengeForTest(data: CreateChallengeTestPayload, creater: User) {
+    const challengeCreateInfo: any = data;
+
+    // challenge startDate를 바탕으로 시작일, 종료일 설정
+    challengeCreateInfo.startDate = startOfDay(new Date(data.startDate)) as Date;
+    challengeCreateInfo.endDate = add(endOfDay(challengeCreateInfo.startDate), { days: 21 });
+
+    // user1 설정
+    challengeCreateInfo.user1 = creater;
+
+    try {
+      const challenge = await this.createChallenge(challengeCreateInfo);
+
+      const user1CommitDate: number[] = data.user1CommitDate;
+      const user2CommitDate: number[] = data.user2CommitDate;
+
+      const user1Promises = user1CommitDate.map(async (daysAfter: number) => {
+        const updatedDate = add(endOfDay(challenge.startDate), { days: daysAfter, hours: 16 });
+        return this.createDummyCommits(
+          challenge.challengeNo,
+          updatedDate,
+          challenge.user1.userNo,
+          daysAfter,
+          true,
+        );
+      });
+
+      const user2Promises = user2CommitDate.map(async (daysAfter: number) => {
+        const updatedDate = add(endOfDay(challenge.startDate), { days: daysAfter, hours: 16 });
+        return this.createDummyCommits(
+          challenge.challengeNo,
+          updatedDate,
+          challenge.user2.userNo,
+          daysAfter,
+          false,
+        );
+      });
+
+      await Promise.all([...user1Promises, ...user2Promises]);
+
+      // user1CommitCnt, user2CommitCnt 개수 업데이트
+      // isApproved 처리, user1Flower 추가
+      const user1CommitCnt = data.user1CommitDate.length;
+      const user2CommitCnt = data.user2CommitDate.length;
+      const updatedChallenge = await this.updateChallenge(challenge.challengeNo, {
+        user1CommitCnt,
+        user2CommitCnt,
+        isApproved: true,
+        user1Flower: data.user1Flower,
+      });
+
+      return updatedChallenge;
+    } catch (err) {
+      throw new BadRequestException('챌린지 생성에 실패했습니다.');
+    }
+  }
+
+  async updateChallengeForTest(challengeNo: number, data: UpdateChallengeTestPayload) {
+    const challenge = await this.findChallenge(challengeNo);
+
+    const updateInfo: any = { ...data };
+
+    if (_.has(data, 'user1') || _.has(data, 'user2')) {
+      throw new BadRequestException(`user1, user2 정보는 변경할 수 없어요.`);
+    }
+
+    if (_.has(data, 'challengeNo')) {
+      throw new BadRequestException(`challengeNo는 변경할 수 없어요.`);
+    }
+
+    if (_.has(data, 'endDate') && _.has(data, 'startDate')) {
+      throw new BadRequestException(`startDate과 endDate중 하나만 선택하세요.`);
+    }
+
+    if (_.has(data, 'startDate')) {
+      updateInfo.startDate = startOfDay(updateInfo.startDate);
+      updateInfo.endDate = add(endOfDay(updateInfo.startDate), { days: 21 });
+    } else if (_.has(data, 'endDate')) {
+      updateInfo.endDate = endOfDay(updateInfo.endDate);
+      updateInfo.startDate = subDays(startOfDay(updateInfo.endDate), 21);
+    }
+
+    try {
+      const updatedChallenge = await this.updateChallenge(challenge.challengeNo, updateInfo);
+      return updatedChallenge;
+    } catch (err) {
+      throw new BadRequestException('챌린지 업데이트에 실패했습니다.');
+    }
   }
 }

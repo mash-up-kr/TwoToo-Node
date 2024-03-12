@@ -21,6 +21,7 @@ import { CommitService } from 'src/commit/commit.service';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificaitonType } from 'src/notification/dto/notification.dto';
 import { LoggerService } from 'src/logger/logger.service';
+import { CreateChallengeTestPayload, UpdateChallengeTestPayload } from './dto/challenge-test.dto';
 
 @ApiTags('challenge')
 @Controller('challenge')
@@ -265,5 +266,49 @@ export class ChallengeController {
         ...partnerGrowthDiaryData,
       },
     };
+  }
+}
+
+@ApiTags('test-api')
+@Controller('test-api')
+export class ChallengeTestController {
+  constructor(
+    private readonly userSvc: UserService,
+    private readonly challengeSvc: ChallengeService,
+  ) {}
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Post('')
+  @ApiOperation({
+    description: '테스트용 - 챌린지를 생성합니다.',
+    summary: '테스트용 - 챌린지 생성',
+  })
+  @ApiResponse({ status: 200, type: ChallengeResDto })
+  async createChallenge(
+    @Body() data: CreateChallengeTestPayload,
+    @JwtParam() jwtParam: JwtPayload,
+  ): Promise<ChallengeResDto> {
+    const user = await this.userSvc.getUser(jwtParam.userNo);
+    const challenge = await this.challengeSvc.createChallengeForTest(data, user);
+
+    return challenge;
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Patch(':challengeNo')
+  @ApiOperation({
+    description: '테스트용 - 챌린지를 생성합니다.',
+    summary: '테스트용 - 챌린지 수정',
+  })
+  @ApiResponse({ status: 200, type: ChallengeResDto })
+  async updateChallenge(
+    @Param('challengeNo') challengeNo: number,
+    @Body() data: UpdateChallengeTestPayload,
+  ): Promise<ChallengeResDto> {
+    const challenge = await this.challengeSvc.updateChallengeForTest(challengeNo, data);
+
+    return challenge;
   }
 }

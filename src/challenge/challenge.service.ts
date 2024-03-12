@@ -364,7 +364,6 @@ export class ChallengeService {
     daysAfter: number,
     isRequester: boolean,
   ) => {
-    const updatedDate = add(endOfDay(startDate), { days: daysAfter, hours: 16 });
     const commitData = {
       userNo: userNo,
       text: `자동 생성 커밋 - ${daysAfter + 1}일차 - ${
@@ -372,7 +371,7 @@ export class ChallengeService {
       }`,
       photoUrl: `https://twotoo-dev.s3.ap-northeast-2.amazonaws.com/nothinghill_1709129516396.jpg`,
       partnerCommit: `자동 생성 파트너 칭찬 - ${daysAfter}일차`,
-      createdAt: updatedDate,
+      createdAt: startDate,
     };
 
     await this.commitSvc.createDummyCommitForTest(challengeNo, commitData);

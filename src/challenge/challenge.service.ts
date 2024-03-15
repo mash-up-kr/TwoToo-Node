@@ -394,7 +394,7 @@ export class ChallengeService {
       const user2CommitDate: number[] = data.user2CommitDate;
 
       const user1Promises = user1CommitDate.map(async (daysAfter: number) => {
-        const updatedDate = add(endOfDay(challenge.startDate), { days: daysAfter, hours: 16 });
+        const updatedDate = add(endOfDay(challenge.startDate), { days: daysAfter, hours:1 });
         return this.createDummyCommits(
           challenge.challengeNo,
           updatedDate,
@@ -405,7 +405,7 @@ export class ChallengeService {
       });
 
       const user2Promises = user2CommitDate.map(async (daysAfter: number) => {
-        const updatedDate = add(endOfDay(challenge.startDate), { days: daysAfter, hours: 16 });
+        const updatedDate = add(endOfDay(challenge.startDate), { days: daysAfter, hours: 1 });
         return this.createDummyCommits(
           challenge.challengeNo,
           updatedDate,

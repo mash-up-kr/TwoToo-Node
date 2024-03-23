@@ -236,10 +236,10 @@ export class ChallengeController {
     const user = await this.userSvc.getUser(jwtParam.userNo);
     const challenge = await this.challengeSvc.findChallenge(challengeNo);
 
-    challenge.startDate.setHours(challenge.startDate.getHours() + 9);
     if (!user.partnerNo) {
-      throw Error('매칭이 되지 않았습니다.');
+      throw Error(`User(${user.userNo}) does not have a partner`)
     }
+
     const partner = await this.userSvc.getUser(user.partnerNo);
     const myGrowthDiaryData = await this.challengeSvc.getUserGrowthDiaryData({
       userNo: jwtParam.userNo,

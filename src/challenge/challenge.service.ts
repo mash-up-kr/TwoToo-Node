@@ -394,7 +394,8 @@ export class ChallengeService {
       const user2CommitDate: number[] = data.user2CommitDate;
 
       const user1Promises = user1CommitDate.map(async (daysAfter: number) => {
-        const updatedDate = add(endOfDay(challenge.startDate), { days: daysAfter, hours:1 });
+        // KST기준 새벽 1시 - 시작일의 자정(00시) + daysAfter 일 후 + 1시간
+        const updatedDate = add(startOfDay(challenge.startDate), { days: daysAfter, hours: 1 });
         return this.createDummyCommits(
           challenge.challengeNo,
           updatedDate,
@@ -405,7 +406,8 @@ export class ChallengeService {
       });
 
       const user2Promises = user2CommitDate.map(async (daysAfter: number) => {
-        const updatedDate = add(endOfDay(challenge.startDate), { days: daysAfter, hours: 1 });
+        // KST기준 새벽 1시 - 시작일의 자정(00시) + daysAfter 일 후 + 1시간
+        const updatedDate = add(startOfDay(challenge.startDate), { days: daysAfter, hours: 1 });
         return this.createDummyCommits(
           challenge.challengeNo,
           updatedDate,

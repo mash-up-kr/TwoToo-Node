@@ -7,9 +7,8 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { add, endOfDay, startOfDay, subDays } from 'date-fns';
+import { add, addDays, endOfDay, isAfter, isBefore, startOfDay, subDays } from 'date-fns';
 import * as _ from 'lodash';
-import moment from 'moment';
 
 import { UserService } from '../user/user.service';
 import { CommitService } from '../commit/commit.service';
@@ -40,7 +39,7 @@ export class ChallengeService {
     private readonly challengeModel: Model<ChallengeDocument>,
     @InjectModel(ChallengeCounter.name)
     private readonly challengeCounterModel: Model<ChallengeCounterDocument>,
-  ) {}
+  ) { }
 
   async createChallenge(challengeInfo: CreateChallenge): Promise<ChallengeResDto> {
     // user1: 챌린지 생성 요청을 보낸 자
@@ -268,46 +267,29 @@ export class ChallengeService {
   }
 
   private getCommitResultOfChallenge(startDate: Date, commitList: Commit[]) {
-    const today: Date = new Date();
-    const yesterday: Date = new Date();
-    yesterday.setDate(today.getDate() - 1);
-    const endDate: Date = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 21); // 챌린지 시작일로부터 22일 지남
-
-    let isCommittedTodayOrYesterday = false;
+    const startDateUTC = startOfDay(startDate); // XXXX-XX-XXT15:00:00.000Z
+    const endDateUTC = endOfDay(addDays(startDate, 21)); // XXXX-XX-XXT14:59:59.999Z - 챌린지 시작일로부터 21일 뒤 (시작일포함 22일치)
+    const now = new Date();
 
     const growthList: GrowthDiaryState[] = [];
+    let isCommittedTodayOrYesterday = false;
 
-    const dateRange: Date[] = [];
-    for (let date = new Date(startDate); date <= endDate; date.setUTCDate(date.getUTCDate() + 1)) {
-      dateRange.push(new Date(date));
-    }
+    // startDate부터 endDate까지 1일씩 늘려가면서 확인 (UTC 15:00 기준)
+    for (let d = startDateUTC; d <= endDateUTC; d = addDays(d, 1)) {
+      let status = GrowthDiaryState.NOT_COMMIT; // 기본값
+      const endTime = endOfDay(d);
 
-    for (const date of dateRange) {
-      const dateString: string = moment(date).utc().format('M/DD/YYYY');
-      const isCommitExist: boolean = commitList.some(
-        (commit: Commit) => moment(commit.createdAt).utc().format('M/DD/YYYY') === dateString,
-      );
+      // d가 now(조회 시점)보다 이전인 경우에만 커밋 여부 확인
+      if (isBefore(d, now)) {
+        const isCommitExist = commitList.some(c => isAfter(c.createdAt, d) && isBefore(c.createdAt, endTime));
+        status = isCommitExist ? GrowthDiaryState.SUCCESS : GrowthDiaryState.FAIL;
 
-      // 어제나 오늘 인증이 있는지 확인
-      if (
-        (dateString === moment(yesterday).utc().format('M/DD/YYYY') ||
-          dateString === moment(today).utc().format('M/DD/YYYY')) &&
-        isCommitExist
-      ) {
-        isCommittedTodayOrYesterday = true;
+        // 어제 시작일 ~ 현재까지 커밋 여부 확인
+        isCommittedTodayOrYesterday = commitList.some(c => isAfter(c.createdAt, startOfDay(addDays(now, -1))) && isBefore(c.createdAt, endOfDay(now)));
       }
 
-      // 날짜(date)에 해당하는 Commit 있음: SUCCESS
-      // 날짜(date)가 조회 시점(today)보다 미래인 경우: NOT_COMMIT
-      // 날짜(date)가 조회 시점(today)보다 과거인 경우: FAIL
-      if (isCommitExist) {
-        growthList.push(GrowthDiaryState.SUCCESS);
-      } else {
-        growthList.push(date > today ? GrowthDiaryState.NOT_COMMIT : GrowthDiaryState.FAIL);
-      }
+      growthList.push(status);
     }
-
     return { growthList, isCommittedTodayOrYesterday };
   }
 
@@ -366,9 +348,7 @@ export class ChallengeService {
   ) => {
     const commitData = {
       userNo: userNo,
-      text: `자동 생성 커밋 - ${daysAfter + 1}일차 - ${
-        isRequester ? '챌린지 생성자' : '챌린지 수락자'
-      }`,
+      text: `자동 생성 커밋 - ${daysAfter + 1}일차 - ${isRequester ? '챌린지 생성자' : '챌린지 수락자'}`,
       photoUrl: `https://twotoo-dev.s3.ap-northeast-2.amazonaws.com/nothinghill_1709129516396.jpg`,
       partnerCommit: `자동 생성 파트너 칭찬 - ${daysAfter}일차`,
       createdAt: startDate,

@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { LoginType } from '../user.types';
 
-@Schema({ collection: 'user' })
+@Schema({ collection: 'user', timestamps: true, versionKey: false })
 export class User {
   @Prop()
   userNo!: number;

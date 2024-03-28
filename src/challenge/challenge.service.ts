@@ -283,7 +283,7 @@ export class ChallengeService {
       if (isBefore(d, now)) {
         const isCommitExist = commitList.some(c => isAfter(c.createdAt, d) && isBefore(c.createdAt, endTime));
         status = isCommitExist ? GrowthDiaryState.SUCCESS : GrowthDiaryState.FAIL;
-        if (nowStartOfDay === d && status === GrowthDiaryState.FAIL) {
+        if (nowStartOfDay.getDate() === d.getDate() && status === GrowthDiaryState.FAIL) {
           status = GrowthDiaryState.NOT_COMMIT;
         }
 

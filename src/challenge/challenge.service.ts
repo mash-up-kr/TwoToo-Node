@@ -270,7 +270,7 @@ export class ChallengeService {
     const startDateUTC = startOfDay(startDate); // XXXX-XX-XXT15:00:00.000Z
     const endDateUTC = endOfDay(addDays(startDate, 21)); // XXXX-XX-XXT14:59:59.999Z - 챌린지 시작일로부터 21일 뒤 (시작일포함 22일치)
     const now = new Date();
-
+    const nowStartOfDay = startOfDay(now);
     const growthList: GrowthDiaryState[] = [];
     let isCommittedTodayOrYesterday = false;
 
@@ -283,6 +283,9 @@ export class ChallengeService {
       if (isBefore(d, now)) {
         const isCommitExist = commitList.some(c => isAfter(c.createdAt, d) && isBefore(c.createdAt, endTime));
         status = isCommitExist ? GrowthDiaryState.SUCCESS : GrowthDiaryState.FAIL;
+        if (nowStartOfDay === d && status === GrowthDiaryState.FAIL) {
+          status = GrowthDiaryState.NOT_COMMIT;
+        }
 
         // 어제 시작일 ~ 현재까지 커밋 여부 확인
         isCommittedTodayOrYesterday = commitList.some(c => isAfter(c.createdAt, startOfDay(addDays(now, -1))) && isBefore(c.createdAt, endOfDay(now)));
